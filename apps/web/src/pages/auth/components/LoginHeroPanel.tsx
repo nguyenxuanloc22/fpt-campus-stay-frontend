@@ -3,7 +3,7 @@ export function LoginHeroPanel() {
     <div className="hidden lg:flex lg:w-[56%] relative flex-col justify-between p-12 overflow-hidden bg-slate-900 text-white select-none">
       {/* Background Campus Photo with dark gradient overlay */}
       <img
-        src="/campus-building.jpg"
+        src="/assets/campus-building.png"
         alt="FPT University Campus"
         className="absolute inset-0 w-full h-full object-cover object-center"
       />
