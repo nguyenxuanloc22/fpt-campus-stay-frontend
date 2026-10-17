@@ -1,120 +1,117 @@
-import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { Building2, Shield, UserCheck, KeyRound, ArrowLeft } from 'lucide-react';
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { User, Shield, HelpCircle } from 'lucide-react';
 import { useAuthStore } from '@features/auth';
-import { ROLES, type Role, ROLE_LABELS, APP_ROUTES } from '@campusstay/constants';
-import { AppButton } from '@shared-ui/components/AppButton';
+import { ROLES, type Role, APP_ROUTES } from '@campusstay/constants';
+import { LoginHeroPanel } from './components/LoginHeroPanel';
+import { StudentLoginForm } from './components/StudentLoginForm';
+import { StaffLoginForm } from './components/StaffLoginForm';
 
 export function LoginPage() {
   const navigate = useNavigate();
   const { loginWithRole } = useAuthStore();
-  const [username, setUsername] = useState('student');
-  const [password, setPassword] = useState('123');
-
-  const resolveRole = (input: string): Role => {
-    const lower = input.trim().toLowerCase();
-    if (lower.includes('admin')) return ROLES.ADMIN;
-    if (lower.includes('manager')) return ROLES.MANAGER;
-    if (lower.includes('staff')) return ROLES.STAFF;
-    return ROLES.STUDENT;
-  };
+  const [activeTab, setActiveTab] = useState<'student' | 'staff'>('student');
 
   const executeLogin = (role: Role) => {
     loginWithRole(role);
-    if (role === ROLES.STUDENT) navigate(APP_ROUTES.STUDENT.DASHBOARD);
+    if (role === ROLES.STUDENT) navigate(APP_ROUTES.STUDENT.NOTIFICATIONS);
     else if (role === ROLES.STAFF) navigate(APP_ROUTES.STAFF.DASHBOARD);
     else if (role === ROLES.MANAGER) navigate(APP_ROUTES.MANAGER.DASHBOARD);
     else if (role === ROLES.ADMIN) navigate(APP_ROUTES.ADMIN.DASHBOARD);
   };
 
-  const handleFormSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const role = resolveRole(username);
-    executeLogin(role);
-  };
-
-  const handleQuickLogin = (role: Role) => {
-    setUsername(role.toLowerCase());
-    setPassword('123');
-    executeLogin(role);
+  const handleStaffLogin = (input: string) => {
+    const lower = input.trim().toLowerCase();
+    if (lower.includes('admin')) executeLogin(ROLES.ADMIN);
+    else if (lower.includes('manager')) executeLogin(ROLES.MANAGER);
+    else if (lower.includes('student')) executeLogin(ROLES.STUDENT);
+    else executeLogin(ROLES.STAFF);
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-4">
-      <div className="w-full max-w-md bg-white rounded-2xl shadow-2xl border border-slate-200/80 p-8">
-        <Link to="/" className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-[#F26F21] mb-6 transition">
-          <ArrowLeft className="w-3.5 h-3.5" />
-          <span>Về trang chủ</span>
-        </Link>
+    <div className="min-h-screen flex w-full bg-slate-100 font-sans">
+      {/* Left Column: Hero Panel */}
+      <LoginHeroPanel />
 
-        <div className="flex flex-col items-center mb-6">
-          <div className="w-14 h-14 bg-[#FFF2EA] text-[#F26F21] rounded-2xl flex items-center justify-center shadow-inner mb-3">
-            <Building2 className="w-8 h-8" />
-          </div>
-          <h1 className="text-2xl font-bold text-[#1A365D]">CampusStay FPT</h1>
-          <p className="text-xs text-slate-500 font-medium mt-1">Đăng nhập KTX FPT University Tân Uyên</p>
-        </div>
-
-        <form onSubmit={handleFormSubmit} className="space-y-4">
-          <div>
-            <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
-              Tài khoản (admin / manager / staff / student)
-            </label>
-            <input
-              type="text"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              placeholder="admin, manager, staff, hoặc student"
-              className="w-full px-3.5 py-2.5 text-sm rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#F26F21] focus:border-transparent transition"
-              required
-            />
+      {/* Right Column: Sign In Form */}
+      <div className="w-full lg:w-[44%] bg-white flex flex-col justify-between p-6 sm:p-12 lg:p-16 relative">
+        <div className="max-w-md w-full mx-auto my-auto">
+          {/* Top Logo */}
+          <div className="flex items-center gap-3 mb-8">
+            <div className="w-10 h-10 rounded-xl bg-[#F26F21] flex items-center justify-center font-black text-white text-sm shadow-md">
+              FPT
+            </div>
+            <div>
+              <div className="text-slate-900 font-bold text-base leading-tight">FPT CampusStay</div>
+              <div className="text-slate-400 text-xs">Dormitory Management System</div>
+            </div>
           </div>
 
-          <div>
-            <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">Mật khẩu</label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="123"
-              className="w-full px-3.5 py-2.5 text-sm rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#F26F21] focus:border-transparent transition"
-              required
-            />
+          {/* Heading */}
+          <div className="mb-6">
+            <h2 className="text-2xl font-bold text-slate-900 mb-1">Sign In</h2>
+            <p className="text-xs text-slate-400">Please log in with your assigned account.</p>
           </div>
 
-          <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg text-xs text-amber-800">
-            💡 <strong>Mật khẩu demo:</strong> <code>123</code> (nhập <code>admin</code>, <code>manager</code>, <code>staff</code> hoặc <code>student</code>)
+          {/* Tab Switcher: [ Student ] and [ Staff / Admin ] */}
+          <div className="bg-slate-100 p-1 rounded-xl flex gap-1 mb-6">
+            <button
+              type="button"
+              onClick={() => setActiveTab('student')}
+              className={`flex-1 py-2 px-3 rounded-lg text-xs font-bold flex items-center justify-center gap-2 transition ${
+                activeTab === 'student'
+                  ? 'bg-[#0F172A] text-white shadow-xs'
+                  : 'text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              <User className="w-3.5 h-3.5" />
+              <span>Student</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveTab('staff')}
+              className={`flex-1 py-2 px-3 rounded-lg text-xs font-bold flex items-center justify-center gap-2 transition ${
+                activeTab === 'staff'
+                  ? 'bg-[#0F172A] text-white shadow-xs'
+                  : 'text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              <Shield className="w-3.5 h-3.5" />
+              <span>Staff / Admin</span>
+            </button>
           </div>
 
-          <AppButton type="submit" className="w-full mt-2" size="lg">
-            Đăng nhập hệ thống
-          </AppButton>
-        </form>
+          {/* Form Content */}
+          {activeTab === 'student' ? (
+            <StudentLoginForm onLogin={() => executeLogin(ROLES.STUDENT)} />
+          ) : (
+            <StaffLoginForm onLogin={handleStaffLogin} />
+          )}
 
-        <div className="mt-6 pt-5 border-t border-slate-200">
-          <div className="flex items-center gap-1.5 text-xs font-semibold text-slate-500 mb-2.5">
-            <KeyRound className="w-3.5 h-3.5 text-[#F26F21]" />
-            <span>ĐĂNG NHẬP 1 CHẠM THEO VAI TRÒ</span>
-          </div>
-          <div className="grid grid-cols-2 gap-2">
-            {(Object.keys(ROLES) as Role[]).map((r) => (
-              <button
-                key={r}
-                type="button"
-                onClick={() => handleQuickLogin(r)}
-                className="flex items-center gap-2 p-2.5 text-left rounded-lg border border-slate-200 hover:border-[#F26F21] hover:bg-[#FFF2EA]/50 text-slate-700 transition group text-xs font-medium"
-              >
-                <div className="w-6 h-6 rounded-md bg-slate-100 group-hover:bg-[#F26F21] group-hover:text-white flex items-center justify-center text-slate-600 transition-colors">
-                  {r === ROLES.STUDENT && <UserCheck className="w-3.5 h-3.5" />}
-                  {r === ROLES.STAFF && <Building2 className="w-3.5 h-3.5" />}
-                  {r === ROLES.MANAGER && <Shield className="w-3.5 h-3.5" />}
-                  {r === ROLES.ADMIN && <KeyRound className="w-3.5 h-3.5" />}
-                </div>
-                <span>{ROLE_LABELS[r]}</span>
-              </button>
-            ))}
+          {/* Quick Demo Switcher for Grading Committee */}
+          <div className="mt-8 pt-4 border-t border-slate-100 flex flex-wrap items-center justify-center gap-1.5 text-[11px] text-slate-500">
+            <span className="font-semibold text-slate-400">Demo Role:</span>
+            <button type="button" onClick={() => executeLogin(ROLES.STUDENT)} className="px-2 py-0.5 rounded bg-slate-100 hover:bg-orange-100 hover:text-[#F26F21]">Student</button>
+            <button type="button" onClick={() => executeLogin(ROLES.STAFF)} className="px-2 py-0.5 rounded bg-slate-100 hover:bg-orange-100 hover:text-[#F26F21]">Staff</button>
+            <button type="button" onClick={() => executeLogin(ROLES.MANAGER)} className="px-2 py-0.5 rounded bg-slate-100 hover:bg-orange-100 hover:text-[#F26F21]">Manager</button>
+            <button type="button" onClick={() => executeLogin(ROLES.ADMIN)} className="px-2 py-0.5 rounded bg-slate-100 hover:bg-orange-100 hover:text-[#F26F21]">Admin</button>
           </div>
         </div>
+
+        {/* Footer */}
+        <div className="text-center text-[11px] text-slate-400 mt-6">
+          © 2026 FPT University • CampusStay v2.4.1
+        </div>
+
+        {/* Floating Help Button (?) */}
+        <button
+          type="button"
+          title="Trợ giúp"
+          onClick={() => alert('CampusStay KTX Tân Uyên - Hotline hỗ trợ: (0274) 7300 999')}
+          className="fixed bottom-6 right-6 w-10 h-10 rounded-full bg-slate-900 hover:bg-slate-800 text-white flex items-center justify-center font-bold text-sm shadow-xl z-50 transition"
+        >
+          <HelpCircle className="w-5 h-5" />
+        </button>
       </div>
     </div>
   );

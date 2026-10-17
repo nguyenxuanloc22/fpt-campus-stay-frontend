@@ -14,7 +14,7 @@ export interface AuthState {
 }
 
 const roleNames: Record<Role, string> = {
-  STUDENT: 'Nguyễn Xuân Lộc (Sinh viên)',
+  STUDENT: 'Nguyễn Thị Mai Anh',
   STAFF: 'Trần Văn Cường (Cán bộ KTX)',
   MANAGER: 'ThS. Hoàng Nam (Trưởng ban KTX)',
   ADMIN: 'Quản trị viên Hệ thống',
@@ -26,11 +26,11 @@ export const useAuthStore = create<AuthState>()(
       token: 'mock-jwt-token-campusstay',
       user: {
         id: 'usr-001',
-        studentId: 'SE170123',
-        name: 'Nguyễn Xuân Lộc',
-        email: 'locnx.se@fpt.edu.vn',
+        studentId: 'SE171234',
+        name: 'Nguyễn Thị Mai Anh',
+        email: 'anhntmse171234@fpt.edu.vn',
         role: 'STUDENT',
-        gender: 'MALE',
+        gender: 'FEMALE',
         major: 'Kỹ thuật phần mềm (SE)',
       },
       isAuthenticated: true,
@@ -42,7 +42,7 @@ export const useAuthStore = create<AuthState>()(
           isAuthenticated: true,
           user: {
             id: `usr-${role.toLowerCase()}-001`,
-            studentId: role === 'STUDENT' ? 'SE170123' : undefined,
+            studentId: role === 'STUDENT' ? 'SE171234' : undefined,
             name: customName || roleNames[role],
             email: `${role.toLowerCase()}@fpt.edu.vn`,
             role,
@@ -58,7 +58,7 @@ export const useAuthStore = create<AuthState>()(
               isAuthenticated: true,
               user: {
                 id: `usr-${role.toLowerCase()}-001`,
-                studentId: role === 'STUDENT' ? 'SE170123' : undefined,
+                studentId: role === 'STUDENT' ? 'SE171234' : undefined,
                 name: roleNames[role],
                 email: `${role.toLowerCase()}@fpt.edu.vn`,
                 role,
