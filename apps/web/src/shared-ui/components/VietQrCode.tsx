@@ -9,7 +9,7 @@ interface VietQrCodeProps {
 const GRID = 25;
 
 /**
- * Hiển thị mã VietQR. Bản demo vẽ hoa văn tất định từ `value` để giao diện trông như thật
+ * Hiển thị mã VietQR. Khi chưa nối API, vẽ hoa văn tất định từ `value` để giao diện trông như thật
  * mà không cần thư viện QR; khi nối API, thay bằng ảnh `qrDataURL` do Backend trả về.
  */
 export function VietQrCode({ value, size = 192 }: VietQrCodeProps) {

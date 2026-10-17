@@ -1,187 +1,270 @@
-import { LogOut, ArrowRightLeft, Bell, ChevronRight } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+import { Bell, ChevronDown, ChevronRight, LogOut, Lock, Settings, User as UserIcon } from 'lucide-react';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
+import clsx from 'clsx';
 import { useAuthStore } from '@features/auth';
-import { ROLES, type Role, ROLE_LABELS, APP_ROUTES } from '@campusstay/constants';
+import { PERSONAL_NOTIFICATIONS } from '@features/notifications/personalNotifications';
+import { ROLE_LABELS, APP_ROUTES } from '@campusstay/constants';
+import { Modal, AppButton, useToast } from '@shared-ui';
 
-/** Map pathname segments to Vietnamese breadcrumb labels. */
 const BREADCRUMB_LABELS: Record<string, string> = {
   student: 'Sinh viên',
   staff: 'Cán bộ',
   manager: 'Quản lý',
   admin: 'Quản trị',
   dashboard: 'Tổng quan',
-  registration: 'Đăng ký KTX',
-  rooms: 'Tòa & Phòng',
-  roommates: 'Bạn cùng phòng',
-  contract: 'Hợp đồng số',
+  registration: 'Đăng ký lưu trú',
+  'my-room': 'Phòng của tôi',
   invoices: 'Hóa đơn',
   requests: 'Yêu cầu',
-  checkin: 'Check-in',
-  notifications: 'Thông báo',
-  profile: 'Hồ sơ',
-  inventory: 'Tồn kho phòng',
-  applications: 'Duyệt đơn',
-  'room-assignment': 'Xếp phòng',
-  'room-transfers': 'Đổi phòng',
-  'checkin-out': 'Check-in/out',
-  inspections: 'Kiểm tra phòng',
-  maintenance: 'Bảo trì',
-  broadcast: 'Phát thông báo',
-  exceptions: 'Ngoại lệ',
-  'batch-approval': 'Duyệt xếp phòng',
+  checkin: 'Check-in / Check-out',
+  notifications: 'Thông báo chung',
+  profile: 'Hồ sơ cá nhân',
+  inventory: 'Phòng & giường',
+  applications: 'Đơn đăng ký',
+  assignment: 'Xếp phòng',
+  'room-changes': 'Đổi phòng',
+  'checkin-out': 'Check-in / Check-out',
+  maintenance: 'Bảo trì & kiểm tra',
+  broadcast: 'Gửi thông báo',
+  approvals: 'Phê duyệt',
+  'assignment-approval': 'Duyệt xếp phòng',
   reports: 'Báo cáo',
-  'staff-performance': 'Hiệu suất',
-  semesters: 'Cấu hình kỳ',
+  semesters: 'Kỳ học',
   rules: 'Luật điều kiện',
-  pricing: 'Bảng giá',
+  pricing: 'Loại phòng & giá',
   'allocation-engine': 'Engine xếp phòng',
-  'batch-runs': 'Batch runs',
   integrations: 'Tích hợp',
   users: 'Người dùng',
-  finance: 'Tài chính',
-  'audit-logs': 'Audit Logs',
+  'audit-logs': 'Nhật ký kiểm toán',
 };
 
-function useBreadcrumbs() {
-  const { pathname } = useLocation();
-  const segments = pathname.split('/').filter(Boolean);
-  return segments.map((seg, idx) => ({
-    label: BREADCRUMB_LABELS[seg] || seg,
-    path: '/' + segments.slice(0, idx + 1).join('/'),
-    isLast: idx === segments.length - 1,
-  }));
+/** Đóng popover khi bấm ra ngoài hoặc nhấn Esc. */
+function useDismiss<T extends HTMLElement>(open: boolean, onClose: () => void) {
+  const ref = useRef<T>(null);
+  useEffect(() => {
+    if (!open) return;
+    const onDown = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) onClose();
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    document.addEventListener('mousedown', onDown);
+    document.addEventListener('keydown', onKey);
+    return () => {
+      document.removeEventListener('mousedown', onDown);
+      document.removeEventListener('keydown', onKey);
+    };
+  }, [open, onClose]);
+  return ref;
 }
 
-function getInitials(name: string): string {
-  return name
-    .split(' ')
-    .filter(Boolean)
-    .map((w) => w[0])
-    .slice(-2)
-    .join('')
-    .toUpperCase();
+const initialsOf = (name: string) =>
+  name.split(' ').filter(Boolean).map((w) => w[0]).slice(-2).join('').toUpperCase();
+
+function NotificationBell() {
+  const navigate = useNavigate();
+  const role = useAuthStore((s) => s.user?.role);
+  const [open, setOpen] = useState(false);
+  const [items, setItems] = useState(() => (role ? PERSONAL_NOTIFICATIONS[role] : []));
+  const ref = useDismiss<HTMLDivElement>(open, () => setOpen(false));
+  const unread = items.filter((i) => i.unread).length;
+
+  useEffect(() => setItems(role ? PERSONAL_NOTIFICATIONS[role] : []), [role]);
+
+  return (
+    <div className="relative" ref={ref}>
+      <button
+        type="button"
+        aria-label={`Thông báo cá nhân${unread ? `, ${unread} chưa đọc` : ''}`}
+        aria-expanded={open}
+        onClick={() => setOpen((v) => !v)}
+        className="relative w-9 h-9 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 flex items-center justify-center text-slate-600"
+      >
+        <Bell className="w-4 h-4" />
+        {unread > 0 && <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-[#F26F21] ring-2 ring-white" />}
+      </button>
+      {open && (
+        <div className="absolute right-0 top-11 w-80 bg-white rounded-2xl border border-slate-200 shadow-xl overflow-hidden z-40">
+          <div className="px-4 py-3 border-b border-slate-100 flex items-center justify-between">
+            <span className="text-sm font-bold text-slate-900">Thông báo của bạn</span>
+            {unread > 0 && (
+              <button type="button" onClick={() => setItems((all) => all.map((i) => ({ ...i, unread: false })))} className="text-xs font-semibold text-[#F26F21]">
+                Đánh dấu đã đọc
+              </button>
+            )}
+          </div>
+          <ul className="max-h-96 overflow-y-auto divide-y divide-slate-100">
+            {items.map((n) => (
+              <li key={n.id}>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setItems((all) => all.map((i) => (i.id === n.id ? { ...i, unread: false } : i)));
+                    setOpen(false);
+                    navigate(n.to);
+                  }}
+                  className="w-full px-4 py-3 text-left hover:bg-slate-50 flex gap-3"
+                >
+                  <span className={clsx('mt-1.5 w-2 h-2 rounded-full shrink-0', n.unread ? 'bg-[#F26F21]' : 'bg-transparent')} />
+                  <span className="min-w-0">
+                    <span className={clsx('block text-xs text-slate-900', n.unread ? 'font-bold' : 'font-medium')}>{n.title}</span>
+                    <span className="block text-xs text-slate-500 mt-0.5">{n.body}</span>
+                    <span className="block text-[11px] text-slate-400 mt-1">{n.time}</span>
+                  </span>
+                </button>
+              </li>
+            ))}
+            {items.length === 0 && <li className="px-4 py-8 text-center text-xs text-slate-400">Không có thông báo mới</li>}
+          </ul>
+          <button
+            type="button"
+            onClick={() => { setOpen(false); navigate(APP_ROUTES.COMMON.NOTIFICATIONS); }}
+            className="w-full px-4 py-2.5 text-xs font-semibold text-slate-600 hover:bg-slate-50 border-t border-slate-100"
+          >
+            Xem thông báo chung
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function UserMenu() {
+  const navigate = useNavigate();
+  const { user, logout } = useAuthStore();
+  const { show, toastNode } = useToast();
+  const [open, setOpen] = useState(false);
+  const [pwOpen, setPwOpen] = useState(false);
+  const [pw, setPw] = useState({ current: '', next: '', confirm: '' });
+  const ref = useDismiss<HTMLDivElement>(open, () => setOpen(false));
+
+  if (!user) return null;
+  const subtitle = `${user.studentId ? `${user.studentId} · ` : ''}${ROLE_LABELS[user.role]}`;
+  const initials = initialsOf(user.name);
+
+  const go = (to: string) => {
+    setOpen(false);
+    navigate(to);
+  };
+
+  const pwValid = pw.current.length > 0 && pw.next.length >= 6 && pw.next === pw.confirm;
+
+  return (
+    <div className="relative" ref={ref}>
+      <button
+        type="button"
+        aria-expanded={open}
+        onClick={() => setOpen((v) => !v)}
+        className="flex items-center gap-2.5 pl-1 pr-2 py-1 rounded-xl hover:bg-slate-50 border border-transparent hover:border-slate-200"
+      >
+        <span className="w-9 h-9 rounded-full bg-[#F26F21] text-white text-xs font-bold flex items-center justify-center">{initials}</span>
+        <span className="hidden md:block text-left">
+          <span className="block text-sm font-bold text-slate-900 leading-tight max-w-[180px] truncate">{user.name}</span>
+          <span className="block text-[11px] text-slate-500">{subtitle}</span>
+        </span>
+        <ChevronDown className={clsx('w-4 h-4 text-slate-400 transition', open && 'rotate-180')} />
+      </button>
+
+      {open && (
+        <div className="absolute right-0 top-12 w-72 bg-white rounded-2xl border border-slate-200 shadow-xl overflow-hidden z-40">
+          <div className="px-4 py-4 flex items-center gap-3 bg-slate-50/70 border-b border-slate-100">
+            <span className="w-11 h-11 rounded-full bg-[#F26F21] text-white text-sm font-bold flex items-center justify-center shrink-0">{initials}</span>
+            <div className="min-w-0">
+              <div className="text-sm font-bold text-slate-900 truncate">{user.name}</div>
+              <div className="text-xs text-slate-500">{subtitle}</div>
+              <div className="text-[10px] font-bold text-[#F26F21] mt-0.5 tracking-wide">CAMPUS: FPT TÂN UYÊN</div>
+            </div>
+          </div>
+          <div className="py-1.5">
+            <button type="button" onClick={() => go(APP_ROUTES.COMMON.PROFILE)} className="w-full px-4 py-2.5 flex items-center gap-3 text-sm text-slate-700 hover:bg-slate-50">
+              <UserIcon className="w-4 h-4 text-slate-400" /> Hồ sơ cá nhân
+            </button>
+            <button type="button" onClick={() => { setOpen(false); setPwOpen(true); }} className="w-full px-4 py-2.5 flex items-center gap-3 text-sm text-slate-700 hover:bg-slate-50">
+              <Lock className="w-4 h-4 text-slate-400" /> Đổi mật khẩu
+            </button>
+            <button type="button" onClick={() => go(`${APP_ROUTES.COMMON.PROFILE}?tab=settings`)} className="w-full px-4 py-2.5 flex items-center gap-3 text-sm text-slate-700 hover:bg-slate-50">
+              <Settings className="w-4 h-4 text-slate-400" /> Cài đặt hệ thống
+            </button>
+          </div>
+          <div className="border-t border-slate-100 py-1.5">
+            <button
+              type="button"
+              onClick={() => { logout(); navigate(APP_ROUTES.AUTH.LOGIN); }}
+              className="w-full px-4 py-2.5 flex items-center gap-3 text-sm font-semibold text-rose-600 hover:bg-rose-50"
+            >
+              <LogOut className="w-4 h-4" /> Đăng xuất
+            </button>
+          </div>
+        </div>
+      )}
+
+      <Modal
+        open={pwOpen}
+        onClose={() => setPwOpen(false)}
+        size="sm"
+        title="Đổi mật khẩu"
+        footer={
+          <>
+            <AppButton variant="outline" onClick={() => setPwOpen(false)}>Hủy</AppButton>
+            <AppButton disabled={!pwValid} onClick={() => { setPwOpen(false); setPw({ current: '', next: '', confirm: '' }); show('Đã đổi mật khẩu'); }}>Lưu</AppButton>
+          </>
+        }
+      >
+        {user.role === 'STUDENT' ? (
+          <p className="text-sm text-slate-600">Sinh viên đăng nhập bằng Google / FEID. Vui lòng đổi mật khẩu tại hệ thống tài khoản của FPT University.</p>
+        ) : (
+          <div className="space-y-3 text-sm">
+            {(
+              [
+                ['current', 'Mật khẩu hiện tại'],
+                ['next', 'Mật khẩu mới (tối thiểu 6 ký tự)'],
+                ['confirm', 'Nhập lại mật khẩu mới'],
+              ] as const
+            ).map(([k, label]) => (
+              <label key={k} className="block">
+                <span className="block text-xs font-semibold text-slate-600 mb-1">{label}</span>
+                <input type="password" value={pw[k]} onChange={(e) => setPw({ ...pw, [k]: e.target.value })} className="w-full px-3 py-2 border border-slate-200 rounded-lg" />
+              </label>
+            ))}
+            {pw.confirm && pw.next !== pw.confirm && <p className="text-xs text-rose-600">Mật khẩu nhập lại không khớp.</p>}
+          </div>
+        )}
+      </Modal>
+      {toastNode}
+    </div>
+  );
 }
 
 export function Header() {
-  const navigate = useNavigate();
-  const { user, logout, switchRole } = useAuthStore();
-  const breadcrumbs = useBreadcrumbs();
-
-  const handleLogout = () => {
-    logout();
-    navigate(APP_ROUTES.AUTH.LOGIN);
-  };
-
-  const handleSwitch = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const newRole = e.target.value as Role;
-    switchRole(newRole);
-    if (newRole === ROLES.STUDENT) navigate(APP_ROUTES.STUDENT.DASHBOARD);
-    else if (newRole === ROLES.STAFF) navigate(APP_ROUTES.STAFF.DASHBOARD);
-    else if (newRole === ROLES.MANAGER) navigate(APP_ROUTES.MANAGER.DASHBOARD);
-    else if (newRole === ROLES.ADMIN) navigate(APP_ROUTES.ADMIN.DASHBOARD);
-  };
-
-  const initials = user?.name ? getInitials(user.name) : '??';
+  const { pathname } = useLocation();
+  const segments = pathname.split('/').filter(Boolean);
+  const crumbs = segments
+    .filter((s) => !['student', 'staff', 'manager', 'admin'].includes(s))
+    .map((s) => BREADCRUMB_LABELS[s] ?? s);
 
   return (
-    <header className="h-14 bg-white border-b border-slate-200/80 px-4 sm:px-6 flex items-center justify-between sticky top-0 z-30">
-      {/* Left: Brand + Breadcrumbs */}
+    <header className="h-16 bg-white border-b border-slate-200 px-4 sm:px-6 flex items-center justify-between sticky top-0 z-30">
       <div className="flex items-center gap-3 min-w-0">
-        <Link to="/" className="flex items-center gap-2.5 group shrink-0">
-          <div className="w-8 h-8 rounded-lg bg-[#F26F21] text-white flex items-center justify-center font-black text-[10px] shadow-xs">
-            FPT
-          </div>
-          <div className="hidden sm:block">
-            <span className="font-bold text-sm text-[#1A365D] group-hover:text-[#F26F21] transition leading-tight">
-              CampusStay FPT
-            </span>
-            <span className="ml-1.5 text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-orange-100 text-[#F26F21]">
-              Tân Uyên
-            </span>
-          </div>
+        <Link to="/" className="flex items-center gap-2.5 shrink-0">
+          <span className="w-9 h-9 rounded-xl bg-[#F26F21] text-white flex items-center justify-center font-black text-[11px]">FPT</span>
+          <span className="hidden sm:block font-bold text-sm text-slate-900">CampusStay</span>
         </Link>
-
-        {/* Breadcrumbs */}
-        {breadcrumbs.length > 0 && (
-          <nav className="hidden md:flex items-center gap-1 pl-3 border-l border-slate-200 text-xs text-slate-500 min-w-0">
-            <Link to="/" className="hover:text-slate-800 transition shrink-0">Trang chủ</Link>
-            {breadcrumbs.map((crumb) => (
-              <span key={crumb.path} className="flex items-center gap-1 min-w-0">
-                <ChevronRight className="w-3 h-3 text-slate-300 shrink-0" />
-                {crumb.isLast ? (
-                  <span className="font-semibold text-slate-800 truncate">{crumb.label}</span>
-                ) : (
-                  <Link to={crumb.path} className="hover:text-slate-800 transition truncate">
-                    {crumb.label}
-                  </Link>
-                )}
+        {crumbs.length > 0 && (
+          <nav aria-label="Breadcrumb" className="hidden md:flex items-center gap-1.5 pl-3 border-l border-slate-200 text-xs text-slate-500 min-w-0">
+            {crumbs.map((c, i) => (
+              <span key={c} className="flex items-center gap-1.5 min-w-0">
+                {i > 0 && <ChevronRight className="w-3 h-3 text-slate-300" />}
+                <span className={clsx('truncate', i === crumbs.length - 1 && 'font-semibold text-slate-800')}>{c}</span>
               </span>
             ))}
           </nav>
         )}
       </div>
-
-      {/* Right: Actions */}
       <div className="flex items-center gap-2 shrink-0">
-        {/* Campus Badge */}
-        <div className="hidden lg:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-50 border border-slate-200/80 text-[10px] font-bold text-slate-600">
-          <span className="w-1.5 h-1.5 rounded-full bg-[#F26F21]" />
-          <span>FPT TÂN UYÊN</span>
-        </div>
-
-        {/* Quick Role Switcher */}
-        <div className="hidden md:flex items-center gap-1.5 text-[11px] bg-slate-50 border border-slate-200 px-2 py-1 rounded-lg">
-          <ArrowRightLeft className="w-3 h-3 text-slate-400" />
-          <span className="text-slate-400 font-medium">Demo:</span>
-          <select
-            value={user?.role || ROLES.STUDENT}
-            onChange={handleSwitch}
-            className="bg-transparent font-semibold text-[#F26F21] focus:outline-none cursor-pointer text-[11px]"
-          >
-            {(Object.keys(ROLES) as Role[]).map((r) => (
-              <option key={r} value={r}>
-                {ROLE_LABELS[r]}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        {/* Notification Bell */}
-        <button
-          type="button"
-          onClick={() => navigate(APP_ROUTES.STUDENT.NOTIFICATIONS)}
-          className="relative w-8 h-8 rounded-lg border border-slate-200/80 hover:bg-slate-50 flex items-center justify-center text-slate-500 transition"
-        >
-          <Bell className="w-4 h-4" />
-          <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-red-500 text-white text-[9px] font-bold flex items-center justify-center border-2 border-white">
-            3
-          </span>
-        </button>
-
-        {/* User Profile */}
-        <div className="flex items-center gap-2 pl-2 border-l border-slate-200">
-          <div className="w-8 h-8 rounded-full bg-[#F26F21] text-white text-[11px] font-bold flex items-center justify-center shadow-xs">
-            {initials}
-          </div>
-          <div className="hidden lg:block text-left">
-            <div className="text-[11px] font-bold text-slate-800 leading-tight truncate max-w-[140px]">
-              {user?.name}
-            </div>
-            <div className="text-[10px] text-slate-400">
-              {user?.role ? ROLE_LABELS[user.role] : ''}
-            </div>
-          </div>
-        </div>
-
-        {/* Logout */}
-        <button
-          type="button"
-          onClick={handleLogout}
-          title="Đăng xuất"
-          className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition"
-        >
-          <LogOut className="w-4 h-4" />
-        </button>
+        <NotificationBell />
+        <UserMenu />
       </div>
     </header>
   );

@@ -20,6 +20,7 @@ import {
   RefreshCw,
 } from 'lucide-react';
 import clsx from 'clsx';
+import { useSearchParams } from 'react-router-dom';
 import { useAuthStore } from '@features/auth';
 import {
   PageHeader,
@@ -71,7 +72,8 @@ const ACTIVITY = [
 export function StudentProfilePage() {
   const user = useAuthStore((state) => state.user);
   const { show, toastNode } = useToast();
-  const [tab, setTab] = useState<TabKey>('info');
+  const [params] = useSearchParams();
+  const [tab, setTab] = useState<TabKey>(params.get('tab') === 'settings' ? 'settings' : 'info');
   const [editing, setEditing] = useState(false);
   const [phone, setPhone] = useState(user?.phoneNumber || '0901 234 567');
   const [personalEmail, setPersonalEmail] = useState('maianh.nguyen@gmail.com');
@@ -90,7 +92,7 @@ export function StudentProfilePage() {
 
       {/* Header card */}
       <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden">
-        <div className="h-24 bg-gradient-to-r from-[#1A365D] via-[#2A4D7E] to-[#F26F21]" />
+        <div className="h-20 bg-slate-100" />
         <div className="px-6 pb-6 -mt-10 flex flex-col md:flex-row md:items-end gap-4">
           <div className="w-20 h-20 rounded-2xl bg-white p-1 shadow">
             <div className="w-full h-full rounded-xl bg-[#FFF2EA] text-[#F26F21] flex items-center justify-center font-bold text-3xl">

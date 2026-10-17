@@ -1,21 +1,23 @@
-/** Sơ đồ trang theo docs/ARCHITECTURE.md §5 (30 trang). */
+/** Sơ đồ trang theo docs/ARCHITECTURE.md §5. */
 export const APP_ROUTES = {
   AUTH: {
     LOGIN: '/login',
     FORBIDDEN: '/403',
     NOT_FOUND: '/404',
   },
+  /** Trang dùng chung cho mọi vai trò */
+  COMMON: {
+    NOTIFICATIONS: '/notifications',
+    PROFILE: '/profile',
+  },
   STUDENT: {
     ROOT: '/student',
     DASHBOARD: '/student/dashboard',
     REGISTRATION: '/student/registration',
-    ROOMS: '/student/rooms',
     MY_ROOM: '/student/my-room',
     INVOICES: '/student/invoices',
     REQUESTS: '/student/requests',
     CHECKIN: '/student/checkin',
-    NOTIFICATIONS: '/student/notifications',
-    PROFILE: '/student/profile',
   },
   STAFF: {
     ROOT: '/staff',

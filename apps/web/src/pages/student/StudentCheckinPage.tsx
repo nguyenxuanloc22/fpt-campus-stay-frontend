@@ -45,7 +45,7 @@ const ASSIGNMENT = {
   bed: 'G1',
   building: 'Tòa A (Nữ)',
   window: '02/01/2027 08:00 – 05/01/2027 20:00',
-  remaining: 4300000,
+  remaining: 4160000,
 };
 
 const ASSETS = [
@@ -119,7 +119,6 @@ export function StudentCheckinPage() {
   const { show, toastNode } = useToast();
   const [tab, setTab] = useState<TabKey>('checkin');
   const [step, setStep] = useState<CheckinStep>('SCAN');
-  const [inWindow, setInWindow] = useState(true);
   const [report, setReport] = useState<Record<string, Condition>>(() => Object.fromEntries(ASSETS.map((a) => [a, 'OK'])));
   const [note, setNote] = useState('');
   const [outReport, setOutReport] = useState<Record<string, Condition>>(() => Object.fromEntries(ASSETS.map((a) => [a, 'OK'])));
@@ -129,7 +128,7 @@ export function StudentCheckinPage() {
 
   const issues = Object.values(report).filter((c) => c === 'ISSUE').length;
 
-  const scan = () => setStep(inWindow ? 'PAY' : 'OUT_OF_WINDOW');
+  const scan = () => setStep('PAY');
 
   const submitReport = () => {
     setStep('DONE');
@@ -150,7 +149,7 @@ export function StudentCheckinPage() {
       <PageHeader title="Check-in / Check-out" description="Tự nhận và trả phòng bằng mã QR, kèm biên bản hiện trạng số" />
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="md:col-span-2 p-5 rounded-2xl bg-gradient-to-r from-[#1A365D] to-[#2A4D7E] text-white flex flex-col sm:flex-row sm:items-center gap-4">
+        <div className="md:col-span-2 p-5 rounded-2xl bg-slate-900 text-white flex flex-col sm:flex-row sm:items-center gap-4">
           <div className="w-14 h-14 rounded-2xl bg-white/10 flex items-center justify-center"><KeyRound className="w-7 h-7 text-orange-300" /></div>
           <div className="flex-1">
             <div className="text-xs text-slate-300">Phân bổ học kỳ {ASSIGNMENT.term}</div>
@@ -197,11 +196,10 @@ export function StudentCheckinPage() {
                   </div>
                   <div className="flex-1 space-y-3 text-xs">
                     <p className="text-slate-600">Hệ thống sẽ kiểm tra khung thời gian check-in và điều kiện nhận phòng của bạn.</p>
-                    <label className="flex items-center gap-2 p-2.5 rounded-lg bg-slate-50">
-                      <input type="checkbox" checked={!inWindow} onChange={(e) => setInWindow(!e.target.checked)} className="accent-[#F26F21]" />
-                      Demo: mô phỏng quét ngoài khung giờ
-                    </label>
-                    <AppButton leftIcon={<QrCode className="w-4 h-4" />} onClick={scan}>Mô phỏng quét mã</AppButton>
+                    <AppButton leftIcon={<QrCode className="w-4 h-4" />} onClick={scan}>Quét mã QR</AppButton>
+                    <button type="button" onClick={() => setStep('OUT_OF_WINDOW')} className="block text-xs font-semibold text-slate-500 hover:text-slate-900">
+                      Không quét được mã hoặc đến ngoài khung giờ?
+                    </button>
                   </div>
                 </div>
               </SectionCard>
@@ -226,11 +224,11 @@ export function StudentCheckinPage() {
                     <div className="text-xs font-bold text-[#F26F21] mt-2">{formatVnd(ASSIGNMENT.remaining)}</div>
                   </div>
                   <div className="space-y-2 text-xs">
-                    <div className="flex justify-between p-2.5 rounded-lg bg-slate-50"><span className="text-slate-500">Phí phòng 4 tháng</span><span>{formatVnd(4800000)}</span></div>
-                    <div className="flex justify-between p-2.5 rounded-lg bg-slate-50"><span className="text-slate-500">Trừ tiền cọc</span><span>-{formatVnd(500000)}</span></div>
+                    <div className="flex justify-between p-2.5 rounded-lg bg-slate-50"><span className="text-slate-500">Phí phòng Spring 2027 (phòng 4 người)</span><span>{formatVnd(5200000)}</span></div>
+                    <div className="flex justify-between p-2.5 rounded-lg bg-slate-50"><span className="text-slate-500">Trừ tiền cọc giữ chỗ (20%)</span><span>-{formatVnd(1040000)}</span></div>
                     <div className="flex justify-between p-2.5 rounded-lg bg-orange-50 font-bold"><span>Cần thanh toán</span><span className="text-[#F26F21]">{formatVnd(ASSIGNMENT.remaining)}</span></div>
                     <AppButton className="w-full" onClick={() => { setStep('ACCESS'); show('Thanh toán thành công — biên nhận đã gửi qua email'); }}>
-                      Mô phỏng: thanh toán thành công
+                      Tôi đã thanh toán
                     </AppButton>
                   </div>
                 </div>

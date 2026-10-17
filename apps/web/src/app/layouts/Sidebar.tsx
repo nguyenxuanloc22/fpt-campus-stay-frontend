@@ -1,17 +1,16 @@
+import { useEffect, useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import {
   LayoutDashboard,
   ClipboardList,
-  Building,
   BedDouble,
   CreditCard,
   Wrench,
   CalendarCheck,
-  Bell,
+  Megaphone,
   Layers,
   CheckSquare,
   Repeat,
-  Megaphone,
   ShieldCheck,
   BarChart3,
   Calendar,
@@ -21,6 +20,9 @@ import {
   Link,
   FileText,
   Users,
+  Building,
+  PanelLeftClose,
+  PanelLeftOpen,
 } from 'lucide-react';
 import clsx from 'clsx';
 import { useAuthStore } from '@features/auth';
@@ -32,17 +34,15 @@ interface NavItem {
   icon: React.ComponentType<{ className?: string }>;
 }
 
-/** Điều hướng theo sitemap trong docs/ARCHITECTURE.md §5. Hồ sơ sinh viên mở từ avatar ở Header. */
+/** Điều hướng theo sitemap (docs/ARCHITECTURE.md §5). Hồ sơ mở từ menu tài khoản trên Header. */
 const NAV: Record<string, NavItem[]> = {
   [ROLES.STUDENT]: [
     { label: 'Tổng quan', to: APP_ROUTES.STUDENT.DASHBOARD, icon: LayoutDashboard },
     { label: 'Đăng ký lưu trú', to: APP_ROUTES.STUDENT.REGISTRATION, icon: ClipboardList },
-    { label: 'Tra cứu phòng', to: APP_ROUTES.STUDENT.ROOMS, icon: Building },
     { label: 'Phòng của tôi', to: APP_ROUTES.STUDENT.MY_ROOM, icon: BedDouble },
     { label: 'Hóa đơn & thanh toán', to: APP_ROUTES.STUDENT.INVOICES, icon: CreditCard },
     { label: 'Yêu cầu', to: APP_ROUTES.STUDENT.REQUESTS, icon: Wrench },
     { label: 'Check-in / Check-out', to: APP_ROUTES.STUDENT.CHECKIN, icon: CalendarCheck },
-    { label: 'Thông báo', to: APP_ROUTES.STUDENT.NOTIFICATIONS, icon: Bell },
   ],
   [ROLES.STAFF]: [
     { label: 'Tổng quan', to: APP_ROUTES.STAFF.DASHBOARD, icon: LayoutDashboard },
@@ -73,33 +73,79 @@ const NAV: Record<string, NavItem[]> = {
   ],
 };
 
+const COMMON_NAV: NavItem = { label: 'Thông báo chung', to: APP_ROUTES.COMMON.NOTIFICATIONS, icon: Megaphone };
+const STORAGE_KEY = 'campusstay_sidebar_collapsed';
+
+const readCollapsed = () => {
+  try {
+    return localStorage.getItem(STORAGE_KEY) === '1';
+  } catch {
+    return false;
+  }
+};
+
+function Item({ item, collapsed }: { item: NavItem; collapsed: boolean }) {
+  return (
+    <NavLink
+      to={item.to}
+      title={collapsed ? item.label : undefined}
+      className={({ isActive }) =>
+        clsx(
+          'relative flex items-center gap-3 rounded-xl text-sm font-medium transition',
+          collapsed ? 'justify-center h-10 w-10 mx-auto' : 'px-3 py-2.5',
+          isActive ? 'bg-slate-100 text-slate-900 font-semibold' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'
+        )
+      }
+    >
+      {({ isActive }) => (
+        <>
+          {isActive && !collapsed && <span className="absolute left-0 top-2 bottom-2 w-1 rounded-r-full bg-[#F26F21]" />}
+          <item.icon className={clsx('w-[18px] h-[18px] shrink-0', isActive && 'text-[#F26F21]')} />
+          {!collapsed && <span className="truncate">{item.label}</span>}
+        </>
+      )}
+    </NavLink>
+  );
+}
+
 export function Sidebar() {
   const role = useAuthStore((state) => state.user?.role);
   const navItems = (role && NAV[role]) || [];
+  const [collapsed, setCollapsed] = useState(readCollapsed);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(STORAGE_KEY, collapsed ? '1' : '0');
+    } catch {
+      /* bộ nhớ trình duyệt không khả dụng — bỏ qua */
+    }
+  }, [collapsed]);
 
   return (
-    <aside className="w-64 flexbg-white border-r border-slate-200/80 flex-col shrink-0 h-[calc(100vh-3.5rem)] sticky top-14">
+    <aside
+      className={clsx(
+        'bg-white border-r border-slate-200 flex flex-col shrink-0 h-[calc(100vh-4rem)] sticky top-16 transition-[width] duration-200',
+        collapsed ? 'w-[72px]' : 'w-64'
+      )}
+    >
       <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-1" aria-label="Điều hướng chính">
-        {navItems.map((item) => (
-          <NavLink
-            key={item.to}
-            to={item.to}
-            className={({ isActive }) =>
-              clsx(
-                'flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition-all',
-                isActive
-                  ? 'bg-[#FFF2EA] text-[#F26F21] shadow-xs'
-                  : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
-              )
-            }
-          >
-            <item.icon className="w-4 h-4 shrink-0" />
-            <span className="truncate">{item.label}</span>
-          </NavLink>
-        ))}
+        {!collapsed && <div className="px-3 pb-2 text-[11px] font-semibold uppercase tracking-wider text-slate-400">Chức năng</div>}
+        {navItems.map((item) => <Item key={item.to} item={item} collapsed={collapsed} />)}
       </nav>
-      <div className="p-4 border-t border-slate-200/60 bg-slate-50/50 text-[11px] text-slate-400 text-center font-medium">
-        FPT University Tân Uyên © 2026
+      <div className="px-3 py-3 border-t border-slate-200 space-y-1">
+        <Item item={COMMON_NAV} collapsed={collapsed} />
+        <button
+          type="button"
+          onClick={() => setCollapsed((v) => !v)}
+          aria-label={collapsed ? 'Mở rộng thanh điều hướng' : 'Thu gọn thanh điều hướng'}
+          className={clsx(
+            'flex items-center gap-3 rounded-xl text-sm text-slate-400 hover:bg-slate-50 hover:text-slate-700 transition',
+            collapsed ? 'justify-center h-10 w-10 mx-auto' : 'w-full px-3 py-2.5'
+          )}
+        >
+          {collapsed ? <PanelLeftOpen className="w-[18px] h-[18px]" /> : <PanelLeftClose className="w-[18px] h-[18px]" />}
+          {!collapsed && <span>Thu gọn</span>}
+        </button>
       </div>
     </aside>
   );

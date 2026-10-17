@@ -1,13 +1,14 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ShieldCheck, HelpCircle, Loader2 } from 'lucide-react';
+import { User, Shield, HelpCircle, Mail, Lock, Eye, EyeOff, AlertCircle } from 'lucide-react';
+import clsx from 'clsx';
 import { useAuthStore } from '@features/auth';
 import { ROLES, type Role, APP_ROUTES } from '@campusstay/constants';
 import { LoginHeroPanel } from './components/LoginHeroPanel';
 
 /**
- * F0 — Đăng nhập bằng Google (Context Diagram): chỉ chấp nhận tài khoản @fpt.edu.vn,
- * Backend ánh xạ email → vai trò. Khối "Chế độ demo" chỉ hiển thị khi VITE_DEMO_MODE khác 'false'.
+ * F0 — Đăng nhập.
+ * Sinh viên: Google / FEID (tài khoản @fpt.edu.vn). Cán bộ, trưởng ban, quản trị: tài khoản được cấp.
  */
 
 const HOME: Record<Role, string> = {
@@ -16,15 +17,6 @@ const HOME: Record<Role, string> = {
   [ROLES.MANAGER]: APP_ROUTES.MANAGER.DASHBOARD,
   [ROLES.ADMIN]: APP_ROUTES.ADMIN.DASHBOARD,
 };
-
-const DEMO_ROLES: { role: Role; label: string }[] = [
-  { role: ROLES.STUDENT, label: 'Sinh viên' },
-  { role: ROLES.STAFF, label: 'Cán bộ KTX' },
-  { role: ROLES.MANAGER, label: 'Trưởng ban' },
-  { role: ROLES.ADMIN, label: 'Quản trị viên' },
-];
-
-const DEMO_MODE = import.meta.env.VITE_DEMO_MODE !== 'false';
 
 function GoogleIcon() {
   return (
@@ -39,20 +31,35 @@ function GoogleIcon() {
 
 export function LoginPage() {
   const navigate = useNavigate();
-  const { loginWithRole } = useAuthStore();
-  const [loading, setLoading] = useState(false);
+  const { loginWithCredentials, loginWithStudentSso } = useAuthStore();
+  const [tab, setTab] = useState<'student' | 'staff'>('student');
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [remember, setRemember] = useState(false);
+  const [error, setError] = useState('');
   const [helpOpen, setHelpOpen] = useState(false);
 
-  const login = (role: Role) => {
-    loginWithRole(role);
-    navigate(HOME[role]);
+  const goHome = () => {
+    const role = useAuthStore.getState().user?.role;
+    if (role) navigate(HOME[role]);
   };
 
-  const googleLogin = () => {
-    setLoading(true);
-    // Bản thật: chuyển hướng tới Google OAuth (hd=fpt.edu.vn); Backend trả JWT kèm vai trò.
-    window.setTimeout(() => login(ROLES.STUDENT), 600);
+  const studentSso = () => {
+    loginWithStudentSso();
+    goHome();
   };
+
+  const submit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!loginWithCredentials(username, password)) {
+      setError('Tài khoản hoặc mật khẩu không đúng.');
+      return;
+    }
+    goHome();
+  };
+
+  const ssoButton = 'w-full flex items-center justify-center gap-3 py-3 px-4 rounded-xl border-2 border-[#F26F21] bg-white hover:bg-orange-50/50 text-slate-800 font-bold text-sm transition';
 
   return (
     <div className="min-h-screen flex w-full bg-slate-100 font-sans">
@@ -61,56 +68,117 @@ export function LoginPage() {
       <div className="w-full lg:w-[44%] bg-white flex flex-col justify-center p-6 sm:p-12 lg:p-16 relative overflow-y-auto">
         <div className="max-w-md w-full mx-auto">
           <div className="flex items-center gap-3 mb-8">
-            <div className="w-10 h-10 rounded-xl bg-[#F26F21] flex items-center justify-center font-black text-white text-sm shadow-md">FPT</div>
+            <div className="w-12 h-12 rounded-xl bg-[#F26F21] flex items-center justify-center font-black text-white text-sm shadow-md">FPT</div>
             <div>
-              <div className="text-slate-900 font-bold text-base leading-tight">FPT CampusStay</div>
-              <div className="text-slate-400 text-xs">Hệ thống quản lý Ký túc xá Tân Uyên</div>
+              <div className="text-slate-900 font-bold text-lg leading-tight">FPT CampusStay</div>
+              <div className="text-slate-400 text-xs">Dormitory Management System</div>
             </div>
           </div>
 
           <div className="mb-6">
-            <h2 className="text-2xl font-bold text-slate-900 mb-1">Đăng nhập</h2>
-            <p className="text-xs text-slate-500">Dành cho sinh viên, cán bộ KTX và quản trị viên FPT University.</p>
+            <h2 className="text-2xl font-bold text-slate-900 mb-1">Sign In</h2>
+            <p className="text-sm text-slate-400">Please log in with your assigned account.</p>
           </div>
 
-          <button
-            type="button"
-            onClick={googleLogin}
-            disabled={loading}
-            className="w-full flex items-center justify-center gap-3 py-3 px-4 rounded-xl border-2 border-[#F26F21] bg-white hover:bg-orange-50/50 text-slate-800 font-bold text-sm transition-all shadow-xs disabled:opacity-60"
-          >
-            {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <GoogleIcon />}
-            <span>Đăng nhập với Google</span>
-          </button>
-
-          <div className="mt-4 p-3 rounded-xl bg-slate-50 text-[11px] text-slate-600 flex gap-2">
-            <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
-            <span>
-              Chỉ chấp nhận tài khoản <strong>@fpt.edu.vn</strong>. Vai trò (sinh viên / cán bộ / trưởng ban / quản trị) được xác định tự động
-              theo tài khoản. Dữ liệu cá nhân được xử lý theo Nghị định 13/2023/NĐ-CP.
-            </span>
+          <div className="bg-slate-100 p-1 rounded-xl flex gap-1 mb-6" role="tablist">
+            {(
+              [
+                ['student', 'Student', User],
+                ['staff', 'Staff / Admin', Shield],
+              ] as const
+            ).map(([key, label, Icon]) => (
+              <button
+                key={key}
+                type="button"
+                role="tab"
+                aria-selected={tab === key}
+                onClick={() => { setTab(key); setError(''); }}
+                className={clsx(
+                  'flex-1 py-2.5 px-3 rounded-lg text-sm font-semibold flex items-center justify-center gap-2 transition',
+                  tab === key ? 'bg-slate-900 text-white shadow-xs' : 'text-slate-500 hover:text-slate-900'
+                )}
+              >
+                <Icon className="w-4 h-4" />
+                {label}
+              </button>
+            ))}
           </div>
 
-          {DEMO_MODE && (
-            <div className="mt-8 pt-4 border-t border-slate-100">
-              <div className="text-[11px] font-semibold text-slate-400 text-center mb-2">Chế độ demo — chọn vai trò</div>
-              <div className="grid grid-cols-2 gap-2">
-                {DEMO_ROLES.map((d) => (
-                  <button
-                    key={d.role}
-                    type="button"
-                    onClick={() => login(d.role)}
-                    className="px-3 py-2 rounded-lg bg-slate-100 hover:bg-orange-100 hover:text-[#F26F21] text-xs font-semibold text-slate-600"
-                  >
-                    {d.label}
-                  </button>
-                ))}
+          <div className="min-h-[290px]">
+            {tab === 'student' ? (
+              <div className="space-y-4">
+                <button type="button" onClick={studentSso} className={ssoButton}>
+                  <GoogleIcon />
+                  <span>Sign in with Google</span>
+                </button>
+                <button type="button" onClick={studentSso} className={ssoButton}>
+                  <span className="w-6 h-6 rounded-md bg-gradient-to-br from-orange-500 to-emerald-600 text-white flex items-center justify-center text-[10px] font-black shrink-0">FE</span>
+                  <span>Sign in with FEID</span>
+                </button>
+                <p className="text-xs text-slate-400 text-center pt-2 leading-relaxed">
+                  FPT University students sign in using their official student credentials.
+                </p>
               </div>
-            </div>
-          )}
+            ) : (
+              <form onSubmit={submit} className="space-y-4">
+                <div>
+                  <label htmlFor="login-account" className="block text-sm font-semibold text-slate-700 mb-1.5">Account</label>
+                  <div className="relative">
+                    <Mail className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                    <input
+                      id="login-account"
+                      value={username}
+                      onChange={(e) => { setUsername(e.target.value); setError(''); }}
+                      placeholder="Enter your username"
+                      autoComplete="username"
+                      required
+                      className="w-full pl-10 pr-3.5 py-3 text-sm rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#F26F21] focus:border-transparent"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label htmlFor="login-password" className="block text-sm font-semibold text-slate-700 mb-1.5">Password</label>
+                  <div className="relative">
+                    <Lock className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                    <input
+                      id="login-password"
+                      type={showPassword ? 'text' : 'password'}
+                      value={password}
+                      onChange={(e) => { setPassword(e.target.value); setError(''); }}
+                      placeholder="Enter your password"
+                      autoComplete="current-password"
+                      required
+                      className="w-full pl-10 pr-10 py-3 text-sm rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#F26F21] focus:border-transparent"
+                    />
+                    <button
+                      type="button"
+                      aria-label={showPassword ? 'Ẩn mật khẩu' : 'Hiện mật khẩu'}
+                      onClick={() => setShowPassword((v) => !v)}
+                      className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                    >
+                      {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </button>
+                  </div>
+                </div>
+                {error && (
+                  <div className="flex items-center gap-2 text-xs text-rose-600"><AlertCircle className="w-4 h-4" />{error}</div>
+                )}
+                <div className="flex items-center justify-between text-sm">
+                  <label className="flex items-center gap-2 cursor-pointer text-slate-600">
+                    <input type="checkbox" checked={remember} onChange={(e) => setRemember(e.target.checked)} className="w-4 h-4 rounded border-slate-300 accent-[#F26F21]" />
+                    Remember me
+                  </label>
+                  <button type="button" onClick={() => setHelpOpen(true)} className="text-[#F26F21] hover:underline font-medium">Forgot password?</button>
+                </div>
+                <button type="submit" className="w-full py-3 px-4 rounded-xl bg-[#F26F21] hover:bg-[#D95A12] text-white font-bold text-sm shadow-md shadow-orange-500/20 transition">
+                  Sign In
+                </button>
+              </form>
+            )}
+          </div>
         </div>
 
-        <div className="text-center text-[11px] text-slate-400 mt-6">© 2026 FPT University · CampusStay</div>
+        <div className="text-center text-xs text-slate-300 mt-6">© 2026 FPT University · CampusStay</div>
 
         <button
           type="button"
@@ -121,9 +189,9 @@ export function LoginPage() {
           <HelpCircle className="w-5 h-5" />
         </button>
         {helpOpen && (
-          <div className="fixed bottom-20 right-6 z-50 w-64 p-4 rounded-xl bg-white border border-slate-200 shadow-lg text-xs text-slate-700">
+          <div className="fixed bottom-20 right-6 z-50 w-72 p-4 rounded-xl bg-white border border-slate-200 shadow-lg text-xs text-slate-700">
             <div className="font-bold text-slate-800 mb-1">Cần hỗ trợ đăng nhập?</div>
-            Liên hệ Văn phòng KTX Tân Uyên: 0274 3 789 001 hoặc email ktx.tanuyen@fpt.edu.vn.
+            Sinh viên dùng tài khoản @fpt.edu.vn. Cán bộ quên mật khẩu vui lòng liên hệ Phòng CNTT hoặc Văn phòng KTX: 0274 3 789 001.
           </div>
         )}
       </div>

@@ -11,14 +11,19 @@ interface StatCardProps {
   trend?: { value: string; up?: boolean };
 }
 
+/**
+ * Giao diện tối giản (CONVENTIONS §8): biểu tượng dùng tông trung tính, chỉ “orange” là điểm nhấn
+ * và “rose” cho cảnh báo. Các tone khác được giữ để tương thích, hiển thị như trung tính.
+ */
+const NEUTRAL = 'bg-slate-100 text-slate-500';
 const TONES = {
   orange: 'bg-orange-50 text-[#F26F21]',
-  navy: 'bg-[#EBF2FB] text-[#1A365D]',
-  emerald: 'bg-emerald-50 text-emerald-600',
-  amber: 'bg-amber-50 text-amber-600',
+  navy: NEUTRAL,
+  emerald: NEUTRAL,
+  amber: NEUTRAL,
   rose: 'bg-rose-50 text-rose-600',
-  blue: 'bg-blue-50 text-blue-600',
-  purple: 'bg-purple-50 text-purple-600',
+  blue: NEUTRAL,
+  purple: NEUTRAL,
 };
 
 export function StatCard({ label, value, icon: Icon, tone = 'orange', hint, trend }: StatCardProps) {

@@ -108,20 +108,29 @@ Clean Architecture 3 lớp: Presentation (Screen, Widget, Riverpod `AsyncValue`)
 
 ## 5. SƠ ĐỒ TRANG (SITEMAP) — VỪA ĐỦ, KHÔNG DƯ
 
-Nguyên tắc: **một trang = một nhóm use case liên quan**; các use case cùng đối tượng dữ liệu gom vào Tabs. Use case của actor **System** không có trang riêng — kết quả của chúng hiển thị trong trang nghiệp vụ tương ứng (ví dụ: đồng hồ giữ chỗ ở trang Đăng ký, cảnh báo xung đột ở trang Duyệt xếp phòng, dự báo ở trang Báo cáo). Tổng **30 trang** (giảm từ 34). Chi tiết chênh lệch so với code hiện tại xem [GAP_ANALYSIS.md](GAP_ANALYSIS.md).
+Nguyên tắc: **một trang = một nhóm use case liên quan**; các use case cùng đối tượng dữ liệu gom vào Tabs. Use case của actor **System** không có trang riêng — kết quả của chúng hiển thị trong trang nghiệp vụ tương ứng (ví dụ: đồng hồ giữ chỗ ở trang Đăng ký, cảnh báo xung đột ở trang Duyệt xếp phòng, dự báo ở trang Báo cáo). Tổng **29 trang** (6 Student + 2 dùng chung + 8 Staff + 4 Manager + 9 Admin). Chi tiết chênh lệch so với code hiện tại xem [GAP_ANALYSIS.md](GAP_ANALYSIS.md).
 
-### 5.1. Student — 9 trang
+**Thông báo có hai loại, tách biệt:**
+- **Thông báo cá nhân** — chuông trên Header, cạnh thông tin người dùng: chỉ những gì liên quan trực tiếp tới người đó hoặc phòng của họ (kết quả xếp phòng, lời mời hoán đổi, hóa đơn sắp đến hạn, lịch sửa thiết bị).
+- **Thông báo chung** — trang `/notifications`, mọi vai trò truy cập từ cuối Sidebar: thông báo hệ thống diện rộng do Quản trị viên cấu hình hoặc Ban quản lý KTX gửi.
+
+### 5.0. Dùng chung — 2 trang
+| Trang | Route | Nội dung |
+|---|---|---|
+| Thông báo chung | `/notifications` | View Notifications (thông báo hệ thống) |
+| Hồ sơ cá nhân | `/profile` (mở từ menu tài khoản) | Sinh viên: hồ sơ đồng bộ SIS; vai trò khác: thông tin tài khoản. Có cài đặt nhận thông báo |
+
+### 5.1. Student — 6 trang
 | Trang | Route | Use case phủ |
 |---|---|---|
-| Tổng quan | `/student/dashboard` | Track Request Status (tóm tắt), View Notifications (mới nhất) |
-| Đăng ký lưu trú | `/student/registration` | Submit Dormitory Application, Validate Eligibility, Select Room Types, Select Roommate, Pay Deposit (hiển thị trạng thái cửa sổ đăng ký & thời hạn giữ chỗ) |
-| Tra cứu phòng | `/student/rooms` | Duyệt tòa / loại phòng / giường trống (sơ đồ tầng, ảnh) |
-| Phòng của tôi | `/student/my-room` | View Room Assignment, hợp đồng số (xem/ký), bạn cùng phòng |
-| Hóa đơn & thanh toán | `/student/invoices` | View Payment, Pay Invoice (VietQR) |
-| Yêu cầu | `/student/requests` | Submit Room Change Request, Initiate Mutual Swap, Respond to Swap Invitation, Submit Maintenance Request, Track Request Status, View Maintenance Schedule |
+| Tổng quan | `/student/dashboard` | Việc cần làm, tiến trình đơn (Track Request Status), thông báo chung mới nhất |
+| Đăng ký lưu trú | `/student/registration` | Submit Dormitory Application: Validate Eligibility → thời gian lưu trú → Select Room Types → Select Roommate (chỉ phòng 2 người) → xác nhận chi phí → Pay Deposit |
+| Phòng của tôi | `/student/my-room` | View Room Assignment, tài sản trong phòng (mã ID, báo hỏng), bạn cùng phòng, lịch lưu trú, hợp đồng số |
+| Hóa đơn & thanh toán | `/student/invoices` | View Payment, Pay Invoice (chỉ VietQR) |
+| Yêu cầu | `/student/requests` | Submit Room Change Request, Initiate Mutual Swap, Respond to Swap Invitation, Submit Maintenance Request (chọn tài sản theo mã), Track Request Status, View Maintenance Schedule |
 | Check-in / Check-out | `/student/checkin` | Self Check-in, Self Check-out, Submit Digital Room-Condition Report |
-| Thông báo | `/student/notifications` | View Notifications |
-| Hồ sơ | `/student/profile` (mở từ avatar) | Thông tin cá nhân đồng bộ SIS, cài đặt thông báo |
+
+Không có trang tra cứu phòng/giường trống cho sinh viên — sơ đồ phòng và tình trạng giường là dữ liệu vận hành nội bộ. Sinh viên chỉ thấy **3 loại phòng** (2, 4, 6 người) kèm hình minh họa, tiện nghi và mức còn chỗ (Còn chỗ / Sắp hết / Hết chỗ), không thấy số lượng cụ thể.
 
 ### 5.2. Staff — 8 trang
 | Trang | Route | Use case phủ |
@@ -173,8 +182,11 @@ Yêu cầu bổ sung cho trải nghiệm: chunk JS khởi tạo ≤ 250 KB gzip,
 
 ## 7. XÁC THỰC & PHIÊN LÀM VIỆC
 
-1. Người dùng chọn **Đăng nhập với Google**; Backend chỉ chấp nhận email `@fpt.edu.vn` và ánh xạ email → vai trò (Student đồng bộ từ SIS; Staff/Manager/Admin do Admin cấp).
-2. Backend trả `access token` (15 phút) + `refresh token` (httpOnly cookie, 7 ngày).
-3. **Web:** access token giữ trong bộ nhớ (Zustand), không lưu PII; `401` → thử refresh một lần → thất bại thì về `/login`.
-4. **Mobile:** token trong `FlutterSecureStorage` (Keychain / Keystore), cấm `SharedPreferences`.
-5. Chế độ demo (mock) cho phép chọn vai trò để trình diễn trước hội đồng; tắt bằng biến môi trường ở bản triển khai thật.
+1. Trang đăng nhập có 2 tab:
+   - **Student** — “Sign in with Google” hoặc “Sign in with FEID” (tài khoản `@fpt.edu.vn`, đồng bộ từ FPT SIS).
+   - **Staff / Admin** — tài khoản & mật khẩu do Quản trị viên cấp (Staff, Manager, Admin).
+2. Vai trò được xác định từ tài khoản sau khi đăng nhập; giao diện chỉ hiển thị chức năng của đúng vai trò đó. **Không có** chế độ chọn/chuyển vai trò trong ứng dụng.
+3. Backend trả `access token` (15 phút) + `refresh token` (httpOnly cookie, 7 ngày).
+4. **Web:** access token giữ trong bộ nhớ (Zustand), không lưu PII; `401` → thử refresh một lần → thất bại thì về `/login`.
+5. **Mobile:** token trong `FlutterSecureStorage` (Keychain / Keystore), cấm `SharedPreferences`.
+6. **Môi trường phát triển (chưa nối Backend):** tài khoản mẫu `student`, `staff`, `manager`, `admin` — mật khẩu `123` (`apps/web/src/features/auth/mockAccounts.ts`). File này bị thay bằng `POST /auth/login` khi nối API.

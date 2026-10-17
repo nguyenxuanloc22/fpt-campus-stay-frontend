@@ -27,7 +27,19 @@ Mức độ: 🔴 sai nghiệp vụ (phải sửa trước bảo vệ) · 🟠 t
 | Manager | Trung tâm phê duyệt 3 tab (đơn đăng ký, đổi phòng, lịch bảo trì) · Duyệt xếp phòng = duyệt/trả về Staff — **G11, G24** · Xóa Hiệu suất Staff — **G14** |
 | Admin | Engine: trọng số theo Phiếu (ngày nộp, nguyện vọng, bạn cùng phòng, ngành/năm), chỉ chạy thử, lịch sử chạy & xung đột; xóa trang Batch runs — **G15** · Tích hợp: FPT SIS, Google OAuth, Gmail API, VietQR, FCM, SMS — **G16** · Báo cáo: công suất/doanh thu/luân chuyển/dự báo thay Báo cáo tài chính — **G20** · Luật điều kiện chỉ còn điều kiện lưu trú (bỏ khung phạt) · Bảng giá bỏ dịch vụ phụ & giảm giá · Kỳ học có mốc giữ chỗ, vòng 1/2, khung check-in |
 
-**Còn lại:** cập nhật `openapi.yaml` theo trạng thái/quyền mới (kế hoạch bước 1) · cập nhật 3 Activity Diagram (G26) · nối API thật thay dữ liệu mẫu.
+### 1.2. Đợt 3 — tinh chỉnh theo góp ý (Student trước)
+
+| Nhóm | Thay đổi |
+|---|---|
+| Đăng nhập | Quay lại bố cục 2 tab: **Student** (Google / FEID) và **Staff / Admin** (tài khoản + mật khẩu). Bỏ hoàn toàn chế độ demo và bộ chọn vai trò; vai trò lấy từ tài khoản. Tài khoản mẫu `student/staff/manager/admin` — mật khẩu `123` |
+| Header & Sidebar | Chuông thông báo cá nhân + menu tài khoản gọn (hồ sơ, đổi mật khẩu, cài đặt, đăng xuất); Sidebar thu gọn/mở rộng, “Thông báo chung” ở cuối cho mọi vai trò |
+| Thông báo | Trang “Thông báo chung” dùng chung `/notifications` (thông báo hệ thống), bỏ nút “Trạng thái rỗng”; thông báo cá nhân chuyển vào chuông |
+| Đăng ký | Thứ tự: kiểm tra điều kiện (bắt buộc sinh viên FPTU) → thời gian lưu trú (đến kỳ 9) → 3 loại phòng 2/4/6 người có hình minh họa & mã tiện nghi → bạn cùng phòng (chỉ phòng 2 người) → xác nhận chi phí (cọc % + cọc điện nước, có tổng) → VietQR |
+| Student | Bỏ trang Tra cứu phòng; Tổng quan rút gọn; Hóa đơn bỏ thẻ thống kê, thông tin chuyển khoản, điện nước — chỉ VietQR; Phòng của tôi thiết kế lại (tài sản có mã ID, báo hỏng theo mã) |
+| Admin | “Loại phòng & giá”: 3 loại phòng, giá theo kỳ, cấu hình % cọc và cọc điện nước |
+| Giao diện | Tông trung tính, cam là màu nhấn duy nhất (CONVENTIONS §8.3) |
+
+**Còn lại:** áp phong cách tối giản cho các trang Staff / Manager / Admin; gộp nhánh `openapi.yaml` theo trạng thái/quyền mới (kế hoạch bước 1) · cập nhật 3 Activity Diagram (G26) · nối API thật thay dữ liệu mẫu.
 
 ---
 

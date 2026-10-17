@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import {
   Wrench,
   Repeat,
@@ -6,12 +7,6 @@ import {
   Plus,
   Camera,
   CheckCircle2,
-  Wind,
-  Zap,
-  Droplets,
-  Wifi,
-  DoorOpen,
-  Lightbulb,
   Send,
   CalendarClock,
   Inbox,
@@ -31,6 +26,7 @@ import {
   useToast,
 } from '@shared-ui';
 import { MAINTENANCE_STATUS, ROOM_CHANGE_STATUS, type MaintenanceStatus, type RoomChangeStatus } from '@campusstay/constants';
+import { assetsForRoom } from '@features/rooms/roomCatalog';
 
 /**
  * Yêu cầu của sinh viên (docs/BUSINESS_FLOWS.md F4, F5):
@@ -71,14 +67,8 @@ interface Invitation {
   answered?: 'ACCEPTED' | 'REJECTED';
 }
 
-const CATEGORIES = [
-  { id: 'AC', label: 'Máy lạnh', icon: Wind },
-  { id: 'ELEC', label: 'Điện', icon: Zap },
-  { id: 'WATER', label: 'Nước / WC', icon: Droplets },
-  { id: 'WIFI', label: 'Wi-Fi', icon: Wifi },
-  { id: 'DOOR', label: 'Cửa / khóa', icon: DoorOpen },
-  { id: 'LIGHT', label: 'Đèn', icon: Lightbulb },
-];
+/** Tài sản trong phòng hiện tại — báo hỏng theo mã ID để cán bộ bảo trì xác định đúng thiết bị */
+const MY_ASSETS = assetsForRoom('A204', 'ROOM_4');
 
 /** Thứ tự hiển thị tiến trình theo State Diagram yêu cầu sửa chữa */
 const MAINT_FLOW: MaintenanceStatus[] = ['SENT', 'PENDING', 'PROCESSING', 'APPROVED', 'SCHEDULED', 'IN_PROGRESS', 'RESOLVED', 'CLOSED'];
@@ -93,9 +83,9 @@ const SWAP_LABEL: Record<RoomChangeStatus, string> = {
 };
 
 const INITIAL_TICKETS: Ticket[] = [
-  { id: 'TK-10482', title: 'Máy lạnh chảy nước, không mát', category: 'Máy lạnh', created: '15/10/2026 21:10', status: 'SCHEDULED', description: 'Máy lạnh chảy nước xuống giường G2, bật 18°C không mát.', timeline: [{ time: '15/10 21:10', text: 'Bạn gửi yêu cầu kèm 2 ảnh' }, { time: '16/10 07:45', text: 'Cán bộ tiếp nhận, phân loại: điện lạnh' }, { time: '16/10 14:00', text: 'Đã lên lịch sửa 18/10 09:00 — KTV Lê Văn Tài' }] },
-  { id: 'TK-10377', title: 'Bóng đèn nhà tắm bị cháy', category: 'Đèn', created: '08/10/2026 19:02', status: 'RESOLVED', description: 'Đèn LED nhà tắm chập chờn rồi tắt hẳn.', timeline: [{ time: '08/10 19:02', text: 'Bạn gửi yêu cầu' }, { time: '09/10 10:30', text: 'Đã thay bóng LED 12W — chờ bạn xác nhận' }] },
-  { id: 'TK-10290', title: 'Ổ cắm bàn học lỏng', category: 'Điện', created: '01/10/2026 20:15', status: 'CLOSED', description: 'Ổ cắm bàn học G1 lỏng, cắm sạc hay bị ngắt.', timeline: [{ time: '01/10 20:15', text: 'Bạn gửi yêu cầu' }, { time: '02/10 15:00', text: 'Đã thay ổ cắm mới' }, { time: '02/10 19:30', text: 'Bạn xác nhận hoàn tất' }] },
+  { id: 'TK-10482', title: 'Máy lạnh chảy nước, không mát', category: 'A204-DH-01 · Điều hòa', created: '15/10/2026 21:10', status: 'SCHEDULED', description: 'Máy lạnh chảy nước xuống giường G2, bật 18°C không mát.', timeline: [{ time: '15/10 21:10', text: 'Bạn gửi yêu cầu kèm 2 ảnh' }, { time: '16/10 07:45', text: 'Cán bộ tiếp nhận, phân loại: điện lạnh' }, { time: '16/10 14:00', text: 'Đã lên lịch sửa 18/10 09:00 — KTV Lê Văn Tài' }] },
+  { id: 'TK-10377', title: 'Bóng đèn nhà tắm bị cháy', category: 'A204-WC-01 · Nhà vệ sinh khép kín', created: '08/10/2026 19:02', status: 'RESOLVED', description: 'Đèn LED nhà tắm chập chờn rồi tắt hẳn.', timeline: [{ time: '08/10 19:02', text: 'Bạn gửi yêu cầu' }, { time: '09/10 10:30', text: 'Đã thay bóng LED 12W — chờ bạn xác nhận' }] },
+  { id: 'TK-10290', title: 'Ổ cắm bàn học lỏng', category: 'A204-BH-01 · Bàn học cá nhân #1', created: '01/10/2026 20:15', status: 'CLOSED', description: 'Ổ cắm bàn học G1 lỏng, cắm sạc hay bị ngắt.', timeline: [{ time: '01/10 20:15', text: 'Bạn gửi yêu cầu' }, { time: '02/10 15:00', text: 'Đã thay ổ cắm mới' }, { time: '02/10 19:30', text: 'Bạn xác nhận hoàn tất' }] },
 ];
 
 const INITIAL_CHANGES: RoomChange[] = [
@@ -129,6 +119,7 @@ function Progress<T extends string>({ flow, current, labels }: { flow: T[]; curr
 
 export function StudentRequestsPage() {
   const { show, toastNode } = useToast();
+  const location = useLocation();
   const [tab, setTab] = useState<TabKey>('maintenance');
   const [tickets, setTickets] = useState(INITIAL_TICKETS);
   const [changes, setChanges] = useState(INITIAL_CHANGES);
@@ -136,7 +127,7 @@ export function StudentRequestsPage() {
   const [maintOpen, setMaintOpen] = useState(false);
   const [changeOpen, setChangeOpen] = useState(false);
 
-  const [category, setCategory] = useState('AC');
+  const [assetId, setAssetId] = useState(MY_ASSETS[0]!.id);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [photos, setPhotos] = useState(0);
@@ -147,10 +138,21 @@ export function StudentRequestsPage() {
 
   const pendingInvites = invites.filter((i) => !i.answered).length;
 
+  // Bấm “Báo hỏng” từ trang Phòng của tôi → mở sẵn form với đúng thiết bị
+  useEffect(() => {
+    const prefill = (location.state as { assetId?: string } | null)?.assetId;
+    if (prefill && MY_ASSETS.some((a) => a.id === prefill)) {
+      setAssetId(prefill);
+      setTab('maintenance');
+      setMaintOpen(true);
+    }
+  }, [location.state]);
+
   const submitMaintenance = (e: React.FormEvent) => {
     e.preventDefault();
     const id = `TK-${10500 + tickets.length}`;
-    setTickets([{ id, title, category: CATEGORIES.find((c) => c.id === category)?.label ?? 'Khác', created: 'Vừa xong', status: MAINTENANCE_STATUS.SENT, description, timeline: [{ time: 'Vừa xong', text: `Bạn gửi yêu cầu${photos ? ` kèm ${photos} ảnh` : ''}` }] }, ...tickets]);
+    const asset = MY_ASSETS.find((a) => a.id === assetId);
+    setTickets([{ id, title, category: asset ? `${asset.id} · ${asset.name}` : 'Khác', created: 'Vừa xong', status: MAINTENANCE_STATUS.SENT, description, timeline: [{ time: 'Vừa xong', text: `Bạn gửi yêu cầu${photos ? ` kèm ${photos} ảnh` : ''}` }] }, ...tickets]);
     setMaintOpen(false);
     setTitle('');
     setDescription('');
@@ -197,8 +199,8 @@ export function StudentRequestsPage() {
       />
 
       {pendingInvites > 0 && tab !== 'invitations' && (
-        <button type="button" onClick={() => setTab('invitations')} className="w-full flex items-center gap-3 p-3.5 rounded-xl border border-purple-200 bg-purple-50 text-xs text-purple-900 text-left">
-          <ArrowLeftRight className="w-5 h-5 text-purple-600" />
+        <button type="button" onClick={() => setTab('invitations')} className="w-full flex items-center gap-3 p-3.5 rounded-xl border border-slate-200 bg-white text-xs text-slate-700 text-left hover:border-slate-300">
+          <ArrowLeftRight className="w-5 h-5 text-[#F26F21]" />
           <span className="flex-1">Bạn có <strong>{pendingInvites} lời mời hoán đổi phòng</strong> đang chờ phản hồi.</span>
           <span className="font-semibold">Xem ngay</span>
         </button>
@@ -220,7 +222,7 @@ export function StudentRequestsPage() {
           {tickets.map((t) => (
             <SectionCard key={t.id}>
               <div className="flex flex-col md:flex-row md:items-start gap-3">
-                <div className="w-10 h-10 rounded-xl bg-orange-50 text-[#F26F21] flex items-center justify-center shrink-0"><Wrench className="w-4 h-4" /></div>
+                <div className="w-10 h-10 rounded-xl bg-slate-100 text-slate-500 flex items-center justify-center shrink-0"><Wrench className="w-4 h-4" /></div>
                 <div className="flex-1 min-w-0">
                   <div className="flex flex-wrap items-center gap-2">
                     <span className="text-sm font-bold text-slate-800">{t.title}</span>
@@ -251,7 +253,7 @@ export function StudentRequestsPage() {
             {changes.map((c) => (
               <SectionCard key={c.id}>
                 <div className="flex flex-col md:flex-row md:items-start gap-3">
-                  <div className={clsx('w-10 h-10 rounded-xl flex items-center justify-center shrink-0', c.kind === 'SWAP' ? 'bg-purple-50 text-purple-600' : 'bg-blue-50 text-blue-600')}>
+                  <div className={clsx('w-10 h-10 rounded-xl flex items-center justify-center shrink-0', 'bg-slate-100 text-slate-500')}>
                     {c.kind === 'SWAP' ? <ArrowLeftRight className="w-4 h-4" /> : <Repeat className="w-4 h-4" />}
                   </div>
                   <div className="flex-1">
@@ -285,7 +287,7 @@ export function StudentRequestsPage() {
                   <div className="flex-1">
                     <div className="text-sm font-bold text-slate-800">{i.from} ({i.fromId}) muốn hoán đổi phòng với bạn</div>
                     <div className="text-xs text-slate-600 mt-1 flex items-center gap-2">
-                      <span className="font-semibold">{i.fromRoom}</span><ArrowLeftRight className="w-3.5 h-3.5 text-purple-500" /><span className="font-semibold">{i.myRoom} (phòng của bạn)</span>
+                      <span className="font-semibold">{i.fromRoom}</span><ArrowLeftRight className="w-3.5 h-3.5 text-slate-400" /><span className="font-semibold">{i.myRoom} (phòng của bạn)</span>
                     </div>
                     <p className="text-xs text-slate-500 mt-1 italic">“{i.reason}”</p>
                     <p className="text-[11px] text-amber-700 mt-1">Hạn phản hồi: {i.expires}</p>
@@ -327,13 +329,15 @@ export function StudentRequestsPage() {
 
       <Modal open={maintOpen} onClose={() => setMaintOpen(false)} size="lg" title="Báo hỏng thiết bị" subtitle="Phòng A204 · Tòa A">
         <form onSubmit={submitMaintenance} className="space-y-4 text-xs">
-          <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
-            {CATEGORIES.map((c) => (
-              <button key={c.id} type="button" onClick={() => setCategory(c.id)} className={clsx('p-2 rounded-lg border flex flex-col items-center gap-1', category === c.id ? 'border-[#1A365D] bg-[#EBF2FB] text-[#1A365D]' : 'border-slate-200 text-slate-600')}>
-                <c.icon className="w-4 h-4" />{c.label}
-              </button>
-            ))}
-          </div>
+          <label className="block">
+            <span className="block font-semibold text-slate-700 mb-1">Thiết bị cần sửa</span>
+            <select value={assetId} onChange={(e) => setAssetId(e.target.value)} className="w-full px-3 py-2 border border-slate-200 rounded-lg bg-white">
+              {MY_ASSETS.map((a) => (
+                <option key={a.id} value={a.id}>{a.id} — {a.name}</option>
+              ))}
+            </select>
+            <span className="block text-[11px] text-slate-400 mt-1">Mã tài sản giúp kỹ thuật viên xác định đúng thiết bị trong phòng.</span>
+          </label>
           <input value={title} onChange={(e) => setTitle(e.target.value)} required placeholder="Tiêu đề ngắn gọn" className="w-full px-3 py-2 border border-slate-200 rounded-lg" />
           <textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={3} placeholder="Mô tả chi tiết, thời điểm phát hiện…" className="w-full px-3 py-2 border border-slate-200 rounded-lg" />
           <div className="flex gap-2 flex-wrap">

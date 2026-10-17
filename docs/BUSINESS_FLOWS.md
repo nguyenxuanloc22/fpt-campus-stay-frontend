@@ -25,8 +25,9 @@
 ---
 
 ## F0. Đăng nhập
-- Đăng nhập bằng **Google** (tài khoản `@fpt.edu.vn`); hệ thống ánh xạ email → vai trò.
-- Student được tạo/cập nhật từ FPT SIS (mã SV, giới tính, ngành, năm học, tỉnh thường trú, tình trạng học tập).
+- **Sinh viên:** Google hoặc FEID (tài khoản `@fpt.edu.vn`). Hồ sơ tạo/cập nhật từ FPT SIS (MSSV, giới tính, ngành, khóa, kỳ hiện tại, tỉnh thường trú, tình trạng học tập).
+- **Cán bộ, Trưởng ban, Quản trị viên:** tài khoản & mật khẩu do Quản trị viên cấp.
+- Vai trò lấy từ tài khoản; không có chức năng tự chuyển vai trò.
 - Email gửi qua Google (Gmail API) — Context Diagram.
 
 ---
@@ -37,15 +38,22 @@
 - **Open / Close Registration Window:** mở/đóng cổng đăng ký tự động theo mốc thời gian Admin cấu hình cho kỳ học.
 - **Send Registration Invitation Email:** khi cổng mở, gửi email mời đăng ký tới sinh viên đủ điều kiện (theo dữ liệu SIS và luật điều kiện).
 
-**Sinh viên thực hiện**
-1. Hệ thống tính **sức chứa còn lại** theo loại phòng.
-2. Chọn **thời gian lưu trú** (kỳ học).
-3. **Chọn loại phòng** (*include* — bắt buộc). Giường tương ứng được **giữ chỗ có thời hạn** (`BED_STATUS.RESERVED`).
-4. **Chọn bạn cùng phòng** (*extend* — tùy chọn):
-   - Có bạn sẵn: nhập **mã sinh viên** → hệ thống gửi **email xác nhận** cho bạn đó.
-   - Chưa có: chọn tiêu chí ghép **vùng/quê quán, học kỳ, ngành**.
-5. Xác nhận thông tin → **Validate Eligibility** (*include*) theo luật Admin cấu hình → tạo **hóa đơn tiền cọc**.
-6. **Pay Deposit** (*include*): hiển thị **VietQR** → sinh viên quét & chuyển khoản → webhook xác nhận → **lưu đơn** (*Processing*).
+**Sinh viên thực hiện (theo thứ tự)**
+1. **Kiểm tra thông tin & điều kiện** (*include* Validate Eligibility): hệ thống đọc hồ sơ từ FPT SIS và áp luật Admin cấu hình. Bắt buộc là **sinh viên FPT University** (tài khoản `@fpt.edu.vn`, có trên SIS), đang học, chưa vượt kỳ 9, không nợ phí KTX, chưa có đơn hiệu lực. Không đạt → không được tiếp tục.
+2. **Chọn thời gian lưu trú:** FPTU có 3 kỳ/năm (Spring, Summer, Fall). Kỳ bắt đầu do hệ thống xác định (kỳ đăng ký kế tiếp của sinh viên); sinh viên chọn **kỳ kết thúc** trong danh sách thả xuống, tối đa đến **kỳ 9** của mình (ví dụ đang kỳ 5 → có thể đăng ký kỳ 6 đến kỳ 9).
+3. **Chọn loại phòng** (*include*): chỉ có **3 loại — phòng 2, 4, 6 người**. Mỗi loại hiển thị hình minh họa, giá/kỳ, tiện nghi kèm **mã thiết bị** (DH, NL, BH…), mức còn chỗ (không hiện số lượng). Sinh viên **không chọn tòa/phòng/giường cụ thể**. Khi chọn, hệ thống **giữ chỗ có thời hạn** (`BED_STATUS.RESERVED`).
+4. **Chọn bạn cùng phòng** (*extend*) — **chỉ phòng 2 người**:
+   - Có bạn sẵn: nhập **MSSV** → hệ thống gửi **email xác nhận** cho bạn đó.
+   - Chưa có: hệ thống ghép theo tiêu chí **khóa, ngành, quê quán, thói quen sinh hoạt**.
+   - Phòng 4 và 6 người: bỏ qua bước này, hệ thống tự xếp.
+5. **Xác nhận thông tin & chi phí:** liệt kê từng khoản và tổng tiền phải trả ngay:
+   - Tiền cọc giữ chỗ = **n% phí kỳ đầu** (n do Admin cấu hình, hiện 20%).
+   - **Cọc điện nước** (số tiền cố định do Admin cấu hình, hiện 500.000 ₫).
+   - Phần còn lại của phí kỳ đầu thanh toán khi check-in.
+   Sinh viên xác nhận lại một lần nữa (kèm đồng ý xử lý dữ liệu cá nhân) → tạo **hóa đơn tiền cọc**.
+6. **Pay Deposit** (*include*): hiển thị **VietQR** đúng tổng tiền → sinh viên quét & chuyển khoản → webhook xác nhận → **lưu đơn** (*Processing*).
+
+**Tài sản có mã ID:** mỗi thiết bị trong phòng có mã `<Phòng>-<Mã thiết bị>-<STT>` (ví dụ `A204-DH-01`). Sinh viên báo hỏng và cán bộ bảo trì theo mã này.
 
 **Tác vụ hệ thống liên quan**
 - **Release Expired Room Hold:** hết thời hạn giữ chỗ mà chưa đóng cọc → nhả giường về `AVAILABLE`.
