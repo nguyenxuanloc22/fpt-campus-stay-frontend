@@ -47,7 +47,7 @@ interface ScheduleItem {
 
 const APPS: AppItem[] = [
   { code: 'APP-SP27-004760', name: 'Trương Gia Bảo', studentId: 'AI180990', roomType: '2 giường', flag: 'Còn nợ hóa đơn điện nước 405.000 ₫ (đang tranh chấp chỉ số công tơ)', staffNote: 'Chỉ số công tơ tháng 9 bị ghi nhầm, đã xác nhận với tổ kỹ thuật. Đề xuất chấp thuận.', staff: 'Trần Văn Cường', docs: ['bien-ban-doi-chieu-cong-to.pdf'], decision: 'PENDING' },
-  { code: 'APP-SP27-004809', name: 'Đỗ Minh Quân', studentId: 'SE190455', roomType: '4 giường máy lạnh', flag: 'SIS báo “bảo lưu” nhưng đã có quyết định học lại', staffNote: 'Quyết định học lại số 1123/QĐ-FPTU hợp lệ, SIS chưa đồng bộ. Đề xuất chấp thuận.', staff: 'Nguyễn Thu Hà', docs: ['quyet-dinh-hoc-lai.pdf'], decision: 'PENDING' },
+  { code: 'APP-SP27-004809', name: 'Đỗ Minh Quân', studentId: 'SE190455', roomType: '4 giường máy lạnh', flag: 'Hồ sơ đào tạo cập nhật sinh viên học lại — Quyết định 1123/QĐ-FPTU hợp lệ', staffNote: 'Quyết định học lại số 1123/QĐ-FPTU hợp lệ, dữ liệu đã đối soát. Đề xuất chấp thuận.', staff: 'Nguyễn Thu Hà', docs: ['quyet-dinh-hoc-lai.pdf'], decision: 'PENDING' },
   { code: 'APP-SP27-004771', name: 'Mai Khánh Vy', studentId: 'SS190234', roomType: '4 giường máy lạnh', flag: 'Yêu cầu ưu tiên tầng thấp vì lý do sức khỏe', staffNote: 'Có chỉ định của bác sĩ. Đề xuất chấp thuận và ghi chú cho engine ưu tiên tầng 1.', staff: 'Lê Minh Khoa', docs: ['chi-dinh-bac-si.pdf'], decision: 'PENDING' },
 ];
 

@@ -1,4 +1,7 @@
 export * from './StaffDashboardPage';
+export * from './StaffDashboard';
+export * from './StaffPortal';
+export * from './staffMockData';
 export * from './StaffInventoryPage';
 export * from './StaffApplicationsPage';
 export * from './StaffAssignmentPage';

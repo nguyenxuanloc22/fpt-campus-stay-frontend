@@ -29,15 +29,15 @@ interface Application {
 }
 
 const okChecks = [
-  { label: 'Sinh viên chính quy (SIS)', ok: true },
+  { label: 'Sinh viên chính quy (Cơ sở dữ liệu đào tạo)', ok: true },
   { label: 'Không nợ phí KTX', ok: true },
   { label: 'Thuộc diện được đăng ký kỳ này', ok: true },
   { label: 'Đã đóng cọc', ok: true },
 ];
 
 const APPLICATIONS: Application[] = [
-  { code: 'APP-SP27-004809', name: 'Đỗ Minh Quân', studentId: 'SE190455', gender: 'Nam', major: 'Kỹ thuật phần mềm', roomType: '4 giường máy lạnh', submitted: '16/10/2026 18:02', status: 'PROCESSING', roommate: 'Ghép theo tiêu chí', flag: 'SIS báo “bảo lưu” nhưng sinh viên đã có quyết định học lại', review: 'FLAGGED', checks: [{ label: 'Sinh viên chính quy (SIS)', ok: false }, ...okChecks.slice(1)], note: 'Đính kèm quyết định học lại số 1123/QĐ-FPTU.' },
-  { code: 'APP-SP27-004788', name: 'Phan Thùy Dung', studentId: 'GD190087', gender: 'Nữ', major: 'Thiết kế đồ họa', roomType: '4 giường quạt', submitted: '15/10/2026 14:10', status: 'PROCESSING', roommate: 'Mời SE190112', flag: 'Bạn cùng phòng được mời khác giới tính trên SIS', review: 'FLAGGED', checks: okChecks },
+  { code: 'APP-SP27-004809', name: 'Đỗ Minh Quân', studentId: 'SE190455', gender: 'Nam', major: 'Kỹ thuật phần mềm', roomType: '4 giường máy lạnh', submitted: '16/10/2026 18:02', status: 'PROCESSING', roommate: 'Ghép theo tiêu chí', flag: 'Hồ sơ đào tạo cập nhật sinh viên học lại — Quyết định 1123/QĐ-FPTU hợp lệ', review: 'FLAGGED', checks: [{ label: 'Sinh viên chính quy (Cơ sở dữ liệu đào tạo)', ok: false }, ...okChecks.slice(1)], note: 'Đính kèm quyết định học lại số 1123/QĐ-FPTU.' },
+  { code: 'APP-SP27-004788', name: 'Phan Thùy Dung', studentId: 'GD190087', gender: 'Nữ', major: 'Thiết kế đồ họa', roomType: '4 giường quạt', submitted: '15/10/2026 14:10', status: 'PROCESSING', roommate: 'Mời SE190112', flag: 'Thông tin bạn cùng phòng được mời cần xác minh lại hồ sơ', review: 'FLAGGED', checks: okChecks },
   { code: 'APP-SP27-004771', name: 'Mai Khánh Vy', studentId: 'SS190234', gender: 'Nữ', major: 'Digital Marketing', roomType: '4 giường máy lạnh', submitted: '14/10/2026 21:47', status: 'PROCESSING', roommate: 'Hệ thống tự xếp', flag: 'Yêu cầu đặc biệt: cần tầng thấp (giấy khám bệnh)', review: 'FLAGGED', checks: okChecks, note: 'Viêm khớp gối, có chỉ định hạn chế leo cầu thang.' },
   { code: 'APP-SP27-004760', name: 'Trương Gia Bảo', studentId: 'AI180990', gender: 'Nam', major: 'Trí tuệ nhân tạo', roomType: '2 giường', submitted: '14/10/2026 10:12', status: 'PROCESSING', roommate: 'Hệ thống tự xếp', flag: 'Còn nợ hóa đơn điện nước 405.000 ₫ (đang tranh chấp)', review: 'ESCALATED', checks: [okChecks[0]!, { label: 'Không nợ phí KTX', ok: false }, okChecks[2]!, okChecks[3]!] },
   { code: 'APP-SP27-004812', name: 'Nguyễn Thị Mai Anh', studentId: 'SE171234', gender: 'Nữ', major: 'Kỹ thuật phần mềm', roomType: '4 giường máy lạnh', submitted: '16/10/2026 20:15', status: 'PROCESSING', roommate: 'Mời SE172211', checks: okChecks },
@@ -76,7 +76,7 @@ export function StaffApplicationsPage() {
     <div className="space-y-6">
       <PageHeader
         title="Rà soát đơn đăng ký"
-        description="Đợt đăng ký Spring 2027 · Điều kiện đã được hệ thống kiểm tra với FPT SIS — chỉ đơn bị gắn cờ cần cán bộ xử lý"
+        description="Đợt đăng ký Spring 2027 · Điều kiện đã được hệ thống xác thực tự động — chỉ đơn bị gắn cờ cần cán bộ xử lý"
         actions={<AppButton size="sm" variant="outline" leftIcon={<Download className="w-4 h-4" />} onClick={() => show('Đã xuất danh sách đơn')}>Xuất danh sách</AppButton>}
       />
 
