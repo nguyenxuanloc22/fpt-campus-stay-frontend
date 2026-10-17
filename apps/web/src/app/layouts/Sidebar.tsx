@@ -94,7 +94,7 @@ export function Sidebar() {
   const navItems = getNavItems();
 
   return (
-    <aside className="w-64 bg-white border-r border-slate-200/80 flex flex-col shrink-0 h-[calc(100vh-4rem)] sticky top-16">
+    <aside className="w-64 bg-white border-r border-slate-200/80 flex flex-col shrink-0 h-[calc(100vh-3.5rem)] sticky top-14">
       <div className="flex-1 overflow-y-auto px-3 py-4 space-y-1">
         {navItems.map((item) => (
           <NavLink
