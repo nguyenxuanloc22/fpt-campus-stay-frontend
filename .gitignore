@@ -6,6 +6,7 @@ node_modules/
 dist/
 build/
 *.local
+*.tsbuildinfo
 
 # Flutter / Dart
 .dart_tool/
@@ -25,3 +26,5 @@ pnpm-debug.log*
 # OS metadata
 .DS_Store
 Thumbs.db
+
+.vercel

@@ -1,5 +1,5 @@
 import { Building2, LogOut, UserCircle2, ArrowRightLeft } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAuthStore } from '@features/auth';
 import { ROLES, type Role, ROLE_LABELS, APP_ROUTES } from '@campusstay/constants';
 
@@ -23,17 +23,17 @@ export function Header() {
 
   return (
     <header className="h-16 bg-white border-b border-slate-200/80 px-6 flex items-center justify-between sticky top-0 z-30">
-      <div className="flex items-center gap-3">
-        <div className="w-9 h-9 rounded-xl bg-[#FFF2EA] text-[#F26F21] flex items-center justify-center font-bold">
+      <Link to="/" className="flex items-center gap-3 group">
+        <div className="w-9 h-9 rounded-xl bg-[#FFF2EA] text-[#F26F21] group-hover:bg-[#F26F21] group-hover:text-white transition flex items-center justify-center font-bold">
           <Building2 className="w-5 h-5" />
         </div>
         <div>
-          <span className="font-bold text-base text-[#1A365D]">CampusStay FPT</span>
+          <span className="font-bold text-base text-[#1A365D] group-hover:text-[#F26F21] transition">CampusStay FPT</span>
           <span className="hidden sm:inline-block ml-2 text-xs font-semibold px-2 py-0.5 rounded-full bg-orange-100 text-[#F26F21]">
             Tân Uyên
           </span>
         </div>
-      </div>
+      </Link>
 
       <div className="flex items-center gap-3">
         {/* Quick Role Switcher for committee demo */}
