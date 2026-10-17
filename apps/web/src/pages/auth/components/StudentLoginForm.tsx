@@ -4,7 +4,7 @@ interface StudentLoginFormProps {
 
 export function StudentLoginForm({ onLogin }: StudentLoginFormProps) {
   return (
-    <div className="space-y-4">
+    <div className="h-full flex flex-col justify-start pt-1 space-y-4">
       {/* Google SSO Button */}
       <button
         type="button"

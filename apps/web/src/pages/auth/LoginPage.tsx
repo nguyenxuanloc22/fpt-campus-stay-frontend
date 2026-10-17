@@ -34,8 +34,8 @@ export function LoginPage() {
       <LoginHeroPanel />
 
       {/* Right Column: Sign In Form */}
-      <div className="w-full lg:w-[44%] bg-white flex flex-col justify-between p-6 sm:p-12 lg:p-16 relative">
-        <div className="max-w-md w-full mx-auto my-auto">
+      <div className="w-full lg:w-[44%] bg-white flex flex-col justify-center p-6 sm:p-12 lg:p-16 relative overflow-y-auto">
+        <div className="max-w-md w-full mx-auto">
           {/* Top Logo */}
           <div className="flex items-center gap-3 mb-8">
             <div className="w-10 h-10 rounded-xl bg-[#F26F21] flex items-center justify-center font-black text-white text-sm shadow-md">
@@ -81,12 +81,14 @@ export function LoginPage() {
             </button>
           </div>
 
-          {/* Form Content */}
-          {activeTab === 'student' ? (
-            <StudentLoginForm onLogin={() => executeLogin(ROLES.STUDENT)} />
-          ) : (
-            <StaffLoginForm onLogin={handleStaffLogin} />
-          )}
+          {/* Form Content - Rigid fixed height container to eliminate shifting */}
+          <div className="h-[270px]">
+            {activeTab === 'student' ? (
+              <StudentLoginForm onLogin={() => executeLogin(ROLES.STUDENT)} />
+            ) : (
+              <StaffLoginForm onLogin={handleStaffLogin} />
+            )}
+          </div>
 
           {/* Quick Demo Switcher for Grading Committee */}
           <div className="mt-8 pt-4 border-t border-slate-100 flex flex-wrap items-center justify-center gap-1.5 text-[11px] text-slate-500">
