@@ -1,0 +1,1187 @@
+openapi: 3.0.3
+info:
+  title: CampusStay FPT API Contract
+  version: 1.0.0
+  description: Single Source of Truth API specification for CampusStay FPT dormitory management system.
+servers:
+  - url: http://localhost:4010/api/v1
+    description: Mock Server (Stoplight Prism for Web)
+  - url: http://10.0.2.2:4010/api/v1
+    description: Mock Server for Android Emulator
+paths:
+  /auth/login:
+    post:
+      summary: Đăng nhập hệ thống
+      operationId: login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Đăng nhập thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '401':
+          description: Thông tin đăng nhập không hợp lệ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+
+  /auth/me:
+    get:
+      summary: Lấy thông tin người dùng hiện tại
+      operationId: getCurrentUser
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Thông tin người dùng
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+
+  /semesters/current:
+    get:
+      summary: Lấy kỳ học đang mở đăng ký KTX
+      operationId: getCurrentSemester
+      responses:
+        '200':
+          description: Thông tin kỳ học
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Semester'
+
+  /eligibility/check:
+    get:
+      summary: Kiểm tra điều kiện đăng ký KTX của sinh viên
+      operationId: checkEligibility
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Kết quả thẩm định điều kiện
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EligibilityResult'
+
+  /buildings:
+    get:
+      summary: Danh sách tòa nhà KTX
+      operationId: getBuildings
+      responses:
+        '200':
+          description: Danh sách tòa nhà
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Building'
+
+  /rooms:
+    get:
+      summary: Danh sách phòng KTX có bộ lọc
+      operationId: getRooms
+      parameters:
+        - name: buildingId
+          in: query
+          schema:
+            type: string
+        - name: roomType
+          in: query
+          schema:
+            type: string
+        - name: status
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Danh sách phòng
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Room'
+
+  /rooms/{id}:
+    get:
+      summary: Chi tiết phòng và danh sách giường
+      operationId: getRoomById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Chi tiết phòng
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RoomDetail'
+
+  /applications:
+    get:
+      summary: Lấy danh sách đơn đăng ký KTX (Staff/Manager)
+      operationId: getApplications
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Danh sách đơn đăng ký
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Application'
+    post:
+      summary: Nộp đơn đăng ký KTX mới (Student)
+      operationId: submitApplication
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubmitApplicationRequest'
+      responses:
+        '201':
+          description: Đăng ký thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Application'
+
+  /applications/my:
+    get:
+      summary: Lấy đơn đăng ký hiện tại của sinh viên
+      operationId: getMyApplication
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Đơn đăng ký của tôi
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Application'
+
+  /applications/{id}/review:
+    patch:
+      summary: Staff duyệt hoặc từ chối đơn đăng ký
+      operationId: reviewApplication
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReviewApplicationRequest'
+      responses:
+        '200':
+          description: Cập nhật thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Application'
+
+  /applications/{id}/exception:
+    patch:
+      summary: Manager phê duyệt đơn ngoại lệ
+      operationId: approveExceptionApplication
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExceptionApprovalRequest'
+      responses:
+        '200':
+          description: Phê duyệt ngoại lệ thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Application'
+
+  /roommates/groups/my:
+    get:
+      summary: Thông tin nhóm bạn cùng phòng của tôi
+      operationId: getMyRoommateGroup
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Thông tin nhóm
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RoommateGroup'
+
+  /roommates/groups:
+    post:
+      summary: Tạo nhóm bạn cùng phòng mới
+      operationId: createRoommateGroup
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                groupName:
+                  type: string
+                  example: "Nhóm SE K18 Tân Uyên"
+      responses:
+        '201':
+          description: Tạo nhóm thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RoommateGroup'
+
+  /roommates/groups/join:
+    post:
+      summary: Gia nhập nhóm bạn bằng mã PIN
+      operationId: joinRoommateGroupByPin
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - inviteCode
+              properties:
+                inviteCode:
+                  type: string
+                  example: "FPT-9821"
+      responses:
+        '200':
+          description: Gia nhập thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RoommateGroup'
+
+  /contracts/my:
+    get:
+      summary: Hợp đồng lưu trú hiện tại của sinh viên
+      operationId: getMyContract
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Hợp đồng lưu trú
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Contract'
+
+  /contracts/{id}/sign:
+    post:
+      summary: Ký tên điện tử vào hợp đồng lưu trú
+      operationId: signContract
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Ký hợp đồng thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Contract'
+
+  /invoices:
+    get:
+      summary: Danh sách hóa đơn (Student xem của mình, Staff xem toàn bộ)
+      operationId: getInvoices
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Danh sách hóa đơn
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Invoice'
+
+  /invoices/{id}/vietqr:
+    get:
+      summary: Lấy mã VietQR động chuẩn NAPAS247 cho hóa đơn
+      operationId: getInvoiceVietQr
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Thông tin thanh toán VietQR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VietQrInfo'
+
+  /maintenance:
+    get:
+      summary: Danh sách yêu cầu bảo trì / sửa chữa
+      operationId: getMaintenanceTickets
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Danh sách yêu cầu bảo trì
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MaintenanceTicket'
+    post:
+      summary: Gửi yêu cầu bảo trì hỏng hóc thiết bị
+      operationId: createMaintenanceTicket
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateMaintenanceRequest'
+      responses:
+        '201':
+          description: Tạo ticket thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MaintenanceTicket'
+
+  /maintenance/{id}:
+    patch:
+      summary: Cập nhật trạng thái bảo trì (Staff)
+      operationId: updateMaintenanceTicket
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  enum: [PENDING, IN_PROGRESS, RESOLVED, CANCELLED]
+                technicianNote:
+                  type: string
+      responses:
+        '200':
+          description: Cập nhật thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MaintenanceTicket'
+
+  /checkin/appointments:
+    get:
+      summary: Lấy lịch hẹn nhận/trả phòng
+      operationId: getCheckinAppointments
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Danh sách lịch hẹn
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CheckinAppointment'
+    post:
+      summary: Đăng ký lịch hẹn check-in/out
+      operationId: createCheckinAppointment
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCheckinRequest'
+      responses:
+        '201':
+          description: Tạo lịch hẹn thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CheckinAppointment'
+
+  /reports/occupancy:
+    get:
+      summary: Báo cáo công suất và tỷ lệ lấp đầy KTX (Manager/Admin)
+      operationId: getOccupancyReport
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Thống kê công suất
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OccupancyReport'
+
+  /allocation/batch-apply:
+    post:
+      summary: Manager phê duyệt kết quả xếp phòng tự động hàng loạt
+      operationId: applyBatchAllocation
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Áp dụng thành công
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  assignedCount:
+                    type: integer
+                    example: 340
+                  message:
+                    type: string
+                    example: "Đã phê duyệt và xuất kết quả xếp phòng thành công"
+
+  /admin/audit-logs:
+    get:
+      summary: Lấy danh sách audit log hệ thống (Admin)
+      operationId: getAuditLogs
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Nhật ký hệ thống
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AuditLog'
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    LoginRequest:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          example: "student.loc@fpt.edu.vn"
+        password:
+          type: string
+          example: "123456"
+        role:
+          type: string
+          enum: [STUDENT, STAFF, MANAGER, ADMIN]
+          example: "STUDENT"
+
+    AuthResponse:
+      type: object
+      required:
+        - token
+        - refreshToken
+        - user
+      properties:
+        token:
+          type: string
+          example: "mock-jwt-token-campusstay-fpt"
+        refreshToken:
+          type: string
+          example: "mock-refresh-token"
+        user:
+          $ref: '#/components/schemas/User'
+
+    User:
+      type: object
+      required:
+        - id
+        - name
+        - email
+        - role
+      properties:
+        id:
+          type: string
+          example: "usr-001"
+        studentId:
+          type: string
+          example: "SE170123"
+        name:
+          type: string
+          example: "Nguyễn Xuân Lộc"
+        email:
+          type: string
+          example: "locnx.se@fpt.edu.vn"
+        role:
+          type: string
+          enum: [STUDENT, STAFF, MANAGER, ADMIN]
+          example: "STUDENT"
+        phoneNumber:
+          type: string
+          example: "0901234567"
+        gender:
+          type: string
+          enum: [MALE, FEMALE]
+          example: "MALE"
+        major:
+          type: string
+          example: "Kỹ thuật phần mềm (SE)"
+
+    Semester:
+      type: object
+      required:
+        - id
+        - code
+        - name
+        - startDate
+        - endDate
+        - registrationOpen
+      properties:
+        id:
+          type: string
+          example: "sem-fall-2026"
+        code:
+          type: string
+          example: "FALL2026"
+        name:
+          type: string
+          example: "Học kỳ Fall 2026"
+        startDate:
+          type: string
+          example: "2026-09-01"
+        endDate:
+          type: string
+          example: "2026-12-31"
+        registrationOpen:
+          type: boolean
+          example: true
+        deadline:
+          type: string
+          example: "2026-08-25"
+
+    EligibilityResult:
+      type: object
+      required:
+        - isEligible
+        - priorityScore
+        - reasons
+      properties:
+        isEligible:
+          type: boolean
+          example: true
+        priorityScore:
+          type: number
+          example: 85.5
+        reasons:
+          type: array
+          items:
+            type: string
+          example: ["Khoảng cách hộ khẩu > 50km (Tân Uyên)", "Điểm rèn luyện tốt", "Tân sinh viên K20"]
+
+    Building:
+      type: object
+      required:
+        - id
+        - code
+        - name
+        - totalRooms
+        - availableBeds
+      properties:
+        id:
+          type: string
+          example: "bld-a"
+        code:
+          type: string
+          example: "DOM-A"
+        name:
+          type: string
+          example: "Tòa A - KTX Nam Tân Uyên"
+        genderAllowed:
+          type: string
+          example: "MALE"
+        totalRooms:
+          type: integer
+          example: 60
+        availableBeds:
+          type: integer
+          example: 42
+
+    Room:
+      type: object
+      required:
+        - id
+        - roomNumber
+        - buildingId
+        - buildingName
+        - floor
+        - roomType
+        - capacity
+        - occupiedBeds
+        - pricePerMonth
+      properties:
+        id:
+          type: string
+          example: "rm-a204"
+        roomNumber:
+          type: string
+          example: "A204"
+        buildingId:
+          type: string
+          example: "bld-a"
+        buildingName:
+          type: string
+          example: "Tòa A"
+        floor:
+          type: integer
+          example: 2
+        roomType:
+          type: string
+          enum: [STANDARD_4, STANDARD_6, PREMIUM_AIRCON_4]
+          example: "PREMIUM_AIRCON_4"
+        capacity:
+          type: integer
+          example: 4
+        occupiedBeds:
+          type: integer
+          example: 2
+        pricePerMonth:
+          type: number
+          example: 1200000
+        hasAirConditioner:
+          type: boolean
+          example: true
+
+    RoomDetail:
+      allOf:
+        - $ref: '#/components/schemas/Room'
+        - type: object
+          properties:
+            beds:
+              type: array
+              items:
+                $ref: '#/components/schemas/Bed'
+
+    Bed:
+      type: object
+      required:
+        - id
+        - bedNumber
+        - status
+      properties:
+        id:
+          type: string
+          example: "bed-a204-1"
+        bedNumber:
+          type: string
+          example: "G1"
+        status:
+          type: string
+          enum: [AVAILABLE, OCCUPIED, MAINTENANCE, RESERVED]
+          example: "AVAILABLE"
+        occupantName:
+          type: string
+          example: "Trần Minh Quân"
+
+    Application:
+      type: object
+      required:
+        - id
+        - studentId
+        - studentName
+        - semesterId
+        - semesterName
+        - roomTypePreferred
+        - status
+        - createdAt
+      properties:
+        id:
+          type: string
+          example: "app-2026-001"
+        studentId:
+          type: string
+          example: "SE170123"
+        studentName:
+          type: string
+          example: "Nguyễn Xuân Lộc"
+        semesterId:
+          type: string
+          example: "sem-fall-2026"
+        semesterName:
+          type: string
+          example: "Fall 2026"
+        roomTypePreferred:
+          type: string
+          example: "PREMIUM_AIRCON_4"
+        buildingPreferred:
+          type: string
+          example: "Tòa A"
+        status:
+          type: string
+          enum: [SUBMITTED, UNDER_REVIEW, APPROVED, REJECTED, EXCEPTION_PENDING, ASSIGNED]
+          example: "APPROVED"
+        assignedRoom:
+          type: string
+          example: "A204"
+        assignedBed:
+          type: string
+          example: "G1"
+        priorityScore:
+          type: number
+          example: 90
+        reviewNote:
+          type: string
+          example: "Đủ điều kiện ưu tiên khoảng cách địa lý"
+        createdAt:
+          type: string
+          example: "2026-08-10T08:30:00Z"
+
+    SubmitApplicationRequest:
+      type: object
+      required:
+        - semesterId
+        - roomTypePreferred
+      properties:
+        semesterId:
+          type: string
+          example: "sem-fall-2026"
+        roomTypePreferred:
+          type: string
+          example: "PREMIUM_AIRCON_4"
+        buildingPreferred:
+          type: string
+          example: "DOM-A"
+        roommateGroupId:
+          type: string
+          example: "grp-9821"
+
+    ReviewApplicationRequest:
+      type: object
+      required:
+        - action
+      properties:
+        action:
+          type: string
+          enum: [APPROVE, REJECT, REQUEST_EXCEPTION]
+          example: "APPROVE"
+        note:
+          type: string
+          example: "Hồ sơ hợp lệ, đã duyệt."
+
+    ExceptionApprovalRequest:
+      type: object
+      required:
+        - approved
+        - managerNote
+      properties:
+        approved:
+          type: boolean
+          example: true
+        managerNote:
+          type: string
+          example: "Duyệt đặc cách diện sinh viên hỗ trợ khó khăn."
+
+    RoommateGroup:
+      type: object
+      required:
+        - id
+        - groupName
+        - inviteCode
+        - members
+      properties:
+        id:
+          type: string
+          example: "grp-9821"
+        groupName:
+          type: string
+          example: "Nhóm SE K18 Tân Uyên"
+        inviteCode:
+          type: string
+          example: "FPT-9821"
+        maxMembers:
+          type: integer
+          example: 4
+        members:
+          type: array
+          items:
+            type: object
+            properties:
+              studentId:
+                type: string
+                example: "SE170123"
+              name:
+                type: string
+                example: "Nguyễn Xuân Lộc"
+              isLeader:
+                type: boolean
+                example: true
+
+    Contract:
+      type: object
+      required:
+        - id
+        - contractNumber
+        - studentId
+        - studentName
+        - roomName
+        - bedName
+        - startDate
+        - endDate
+        - status
+      properties:
+        id:
+          type: string
+          example: "ct-2026-789"
+        contractNumber:
+          type: string
+          example: "HD-KTX-2026-0789"
+        studentId:
+          type: string
+          example: "SE170123"
+        studentName:
+          type: string
+          example: "Nguyễn Xuân Lộc"
+        roomName:
+          type: string
+          example: "A204"
+        bedName:
+          type: string
+          example: "Giường số 1 (G1)"
+        monthlyPrice:
+          type: number
+          example: 1200000
+        depositAmount:
+          type: number
+          example: 1000000
+        startDate:
+          type: string
+          example: "2026-09-01"
+        endDate:
+          type: string
+          example: "2026-12-31"
+        status:
+          type: string
+          enum: [DRAFT, SIGNED, ACTIVE, TERMINATED]
+          example: "SIGNED"
+        signedAt:
+          type: string
+          example: "2026-08-15T14:20:00Z"
+
+    Invoice:
+      type: object
+      required:
+        - id
+        - invoiceCode
+        - title
+        - amount
+        - status
+        - dueDate
+      properties:
+        id:
+          type: string
+          example: "inv-2026-01"
+        invoiceCode:
+          type: string
+          example: "INV-FALL26-001"
+        title:
+          type: string
+          example: "Tiền phòng KTX Fall 2026 (Phòng A204 - Giường G1)"
+        amount:
+          type: number
+          example: 4800000
+        deposit:
+          type: number
+          example: 1000000
+        totalPayable:
+          type: number
+          example: 5800000
+        status:
+          type: string
+          enum: [UNPAID, PAID, OVERDUE, CANCELLED]
+          example: "UNPAID"
+        dueDate:
+          type: string
+          example: "2026-08-25"
+
+    VietQrInfo:
+      type: object
+      required:
+        - qrImageUrl
+        - bankId
+        - bankName
+        - accountNo
+        - accountName
+        - amount
+        - description
+      properties:
+        qrImageUrl:
+          type: string
+          example: "https://api.vietqr.io/image/970422-0901234567-compact2.png?amount=5800000&addInfo=CSFP%20INV001&accountName=FPT%20CAMPUSSTAY"
+        bankId:
+          type: string
+          example: "MB"
+        bankName:
+          type: string
+          example: "Ngân hàng TMCP Quân Đội (MB Bank)"
+        accountNo:
+          type: string
+          example: "03456789999"
+        accountName:
+          type: string
+          example: "FPT UNIVERSITY CAMPUSSTAY"
+        amount:
+          type: number
+          example: 5800000
+        description:
+          type: string
+          example: "CSFP INV-FALL26-001 SE170123"
+
+    MaintenanceTicket:
+      type: object
+      required:
+        - id
+        - title
+        - roomNumber
+        - category
+        - status
+        - createdAt
+      properties:
+        id:
+          type: string
+          example: "mt-01"
+        title:
+          type: string
+          example: "Điều hòa phòng A204 không lạnh, kêu to"
+        roomNumber:
+          type: string
+          example: "A204"
+        category:
+          type: string
+          enum: [AIR_CONDITIONER, ELECTRICITY, PLUMBING, FURNITURE, OTHER]
+          example: "AIR_CONDITIONER"
+        description:
+          type: string
+          example: "Máy lạnh bật 16 độ nhưng chỉ có gió thoảng, ban đêm phát ra tiếng kêu rè rè."
+        status:
+          type: string
+          enum: [PENDING, IN_PROGRESS, RESOLVED, CANCELLED]
+          example: "IN_PROGRESS"
+        technicianName:
+          type: string
+          example: "Chú Ba Kỹ Thuật"
+        createdAt:
+          type: string
+          example: "2026-10-12T09:15:00Z"
+
+    CreateMaintenanceRequest:
+      type: object
+      required:
+        - title
+        - roomNumber
+        - category
+        - description
+      properties:
+        title:
+          type: string
+          example: "Bóng đèn phòng tắm chớp tắt liên tục"
+        roomNumber:
+          type: string
+          example: "A204"
+        category:
+          type: string
+          enum: [AIR_CONDITIONER, ELECTRICITY, PLUMBING, FURNITURE, OTHER]
+          example: "ELECTRICITY"
+        description:
+          type: string
+          example: "Đèn tuýp LED phòng tắm bị nhấp nháy từ tối qua."
+
+    CheckinAppointment:
+      type: object
+      required:
+        - id
+        - studentId
+        - roomNumber
+        - scheduledTime
+        - type
+        - status
+      properties:
+        id:
+          type: string
+          example: "chk-01"
+        studentId:
+          type: string
+          example: "SE170123"
+        roomNumber:
+          type: string
+          example: "A204"
+        scheduledTime:
+          type: string
+          example: "2026-08-30 09:30"
+        type:
+          type: string
+          enum: [CHECK_IN, CHECK_OUT]
+          example: "CHECK_IN"
+        status:
+          type: string
+          enum: [SCHEDULED, COMPLETED, CANCELLED]
+          example: "SCHEDULED"
+
+    CreateCheckinRequest:
+      type: object
+      required:
+        - scheduledTime
+        - type
+      properties:
+        scheduledTime:
+          type: string
+          example: "2026-08-30 09:30"
+        type:
+          type: string
+          enum: [CHECK_IN, CHECK_OUT]
+          example: "CHECK_IN"
+
+    OccupancyReport:
+      type: object
+      required:
+        - totalBeds
+        - occupiedBeds
+        - availableBeds
+        - maintenanceBeds
+        - occupancyRate
+      properties:
+        totalBeds:
+          type: integer
+          example: 1200
+        occupiedBeds:
+          type: integer
+          example: 1045
+        availableBeds:
+          type: integer
+          example: 125
+        maintenanceBeds:
+          type: integer
+          example: 30
+        occupancyRate:
+          type: number
+          example: 87.08
+        estimatedRevenue:
+          type: number
+          example: 1254000000
+
+    AuditLog:
+      type: object
+      required:
+        - id
+        - actor
+        - role
+        - action
+        - target
+        - timestamp
+      properties:
+        id:
+          type: string
+          example: "log-101"
+        actor:
+          type: string
+          example: "admin@fpt.edu.vn"
+        role:
+          type: string
+          example: "ADMIN"
+        action:
+          type: string
+          example: "UPDATE_SEMESTER_CONFIG"
+        target:
+          type: string
+          example: "Semester FALL2026"
+        ipAddress:
+          type: string
+          example: "113.161.45.12"
+        timestamp:
+          type: string
+          example: "2026-10-15T10:30:00Z"
+
+    ApiError:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: string
+          example: "UNAUTHORIZED"
+        message:
+          type: string
+          example: "Phiên đăng nhập đã hết hạn hoặc không có quyền truy cập."

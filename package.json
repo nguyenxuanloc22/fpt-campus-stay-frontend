@@ -1,0 +1,23 @@
+{
+  "name": "fpt-campus-stay-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "apps/web",
+    "packages/*",
+    "mock-server"
+  ],
+  "scripts": {
+    "dev": "npm run --prefix apps/web dev",
+    "build": "npm run --prefix apps/web build",
+    "lint": "npm run --prefix apps/web lint",
+    "test": "npm run --prefix apps/web test",
+    "mock": "node mock-server/run-mock.js",
+    "flutter:run": "cd apps/mobile && flutter run",
+    "flutter:analyze": "cd apps/mobile && flutter analyze",
+    "flutter:test": "cd apps/mobile && flutter test"
+  },
+  "devDependencies": {
+    "@stoplight/prism-cli": "^5.8.3"
+  }
+}
