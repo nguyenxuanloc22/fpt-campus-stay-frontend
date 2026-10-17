@@ -1,26 +1,23 @@
 import type { RouteObject } from 'react-router-dom';
-import {
-  StudentDashboardPage,
-  StudentRegistrationPage,
-  StudentRoomsPage,
-  StudentRoommatesPage,
-  StudentContractPage,
-  StudentInvoicesPage,
-  StudentRequestsPage,
-  StudentCheckinPage,
-  StudentNotificationsPage,
-  StudentProfilePage,
-} from '@pages/student';
+import { APP_ROUTES } from '@campusstay/constants';
+import { RequirePermission } from '../guards/RequirePermission';
+import { lazyPage } from './lazyPage';
+
+const load = () => import('@pages/student');
+const page = (name: Parameters<typeof lazyPage<Awaited<ReturnType<typeof load>>>>[1]) => (
+  <RequirePermission permission="application:create">{lazyPage(load, name)}</RequirePermission>
+);
+
+const R = APP_ROUTES.STUDENT;
 
 export const studentRoutes: RouteObject[] = [
-  { path: '/student/dashboard', element: <StudentDashboardPage /> },
-  { path: '/student/registration', element: <StudentRegistrationPage /> },
-  { path: '/student/rooms', element: <StudentRoomsPage /> },
-  { path: '/student/roommates', element: <StudentRoommatesPage /> },
-  { path: '/student/contract', element: <StudentContractPage /> },
-  { path: '/student/invoices', element: <StudentInvoicesPage /> },
-  { path: '/student/requests', element: <StudentRequestsPage /> },
-  { path: '/student/checkin', element: <StudentCheckinPage /> },
-  { path: '/student/notifications', element: <StudentNotificationsPage /> },
-  { path: '/student/profile', element: <StudentProfilePage /> },
+  { path: R.DASHBOARD, element: page('StudentDashboardPage') },
+  { path: R.REGISTRATION, element: page('StudentRegistrationPage') },
+  { path: R.ROOMS, element: page('StudentRoomsPage') },
+  { path: R.MY_ROOM, element: page('StudentMyRoomPage') },
+  { path: R.INVOICES, element: page('StudentInvoicesPage') },
+  { path: R.REQUESTS, element: page('StudentRequestsPage') },
+  { path: R.CHECKIN, element: page('StudentCheckinPage') },
+  { path: R.NOTIFICATIONS, element: page('StudentNotificationsPage') },
+  { path: R.PROFILE, element: page('StudentProfilePage') },
 ];

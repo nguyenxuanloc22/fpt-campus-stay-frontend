@@ -1,5 +1,4 @@
 export * from './ManagerDashboardPage';
-export * from './ManagerExceptionsPage';
-export * from './ManagerBatchApprovalPage';
+export * from './ManagerApprovalsPage';
+export * from './ManagerAssignmentApprovalPage';
 export * from './ManagerReportsPage';
-export * from './ManagerStaffPerformancePage';

@@ -1,3 +1,4 @@
+/** Sơ đồ trang theo docs/ARCHITECTURE.md §5 (30 trang). */
 export const APP_ROUTES = {
   AUTH: {
     LOGIN: '/login',
@@ -9,8 +10,7 @@ export const APP_ROUTES = {
     DASHBOARD: '/student/dashboard',
     REGISTRATION: '/student/registration',
     ROOMS: '/student/rooms',
-    ROOMMATES: '/student/roommates',
-    CONTRACT: '/student/contract',
+    MY_ROOM: '/student/my-room',
     INVOICES: '/student/invoices',
     REQUESTS: '/student/requests',
     CHECKIN: '/student/checkin',
@@ -22,20 +22,18 @@ export const APP_ROUTES = {
     DASHBOARD: '/staff/dashboard',
     INVENTORY: '/staff/inventory',
     APPLICATIONS: '/staff/applications',
-    ROOM_ASSIGNMENT: '/staff/room-assignment',
-    ROOM_TRANSFERS: '/staff/room-transfers',
+    ASSIGNMENT: '/staff/assignment',
+    ROOM_CHANGES: '/staff/room-changes',
     CHECKIN_OUT: '/staff/checkin-out',
-    INSPECTIONS: '/staff/inspections',
     MAINTENANCE: '/staff/maintenance',
     BROADCAST: '/staff/broadcast',
   },
   MANAGER: {
     ROOT: '/manager',
     DASHBOARD: '/manager/dashboard',
-    EXCEPTIONS: '/manager/exceptions',
-    BATCH_APPROVAL: '/manager/batch-approval',
+    APPROVALS: '/manager/approvals',
+    ASSIGNMENT_APPROVAL: '/manager/assignment-approval',
     REPORTS: '/manager/reports',
-    STAFF_PERFORMANCE: '/manager/staff-performance',
   },
   ADMIN: {
     ROOT: '/admin',
@@ -44,10 +42,9 @@ export const APP_ROUTES = {
     RULES: '/admin/rules',
     PRICING: '/admin/pricing',
     ALLOCATION_ENGINE: '/admin/allocation-engine',
-    BATCH_RUNS: '/admin/batch-runs',
     INTEGRATIONS: '/admin/integrations',
     USERS: '/admin/users',
-    FINANCE: '/admin/finance',
+    REPORTS: '/admin/reports',
     AUDIT_LOGS: '/admin/audit-logs',
   },
 } as const;

@@ -1,29 +1,22 @@
 import type { RouteObject } from 'react-router-dom';
+import { APP_ROUTES } from '@campusstay/constants';
 import { RequirePermission } from '../guards/RequirePermission';
-import {
-  StaffDashboardPage,
-  StaffInventoryPage,
-  StaffApplicationsPage,
-  StaffRoomAssignmentPage,
-  StaffRoomTransfersPage,
-  StaffCheckinOutPage,
-  StaffInspectionsPage,
-  StaffMaintenancePage,
-  StaffBroadcastPage,
-} from '@pages/staff';
+import { lazyPage } from './lazyPage';
 
-const wrap = (elem: React.ReactNode) => (
-  <RequirePermission permission="inventory:manage">{elem}</RequirePermission>
+const load = () => import('@pages/staff');
+const page = (name: Parameters<typeof lazyPage<Awaited<ReturnType<typeof load>>>>[1]) => (
+  <RequirePermission permission="inventory:manage">{lazyPage(load, name)}</RequirePermission>
 );
 
+const R = APP_ROUTES.STAFF;
+
 export const staffRoutes: RouteObject[] = [
-  { path: '/staff/dashboard', element: wrap(<StaffDashboardPage />) },
-  { path: '/staff/inventory', element: wrap(<StaffInventoryPage />) },
-  { path: '/staff/applications', element: wrap(<StaffApplicationsPage />) },
-  { path: '/staff/room-assignment', element: wrap(<StaffRoomAssignmentPage />) },
-  { path: '/staff/room-transfers', element: wrap(<StaffRoomTransfersPage />) },
-  { path: '/staff/checkin-out', element: wrap(<StaffCheckinOutPage />) },
-  { path: '/staff/inspections', element: wrap(<StaffInspectionsPage />) },
-  { path: '/staff/maintenance', element: wrap(<StaffMaintenancePage />) },
-  { path: '/staff/broadcast', element: wrap(<StaffBroadcastPage />) },
+  { path: R.DASHBOARD, element: page('StaffDashboardPage') },
+  { path: R.INVENTORY, element: page('StaffInventoryPage') },
+  { path: R.APPLICATIONS, element: page('StaffApplicationsPage') },
+  { path: R.ASSIGNMENT, element: page('StaffAssignmentPage') },
+  { path: R.ROOM_CHANGES, element: page('StaffRoomChangesPage') },
+  { path: R.CHECKIN_OUT, element: page('StaffCheckinOutPage') },
+  { path: R.MAINTENANCE, element: page('StaffMaintenancePage') },
+  { path: R.BROADCAST, element: page('StaffBroadcastPage') },
 ];

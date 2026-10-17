@@ -1,6 +1,10 @@
 import { ROLES, type Role } from '@campusstay/constants';
 import type { Permission } from './permissions';
 
+/**
+ * Ma trận phân quyền — nguồn sự thật duy nhất ở Frontend.
+ * Mọi thay đổi phải cập nhật đồng thời docs/PERMISSION_MATRIX.md.
+ */
 export const ROLE_PERMISSIONS: Record<Role, readonly Permission[]> = {
   [ROLES.STUDENT]: [
     'application:create',
@@ -12,16 +16,24 @@ export const ROLE_PERMISSIONS: Record<Role, readonly Permission[]> = {
     'contract:sign_own',
     'invoice:view_own',
     'invoice:pay_vietqr',
+    'room_change:create_own',
+    'room_change:respond_invitation',
+    'checkin:self',
     'maintenance:create_own',
     'maintenance:view_own',
+    'maintenance:view_schedule',
+    'notification:view_own',
   ],
   [ROLES.STAFF]: [
     'inventory:view_public',
     'inventory:manage',
     'application:review',
-    'assignment:manual',
+    'assignment:adjust_proposal',
     'contract:manage_all',
     'invoice:manage',
+    'room_change:verify',
+    'checkin:process_manual',
+    'checkout:verify',
     'maintenance:process',
     'inspection:conduct',
     'broadcast:send',
@@ -31,12 +43,16 @@ export const ROLE_PERMISSIONS: Record<Role, readonly Permission[]> = {
     'application:approve_exception',
     'assignment:approve_batch',
     'contract:manage_all',
+    'room_change:approve',
+    'maintenance:approve_schedule',
     'report:operational',
+    'report:financial',
   ],
   [ROLES.ADMIN]: [
     'inventory:view_public',
     'inventory:configure',
-    'assignment:run_batch',
+    'assignment:configure_engine',
+    'assignment:monitor_engine',
     'invoice:reconcile',
     'report:operational',
     'report:financial',

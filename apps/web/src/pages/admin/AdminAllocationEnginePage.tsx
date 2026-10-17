@@ -1,66 +1,219 @@
-import { useState } from 'react';
-import { Play, CheckCircle2 } from 'lucide-react';
-import { AppButton } from '@shared-ui/components/AppButton';
+import { useEffect, useState } from 'react';
+import { Cpu, Play, Save, Settings2, Users, Building2, Sparkles, Terminal, GripVertical, Clock, History, AlertTriangle } from 'lucide-react';
+import clsx from 'clsx';
+import { PageHeader, StatCard, SectionCard, AppButton, ProgressBar, DonutChart, StatusBadge, useToast } from '@shared-ui';
+
+/**
+ * Configure Assignment Rules & Priorities + Monitor Assignment Engine (Admin) — docs/BUSINESS_FLOWS.md F2.
+ * Engine là actor System: tự chạy theo lịch kỳ học (Finalize Roommate Matching → Execute Room Assignment Algorithm
+ * → Detect Assignment Conflicts → Open Round 2 & Backfill). Admin chỉ cấu hình, chạy thử và giám sát.
+ */
+
+const STRATEGIES = [
+  { id: 'DATE_FIRST', name: 'Ưu tiên ngày nộp', desc: 'Đơn đóng cọc sớm được xếp trước vào loại phòng đã chọn.' },
+  { id: 'GROUP_FIRST', name: 'Ưu tiên bạn cùng phòng', desc: 'Xếp các cặp/nhóm đã xác nhận trước để không bị tách.' },
+  { id: 'BALANCED', name: 'Cân bằng (khuyến nghị)', desc: 'Tối ưu tổng điểm theo trọng số bên dưới, giữ nhóm, cân bằng tầng.' },
+];
+
+const CONSTRAINTS = [
+  { id: 'gender', label: 'Đúng khu giới tính', hard: true, enabled: true },
+  { id: 'type', label: 'Đúng loại phòng đã đóng cọc', hard: true, enabled: true },
+  { id: 'capacity', label: 'Không vượt sức chứa / không gán trùng giường', hard: true, enabled: true },
+  { id: 'pair', label: 'Không tách cặp bạn cùng phòng đã xác nhận', hard: false, enabled: true },
+  { id: 'keep', label: 'Giữ phòng cũ cho sinh viên đang ở', hard: false, enabled: true },
+  { id: 'cohort', label: 'Ghép sinh viên cùng khóa / cùng ngành', hard: false, enabled: true },
+];
+
+/** Tiêu chí ưu tiên theo Phiếu đăng ký §3.2.c */
+const WEIGHTS = [
+  ['date', 'Ngày nộp đơn / đóng cọc'],
+  ['preference', 'Nguyện vọng loại phòng'],
+  ['roommate', 'Yêu cầu bạn cùng phòng'],
+  ['program', 'Ngành / năm học'],
+] as const;
+
+const LOG_LINES = [
+  '[03:00:00] Khởi động engine v2.3 — chiến lược BALANCED',
+  '[03:00:02] Nạp 1.284 đơn đã đóng cọc, 412 giường trống',
+  '[03:00:09] Finalize Roommate Matching — 44 cặp/nhóm đã xác nhận, ghép thêm 37 theo tiêu chí',
+  '[03:00:18] Giữ phòng cũ cho 121 sinh viên đang ở',
+  '[03:01:31] Execute Room Assignment Algorithm — xếp cá nhân theo trọng số',
+  '[03:02:05] Detect Assignment Conflicts — 6 cảnh báo (2 giường trùng, 1 cặp bị tách, 2 sai khu, 1 vượt sức chứa)',
+  '[03:02:10] 18 đơn không còn giường phù hợp → chờ vòng 2',
+  '[03:02:14] Hoàn tất: đề xuất BR-SP27-02 (342 phân bổ) → chờ Staff rà soát',
+];
+
+const RUNS = [
+  { id: 'BR-SP27-02', when: '25/11/2026 03:00', type: 'Vòng 1', total: 342, conflicts: 6, status: 'PENDING_APPROVAL' },
+  { id: 'BR-SP27-01', when: '24/11/2026 15:12', type: 'Chạy thử', total: 298, conflicts: 14, status: 'COMPLETED' },
+  { id: 'BR-FA26-04', when: '20/08/2026 03:00', type: 'Vòng 2', total: 186, conflicts: 2, status: 'APPROVED' },
+  { id: 'BR-FA26-03', when: '12/08/2026 03:00', type: 'Vòng 1', total: 1012, conflicts: 9, status: 'APPROVED' },
+];
 
 export function AdminAllocationEnginePage() {
-  const [isRunning, setIsRunning] = useState(false);
-  const [result, setResult] = useState<string | null>(null);
+  const { show, toastNode } = useToast();
+  const [strategy, setStrategy] = useState('BALANCED');
+  const [constraints, setConstraints] = useState(CONSTRAINTS);
+  const [weights, setWeights] = useState<Record<(typeof WEIGHTS)[number][0], number>>({ date: 40, preference: 30, roommate: 20, program: 10 });
+  const [running, setRunning] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [logs, setLogs] = useState<string[]>(LOG_LINES);
 
-  const handleSimulate = () => {
-    setIsRunning(true);
-    setTimeout(() => {
-      setIsRunning(false);
-      setResult('Chạy mô phỏng hoàn tất: 340/350 sinh viên được xếp thành công. 0 xung đột.');
-    }, 1500);
+  useEffect(() => {
+    if (!running) return;
+    if (progress >= 100) {
+      setRunning(false);
+      show('Chạy thử hoàn tất — kết quả không tạo đề xuất chính thức');
+      return;
+    }
+    const t = window.setTimeout(() => {
+      const next = Math.min(100, progress + 12.5);
+      setLogs(LOG_LINES.slice(0, Math.round(next / 12.5)));
+      setProgress(next);
+    }, 500);
+    return () => window.clearTimeout(t);
+  }, [running, progress, show]);
+
+  const start = () => {
+    setLogs([]);
+    setProgress(0);
+    setRunning(true);
   };
 
+  const totalWeight = Object.values(weights).reduce((s, v) => s + v, 0);
+
   return (
-    <div className="max-w-3xl mx-auto space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-[#1A365D]">Cấu Hình Thuật Toán Xếp Phòng (Allocation Engine)</h1>
-        <p className="text-xs text-slate-500 mt-1">Cài đặt trọng số ghép nhóm bạn, cùng ngành, khóa học và chạy mô phỏng giả lập</p>
+    <div className="space-y-6">
+      <PageHeader
+        title="Engine xếp phòng"
+        description="Cấu hình luật & trọng số ưu tiên, chạy thử và giám sát các lần hệ thống tự chạy"
+        badge={<span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-[#EBF2FB] text-[#1A365D]">v2.3</span>}
+        actions={
+          <>
+            <AppButton size="sm" variant="outline" isLoading={running} leftIcon={<Play className="w-4 h-4" />} onClick={start}>Chạy thử</AppButton>
+            <AppButton size="sm" disabled={totalWeight !== 100} leftIcon={<Save className="w-4 h-4" />} onClick={() => show('Đã lưu cấu hình — áp dụng cho lần chạy kế tiếp')}>Lưu cấu hình</AppButton>
+          </>
+        }
+      />
+
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <StatCard label="Đơn đã đóng cọc" value="1.284" icon={Users} tone="navy" />
+        <StatCard label="Giường khả dụng" value="412" icon={Building2} tone="emerald" hint="sau khi giữ phòng cũ" />
+        <StatCard label="Xung đột lần chạy gần nhất" value="6" icon={AlertTriangle} tone="rose" hint="Staff đã xử lý 6/6" />
+        <StatCard label="Lịch chạy kế tiếp" value="02/12 03:00" icon={Clock} tone="blue" hint="Vòng 2 & lấp chỗ" />
       </div>
 
-      <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4 text-xs">
-        <h3 className="font-bold text-slate-800 text-sm">Trọng số ưu tiên (Weight Matrix)</h3>
-        
-        <div>
-          <label className="block font-semibold text-slate-700 mb-1">Ưu tiên nhóm bạn cùng phòng (Roommate Group PIN)</label>
-          <input type="range" min="1" max="100" defaultValue="90" className="w-full accent-[#F26F21]" />
-          <span className="text-slate-400">Trọng số: 90/100 (Ưu tiên cao nhất)</span>
-        </div>
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+        <div className="xl:col-span-2 space-y-6">
+          <SectionCard title={<span className="flex items-center gap-2"><Cpu className="w-4 h-4" /> Chiến lược phân bổ</span>}>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              {STRATEGIES.map((s) => (
+                <label key={s.id} className={clsx('p-4 rounded-xl border cursor-pointer', strategy === s.id ? 'border-[#F26F21] bg-orange-50/50 ring-2 ring-orange-100' : 'border-slate-200')}>
+                  <div className="flex items-center gap-2 mb-1">
+                    <input type="radio" checked={strategy === s.id} onChange={() => setStrategy(s.id)} className="accent-[#F26F21]" />
+                    <span className="text-xs font-bold text-slate-800">{s.name}</span>
+                  </div>
+                  <p className="text-[11px] text-slate-500 leading-relaxed">{s.desc}</p>
+                </label>
+              ))}
+            </div>
+          </SectionCard>
 
-        <div>
-          <label className="block font-semibold text-slate-700 mb-1">Cùng ngành đào tạo (Major)</label>
-          <input type="range" min="1" max="100" defaultValue="60" className="w-full accent-[#F26F21]" />
-          <span className="text-slate-400">Trọng số: 60/100</span>
-        </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <SectionCard title={<span className="flex items-center gap-2"><Settings2 className="w-4 h-4" /> Ràng buộc</span>} noPadding>
+              <ul className="divide-y divide-slate-100">
+                {constraints.map((c) => (
+                  <li key={c.id} className="px-4 py-2.5 flex items-center gap-2 text-xs">
+                    <GripVertical className="w-3.5 h-3.5 text-slate-300" />
+                    <span className="flex-1 text-slate-700">{c.label}</span>
+                    <span className={clsx('text-[10px] font-bold px-1.5 py-0.5 rounded', c.hard ? 'bg-rose-50 text-rose-600' : 'bg-slate-100 text-slate-500')}>{c.hard ? 'Cứng' : 'Mềm'}</span>
+                    <input type="checkbox" disabled={c.hard} checked={c.enabled} onChange={(e) => setConstraints(constraints.map((x) => (x.id === c.id ? { ...x, enabled: e.target.checked } : x)))} className="accent-[#F26F21]" />
+                  </li>
+                ))}
+              </ul>
+            </SectionCard>
 
-        <div>
-          <label className="block font-semibold text-slate-700 mb-1">Cùng khóa học (K18, K19, K20)</label>
-          <input type="range" min="1" max="100" defaultValue="40" className="w-full accent-[#F26F21]" />
-          <span className="text-slate-400">Trọng số: 40/100</span>
-        </div>
-
-        {result && (
-          <div className="p-3 bg-emerald-50 text-emerald-800 rounded-lg flex items-center gap-2">
-            <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-            <span>{result}</span>
+            <SectionCard title={<span className="flex items-center gap-2"><Sparkles className="w-4 h-4" /> Trọng số ưu tiên (%)</span>}>
+              <div className="space-y-4 text-xs">
+                {WEIGHTS.map(([k, l]) => (
+                  <div key={k}>
+                    <div className="flex justify-between mb-1"><span className="text-slate-600">{l}</span><span className="font-bold">{weights[k]}</span></div>
+                    <input type="range" min={0} max={100} step={5} value={weights[k]} onChange={(e) => setWeights({ ...weights, [k]: Number(e.target.value) })} className="w-full accent-[#F26F21]" />
+                  </div>
+                ))}
+                <div className={clsx('pt-2 border-t font-semibold', totalWeight === 100 ? 'text-emerald-600' : 'text-rose-600')}>
+                  Tổng: {totalWeight}% {totalWeight !== 100 && '— cần bằng 100% để lưu'}
+                </div>
+              </div>
+            </SectionCard>
           </div>
-        )}
 
-        <div className="pt-4 border-t flex justify-end gap-2">
-          <AppButton
-            variant="secondary"
-            size="sm"
-            isLoading={isRunning}
-            onClick={handleSimulate}
-            leftIcon={<Play className="w-4 h-4" />}
+          <SectionCard title={<span className="flex items-center gap-2"><History className="w-4 h-4" /> Lịch sử chạy</span>} noPadding>
+            <table className="w-full text-xs">
+              <thead className="bg-slate-50 text-slate-500">
+                <tr><th className="text-left px-5 py-2.5 font-semibold">Đề xuất</th><th className="text-left px-5 py-2.5 font-semibold">Thời gian</th><th className="text-left px-5 py-2.5 font-semibold">Loại</th><th className="text-right px-5 py-2.5 font-semibold">Phân bổ</th><th className="text-right px-5 py-2.5 font-semibold">Xung đột</th><th className="text-left px-5 py-2.5 font-semibold">Trạng thái</th></tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                {RUNS.map((r) => (
+                  <tr key={r.id}>
+                    <td className="px-5 py-2.5 font-bold text-[#1A365D]">{r.id}</td>
+                    <td className="px-5 py-2.5 text-slate-500">{r.when}</td>
+                    <td className="px-5 py-2.5">{r.type}</td>
+                    <td className="px-5 py-2.5 text-right">{r.total.toLocaleString('vi-VN')}</td>
+                    <td className={clsx('px-5 py-2.5 text-right font-semibold', r.conflicts ? 'text-amber-600' : 'text-slate-500')}>{r.conflicts}</td>
+                    <td className="px-5 py-2.5"><StatusBadge status={r.status} customLabel={r.type === 'Chạy thử' ? 'Chạy thử' : undefined} /></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </SectionCard>
+
+
+          <SectionCard
+            title={<span className="flex items-center gap-2"><Terminal className="w-4 h-4" /> Nhật ký thực thi</span>}
+            actions={running ? <StatusBadge status="RUNNING" /> : <StatusBadge status="SUCCESS" customLabel="Lần chạy gần nhất thành công" />}
           >
-            Chạy mô phỏng giả lập (Dry-run)
-          </AppButton>
+            {(running || progress > 0) && (
+              <div className="mb-3">
+                <div className="flex justify-between text-[11px] text-slate-500 mb-1"><span>Tiến độ</span><span>{progress}%</span></div>
+                <ProgressBar value={progress} tone="orange" size="md" />
+              </div>
+            )}
+            <div className="bg-slate-900 text-emerald-300 rounded-xl p-4 font-mono text-[11px] leading-relaxed h-56 overflow-y-auto">
+              {logs.map((l) => <div key={l}>{l}</div>)}
+              {running && <div className="animate-pulse">▋</div>}
+            </div>
+          </SectionCard>
+        </div>
+
+        <div className="space-y-6">
+          <SectionCard title="Kết quả lần chạy gần nhất" subtitle="BR-SP27-02 • 17/10/2026 03:00">
+            <DonutChart
+              size={130}
+              centerValue="342"
+              centerLabel="phân bổ"
+              segments={[
+                { label: 'Khớp NV 1', value: 243, color: '#10B981' },
+                { label: 'Khớp NV 2–3', value: 68, color: '#3B82F6' },
+                { label: 'Ngoài NV', value: 25, color: '#F59E0B' },
+                { label: 'Cảnh báo', value: 6, color: '#F43F5E' },
+              ]}
+            />
+          </SectionCard>
+          <SectionCard title="So sánh chiến lược (chạy thử)">
+            <table className="w-full text-xs">
+              <thead className="text-slate-500 border-b"><tr><th className="text-left py-2 font-semibold">Chiến lược</th><th className="text-right py-2 font-semibold">Khớp NV</th><th className="text-right py-2 font-semibold">Giữ nhóm</th></tr></thead>
+              <tbody className="divide-y divide-slate-100">
+                <tr><td className="py-2">Ưu tiên ngày nộp</td><td className="py-2 text-right">88.2%</td><td className="py-2 text-right">72%</td></tr>
+                <tr><td className="py-2">Ưu tiên bạn cùng phòng</td><td className="py-2 text-right">84.6%</td><td className="py-2 text-right">98%</td></tr>
+                <tr className="font-bold text-[#1A365D]"><td className="py-2">Cân bằng</td><td className="py-2 text-right">90.9%</td><td className="py-2 text-right">93%</td></tr>
+              </tbody>
+            </table>
+          </SectionCard>
         </div>
       </div>
+
+      {toastNode}
     </div>
   );
 }

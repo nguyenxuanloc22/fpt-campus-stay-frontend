@@ -1,131 +1,180 @@
 # KIẾN TRÚC HỆ THỐNG FRONTEND CAMPUSSTAY FPT
-**Dự án:** Hệ thống Quản lý Ký túc xá & Sắp xếp Phòng – FPT University Tân Uyên (Bình Dương)  
-**Vai trò:** Senior Frontend Architect  
-**Phiên bản tài liệu:** 1.0.0
+**Đề tài:** CampusStay FPT – Hệ thống quản lý đăng ký ký túc xá và sắp xếp phòng tại cơ sở Tân Uyên (Bình Dương) của Đại học FPT
+**Mã đề tài:** FA26SE260 · GVHD: Thân Thị Ngọc Vân · Thời gian: 09/2026 – 03/2027
+**Phiên bản tài liệu:** 2.0 (17/10/2026)
+
+Tài liệu liên quan: [CONVENTIONS.md](CONVENTIONS.md) · [BUSINESS_FLOWS.md](BUSINESS_FLOWS.md) · [PERMISSION_MATRIX.md](PERMISSION_MATRIX.md) · [GAP_ANALYSIS.md](GAP_ANALYSIS.md) · [api-contract/openapi.yaml](api-contract/openapi.yaml)
+
+**Nguồn yêu cầu:** Use Case Diagram v2 — [`diagrams/usecase-diagram-v2.webp`](diagrams/usecase-diagram-v2.webp) (bản mới nhất, ưu tiên cao nhất) · Phiếu đăng ký FA26SE260 · Activity/State/Context Diagram · ERD F0–F6.
 
 ---
 
-## 1. TỔNG QUAN HỆ THỐNG & TRIẾT LÝ THIẾT KẾ
+## 1. PHẠM VI ĐỀ TÀI
 
-CampusStay FPT là nền tảng quản lý lưu trú ký túc xá hiện đại dành riêng cho sinh viên và ban quản lý tại campus FPT University Tân Uyên (Bình Dương). Dự án được tổ chức theo mô hình **Monorepo** bao gồm 2 ứng dụng client:
-1. **Web Portal (React 18 + TypeScript strict + Vite):** Phục vụ toàn diện cả 4 đối tượng: Sinh viên (Student), Cán bộ KTX (Staff), Trưởng ban KTX (Manager), và Quản trị viên (Admin).
-2. **Mobile App (Flutter + Dart null-safety):** Ứng dụng di động tối ưu trải nghiệm nhanh, tiện lợi dành riêng cho **Sinh viên (Student)**.
+### 1.1. Trong phạm vi
+CampusStay FPT sở hữu toàn bộ nghiệp vụ **riêng của KTX**: đăng ký lưu trú theo kỳ, tồn kho tòa/tầng/phòng/giường, xếp phòng (tự động + thủ công), hợp đồng lưu trú số, thu phí phòng qua VietQR, đổi phòng, check-in/check-out, bảo trì – kiểm tra phòng, thông báo và báo cáo.
+
+### 1.2. Ngoài phạm vi (theo Phiếu đăng ký)
+- **Không** thay thế hệ thống thông tin sinh viên trung tâm (FPT SIS) — chỉ đọc dữ liệu để xác minh điều kiện.
+- **Không** thu học phí. Thu phí giới hạn ở **phí phòng/giường** (tiền cọc + phần còn lại). Hóa đơn điện/nước là **mở rộng (Flow 6)**, làm sau khi các flow chính hoàn tất.
+- **Không** quản lý thiết bị phần cứng (cửa từ, camera, công tơ thông minh) — chỉ ghi nhận dữ liệu do cán bộ nhập.
+
+### 1.3. Sản phẩm bàn giao
+| # | Sản phẩm | Người dùng | Công nghệ |
+|---|---|---|---|
+| 1 | Ứng dụng tự phục vụ cho sinh viên | Student | Web (React) + Mobile (Flutter) |
+| 2 | Web quản lý vận hành KTX | Staff, Manager | Web (React) |
+| 3 | Dashboard quản trị & báo cáo | Admin | Web (React) |
+
+---
+
+## 2. TÁC NHÂN (ACTOR) & TRÁCH NHIỆM
+
+Bám theo **Use Case Diagram v2** (4 actor người dùng + actor **System**). Phiếu đăng ký liệt kê 3 actor; actor **Manager** được tách ra từ “Dormitory Staff” trong giai đoạn phân tích yêu cầu (P2) để phân định rõ **người thao tác** và **người phê duyệt**. Actor **System** đại diện các tác vụ tự động mà Phiếu yêu cầu ở mục *Intelligent Assignment and Occupancy Engine*.
+
+| Actor | Nền tảng | Trách nhiệm (theo Use Case v2) |
+|---|---|---|
+| **Student** | Web + Mobile | Nộp đơn đăng ký (kiểm tra điều kiện, đóng cọc, chọn loại phòng; tùy chọn chọn bạn cùng phòng) · xem kết quả xếp phòng · xem & thanh toán hóa đơn · yêu cầu đổi phòng / hoán đổi chéo · phản hồi lời mời hoán đổi · báo hỏng · theo dõi trạng thái yêu cầu · tự check-in/check-out kèm biên bản hiện trạng số · xem thông báo · xem lịch bảo trì |
+| **Staff** | Web | Rà soát đơn đăng ký · cập nhật trạng thái phòng/giường · **rà soát & điều chỉnh đề xuất xếp phòng** · xử lý yêu cầu bảo trì · lên lịch & thực hiện kiểm tra phòng · ghi nhận theo dõi bảo trì · **check-in thủ công / trễ hạn** · xác minh hiện trạng khi trả phòng · gửi thông báo |
+| **Manager** | Web | Phê duyệt/từ chối đơn đăng ký · duyệt đề xuất xếp phòng · duyệt/từ chối đổi phòng · duyệt lịch bảo trì định kỳ · giám sát công suất & vận hành · xem báo cáo tài chính & vận hành |
+| **Admin** | Web | Quản lý tài khoản & vai trò · cấu hình kỳ học · luật điều kiện · giá phòng/giường · luật & trọng số xếp phòng · giám sát engine · báo cáo công suất, doanh thu, luân chuyển · quản lý tích hợp SIS |
+| **System** | Backend (scheduler + engine) | Mở/đóng cửa sổ đăng ký · gửi email mời đăng ký · nhả giữ chỗ hết hạn · hủy đơn chưa đóng cọc · chốt ghép bạn cùng phòng · chạy thuật toán xếp phòng · phát hiện xung đột · mở vòng 2 & lấp chỗ · hủy no-show & giữ cọc · tạo hóa đơn · đánh dấu hóa đơn quá hạn · gửi nhắc nhở tự động · dự báo công suất |
+
+**Hệ thống ngoài** (theo Context Diagram): **Google** (xác thực tài khoản @fpt.edu.vn + gửi email) · **Payment Gateway** (VietQR / NAPAS 247, webhook xác nhận) · **FPT SIS** (xác minh tình trạng học tập — yêu cầu Interoperability của Phiếu).
+
+---
+
+## 3. KIẾN TRÚC TỔNG THỂ
 
 ```mermaid
 graph TD
     subgraph "Single Source of Truth"
-        OAS["docs/api-contract/openapi.yaml<br/>(OpenAPI 3.0 Contract)"]
+        OAS["docs/api-contract/openapi.yaml"]
+    end
+    subgraph "Clients"
+        WEB["Web Portal — React 19 + TS strict + Vite<br/>Student · Staff · Manager · Admin"]
+        MOB["Mobile App — Flutter<br/>Student"]
+    end
+    subgraph "Backend (Spring Boot / Node.js)"
+        API["REST API + RBAC"]
+        ENG["Assignment Engine — actor System<br/>ghép bạn, xếp phòng, xung đột, vòng 2"]
+        JOB["Scheduler — actor System<br/>cửa sổ đăng ký, giữ chỗ, no-show,<br/>hóa đơn, quá hạn, nhắc nhở, dự báo"]
+        DB[("PostgreSQL")]
+    end
+    subgraph "External"
+        GG["Google OAuth / Gmail API"]
+        PAY["VietQR Payment Gateway"]
+        SIS["FPT SIS"]
+        FCM["Firebase Cloud Messaging"]
     end
 
-    subgraph "Mock & Backend Gateway"
-        MOCK["Stoplight Prism Mock Server<br/>(0.0.0.0:4010)"]
-    end
-
-    subgraph "Web Frontend (React 18 + TS Strict)"
-        W_UI["UI Pages & Feature Components"]
-        W_HOOKS["TanStack Query & Zustand Hooks"]
-        W_API["@campusstay/api-client<br/>(Single Axios Instance)"]
-        W_PKGS["@campusstay/permissions<br/>@campusstay/types<br/>@campusstay/constants<br/>@campusstay/validators"]
-    end
-
-    subgraph "Mobile Client (Flutter + Dart Null-Safety)"
-        M_PRE["Presentation Layer<br/>(Screens, Widgets, Riverpod)"]
-        M_DOM["Domain Layer<br/>(Entities, Repo Interfaces)"]
-        M_DATA["Data Layer<br/>(DTOs, Data Sources, Repo Impls)"]
-        M_CORE["Core Network & Storage<br/>(Dio + FlutterSecureStorage)"]
-    end
-
-    OAS -->|Generate Types / Schema| W_PKGS
-    OAS -->|Serve Mock Endpoints| MOCK
-    OAS -->|Generate Models / DTO| M_DATA
-
-    W_UI --> W_HOOKS
-    W_HOOKS --> W_API
-    W_API --> W_PKGS
-    W_API -->|HTTP Bearer| MOCK
-
-    M_PRE --> M_DOM
-    M_DATA --> M_DOM
-    M_PRE --> M_DATA
-    M_DATA --> M_CORE
-    M_CORE -->|HTTP Bearer| MOCK
+    OAS --> WEB
+    OAS --> MOB
+    OAS --> API
+    WEB -->|HTTPS + JWT| API
+    MOB -->|HTTPS + JWT| API
+    API --> DB
+    ENG --> DB
+    JOB --> DB
+    API <--> GG
+    API <-->|QR + webhook| PAY
+    API -->|xác minh điều kiện| SIS
+    API --> FCM
 ```
 
----
-
-## 2. TẠI SAO CHIA SẺ OPENAPI CONTRACT MÀ KHÔNG CHIA SẺ CODE?
-
-Một câu hỏi cốt lõi từ Hội đồng giám khảo: *“Tại sao Web và Mobile trong cùng Monorepo lại không chia sẻ code (code sharing)?”*
-
-### Quyết định Kiến trúc:
-1. **Môi trường & Ngôn ngữ khác biệt (Heterogeneous Stacks):**
-   - Web chạy trên JavaScript/TypeScript runtime (V8 / trình duyệt).
-   - Mobile chạy trên Dart native compiled (AOT native cho Android/iOS).
-   - Việc cố gắng chia sẻ code (như qua Kotlin Multiplatform hoặc WebAssembly) sẽ tạo ra tầng trung gian cồng kềnh, khó debug và giới hạn khả năng tận dụng hệ sinh thái phong phú của cả React lẫn Flutter.
-2. **OpenAPI 3.0 là Single Source of Truth:**
-   - Thay vì chia sẻ code, hai bên chia sẻ **Hợp đồng giao tiếp (API Contract)** tại `docs/api-contract/openapi.yaml`.
-   - Web sinh type TypeScript bằng `openapi-typescript` hoặc interface bám sát schema.
-   - Mobile sinh model Dart/Freezed chuẩn null-safety bám sát schema.
-   - Mọi thay đổi về dữ liệu nghiệp vụ đều được đồng bộ hóa từ một file YAML duy nhất, loại bỏ hoàn toàn nguy cơ lệch pha (drift) giữa 2 nền tảng.
-3. **Decoupled Release Cycle (Chu kỳ phát hành độc lập):**
-   - Web triển khai tức thì (Continuous Deployment qua Web Server).
-   - Mobile phải trải qua quy trình build APK/IPA, review của Google Play và Apple App Store. Tách biệt code giúp tránh tình trạng một thay đổi nhỏ của web làm vỡ pipeline của mobile và ngược lại.
+**Vì sao Web và Mobile chia sẻ hợp đồng API thay vì chia sẻ code?** Hai runtime khác nhau (V8 vs Dart AOT); chia sẻ code tạo tầng trung gian khó debug. `openapi.yaml` là nguồn sự thật duy nhất: Web sinh type TypeScript, Mobile sinh model Dart, Prism dựng mock server — tránh lệch pha dữ liệu, và hai nền tảng phát hành độc lập.
 
 ---
 
-## 3. PHÂN VAI TRÒ & GIẢI TRÌNH BỔ SUNG ACTOR "MANAGER"
+## 4. KIẾN TRÚC TỪNG NỀN TẢNG
 
-Hệ thống hỗ trợ 4 Roles:
+### 4.1. Web (React 19 + TypeScript strict)
+```
+apps/web/src/
+├─ app/          router (lazy theo vai trò), layouts (Header, Sidebar), guards (RequireAuth, RequirePermission)
+├─ features/     <domain>/{components, hooks, mocks.ts, index.ts}  — auth, application, assignment, invoice, …
+├─ pages/        student/ staff/ manager/ admin/  — mỗi route một file Page
+└─ shared-ui/    design tokens + component dùng chung (xem CONVENTIONS §8)
+packages/        api-client · constants · permissions · types · validators
+```
+- **State server:** TanStack Query (cache, retry, optimistic update). **State client:** Zustand (phiên đăng nhập, tùy chọn giao diện).
+- **Form:** react-hook-form + zod (`@campusstay/validators`) — cùng schema kiểm tra ở client và mô tả ở OpenAPI.
+- **Phân quyền:** `can()`, `usePermission()`, `<Can>`, `<RequirePermission>` đọc từ `packages/permissions`.
 
-| Role | Nền tảng | Trách nhiệm chính |
+### 4.2. Mobile (Flutter, chỉ dành cho Student)
+Clean Architecture 3 lớp: Presentation (Screen, Widget, Riverpod `AsyncValue`) → Domain (Entity, Repository interface) → Data (DTO, DataSource, Repository impl) → Core (`DioClient`, `FlutterSecureStorage`). Tài khoản không phải Student đăng nhập sẽ được đăng xuất và chuyển tới màn hình hướng dẫn dùng Web.
+
+---
+
+## 5. SƠ ĐỒ TRANG (SITEMAP) — VỪA ĐỦ, KHÔNG DƯ
+
+Nguyên tắc: **một trang = một nhóm use case liên quan**; các use case cùng đối tượng dữ liệu gom vào Tabs. Use case của actor **System** không có trang riêng — kết quả của chúng hiển thị trong trang nghiệp vụ tương ứng (ví dụ: đồng hồ giữ chỗ ở trang Đăng ký, cảnh báo xung đột ở trang Duyệt xếp phòng, dự báo ở trang Báo cáo). Tổng **30 trang** (giảm từ 34). Chi tiết chênh lệch so với code hiện tại xem [GAP_ANALYSIS.md](GAP_ANALYSIS.md).
+
+### 5.1. Student — 9 trang
+| Trang | Route | Use case phủ |
 |---|---|---|
-| **STUDENT** | Web & Mobile | Đăng ký KTX, duyệt sơ đồ phòng, ghép nhóm bạn bằng mã PIN, ký hợp đồng số, quét VietQR đóng tiền, báo hỏng, check-in. |
-| **STAFF** | Web | Quản lý tồn kho phòng/giường, thẩm định đơn đăng ký, xếp phòng thủ công, đổi phòng, nghiệm thu nhận/trả phòng, bảo trì, phát thông báo. |
-| **MANAGER** | Web | Phê duyệt đơn ngoại lệ, thẩm định & duyệt kết quả xếp phòng tự động hàng loạt, báo cáo công suất & hiệu suất staff. |
-| **ADMIN** | Web | Cấu hình kỳ học, luật ưu tiên, bảng giá, cấu hình engine xếp phòng, tích hợp SIS & VietQR, quản lý tài khoản & audit log. |
+| Tổng quan | `/student/dashboard` | Track Request Status (tóm tắt), View Notifications (mới nhất) |
+| Đăng ký lưu trú | `/student/registration` | Submit Dormitory Application, Validate Eligibility, Select Room Types, Select Roommate, Pay Deposit (hiển thị trạng thái cửa sổ đăng ký & thời hạn giữ chỗ) |
+| Tra cứu phòng | `/student/rooms` | Duyệt tòa / loại phòng / giường trống (sơ đồ tầng, ảnh) |
+| Phòng của tôi | `/student/my-room` | View Room Assignment, hợp đồng số (xem/ký), bạn cùng phòng |
+| Hóa đơn & thanh toán | `/student/invoices` | View Payment, Pay Invoice (VietQR) |
+| Yêu cầu | `/student/requests` | Submit Room Change Request, Initiate Mutual Swap, Respond to Swap Invitation, Submit Maintenance Request, Track Request Status, View Maintenance Schedule |
+| Check-in / Check-out | `/student/checkin` | Self Check-in, Self Check-out, Submit Digital Room-Condition Report |
+| Thông báo | `/student/notifications` | View Notifications |
+| Hồ sơ | `/student/profile` (mở từ avatar) | Thông tin cá nhân đồng bộ SIS, cài đặt thông báo |
 
-> **Giải trình Kiến trúc về Actor MANAGER:**  
-> Trong tài liệu đề tài đăng ký ban đầu chỉ có 3 Actor (*Student, Staff, Admin*).  
-> **MANAGER được bổ sung trong kiến trúc này nhằm tách biệt dứt điểm thẩm quyền duyệt cấp cao (Approval Authority) khỏi công việc vận hành hàng ngày (Daily Operations) của Staff.**  
-> - Cán bộ Staff chỉ tập trung vào nghiệp vụ thực địa (thẩm định theo barem điểm có sẵn, lập biên bản, kiểm kê, bàn giao chìa khóa).
-> - Các quyết định mang tính chiến lược hoặc ngoại lệ pháp lý (phê duyệt đơn diện khó khăn không đủ điểm, phê duyệt áp dụng kết quả phân bổ hàng trăm sinh viên từ thuật toán xếp phòng) bắt buộc phải do cấp Quản lý (Trưởng ban KTX/Ban Giám hiệu) ký duyệt điện tử.
+### 5.2. Staff — 8 trang
+| Trang | Route | Use case phủ |
+|---|---|---|
+| Tổng quan | `/staff/dashboard` | Việc cần làm trong ngày, tiến độ check-in thời gian thực |
+| Phòng & giường | `/staff/inventory` | Update Room & Bed Status |
+| Đơn đăng ký | `/staff/applications` | Review Dormitory Applications (đơn bị gắn cờ, chuyển Manager) |
+| Xếp phòng | `/staff/assignment` | Review / Adjust Room Assignment Proposal (cảnh báo xung đột, điều chỉnh thủ công, danh sách vòng 2) |
+| Đổi phòng | `/staff/room-changes` | Theo dõi & rà soát đơn đổi phòng trước khi Manager quyết định (không có use case riêng — gộp được vào Tổng quan nếu cần tinh gọn) |
+| Check-in / Check-out | `/staff/checkin-out` | Process Manual / Late Check-in, Verify Room Condition at Check-out, danh sách sắp no-show |
+| Bảo trì & kiểm tra | `/staff/maintenance` | Handle Maintenance Requests, Schedule Room Inspections, Inspect Room/Equipment, Record Maintenance Follow-ups |
+| Thông báo | `/staff/broadcast` | Communicate with residents (in-app, email, SMS) |
+
+### 5.3. Manager — 4 trang
+| Trang | Route | Use case phủ |
+|---|---|---|
+| Tổng quan vận hành | `/manager/dashboard` | Monitor Dormitory Occupancy & Operations |
+| Trung tâm phê duyệt | `/manager/approvals` | Approve/Reject Dormitory Applications, Approve/Reject Room Change Requests, Approve Periodic Maintenance Schedules (3 tab) |
+| Duyệt xếp phòng | `/manager/assignment-approval` | Review/Approve Room Assignment Proposals (kèm cảnh báo xung đột từ System) |
+| Báo cáo | `/manager/reports` | Review Financial & Operation Reports |
+
+### 5.4. Admin — 9 trang
+| Trang | Route | Use case phủ |
+|---|---|---|
+| Tổng quan hệ thống | `/admin/dashboard` | Sức khỏe hệ thống, tích hợp, kỳ học đang chạy |
+| Kỳ học | `/admin/semesters` | Configure Academic Terms (mốc mở/đóng cửa sổ đăng ký, hạn cọc, thời hạn giữ chỗ, khung check-in — đầu vào cho actor System) |
+| Luật điều kiện | `/admin/rules` | Configure Eligibility Rules (năm học, ngành, khoảng cách) |
+| Loại phòng & giá | `/admin/pricing` | Configure Room & Bed Pricing |
+| Engine xếp phòng | `/admin/allocation-engine` | Configure Assignment Rules & Priorities, Monitor Assignment Engine (lịch sử chạy, xung đột) |
+| Tích hợp | `/admin/integrations` | Quản lý kết nối FPT SIS, VietQR, Google |
+| Người dùng & vai trò | `/admin/users` | Manage User Accounts & Roles |
+| Báo cáo | `/admin/reports` | Generate Occupancy, Revenue & Turnover Reports; hiển thị Forecast Occupancy Trends (System) |
+| Nhật ký kiểm toán | `/admin/audit-logs` | Yêu cầu phi chức năng: truy vết theo NĐ 13/2023 |
 
 ---
 
-## 4. CHI TIẾT TẦNG KIẾN TRÚC MỖI NỀN TẢNG
+## 6. KIẾN TRÚC ĐÁP ỨNG YÊU CẦU PHI CHỨC NĂNG
 
-### 4.1. Kiến trúc Web (React 18 + TS Strict)
-Áp dụng mô hình **Feature-Driven Architecture**:
-- `Page`: File cực mỏng (< 60 dòng), đóng vai trò entry point cho Route, không chứa business logic.
-- `Feature Component`: Xử lý giao diện của từng domain (ví dụ form đăng ký, thẻ nhóm bạn).
-- `Feature Hooks`: Tích hợp TanStack Query (`useQuery`, `useMutation`) và Zustand.
-- `packages/api-client`: Thư viện Axios duy nhất gắn Bearer token, interceptor chặn lỗi 401/403 và chuẩn hóa về kiểu `AppError`.
-- `packages/permissions`: Nguồn sự thật phân quyền, kiểm tra bằng hàm `can()`, hook `usePermission()` và component `<Can>`.
+| Yêu cầu (Phiếu §3.2.d) | Giải pháp kiến trúc | Tiêu chí kiểm thử |
+|---|---|---|
+| **Bảo mật & quyền riêng tư** (NĐ 13/2023/NĐ-CP) | Đăng nhập Google OAuth giới hạn domain `fpt.edu.vn`; JWT ngắn hạn (15 phút) + refresh token; RBAC 4 vai trò kiểm tra ở Backend; mã hóa TLS 1.2+ khi truyền, AES-256 cho trường nhạy cảm (CCCD, SĐT, STK hoàn cọc) khi lưu; che dữ liệu khi hiển thị; audit log bất biến cho mọi thao tác ghi & xuất dữ liệu; thu thập đồng ý xử lý dữ liệu cá nhân khi đăng ký lần đầu | 100% API ghi có kiểm tra quyền; không có PII trong log/URL; pentest OWASP Top 10 cơ bản |
+| **Khả năng mở rộng** (4.000 sinh viên) | API stateless chạy nhiều instance sau load balancer; PostgreSQL có index theo `term_id`, `status`, `student_id`; phân trang server; engine xếp phòng chạy nền theo batch, không chặn request; Docker để nhân bản | Tải thử 500 người dùng đồng thời giờ mở cổng: p95 API < 800 ms; engine xếp 4.000 đơn < 5 phút |
+| **Khả năng cấu hình** | Kỳ học, luật điều kiện, loại phòng, bảng giá, trọng số engine lưu trong bảng cấu hình, chỉnh qua trang Admin — không cần build lại; luật có phiên bản để quay lui | Đổi giá / luật có hiệu lực ngay cho đơn mới, không deploy |
+| **Khả năng tích hợp** | Adapter riêng cho FPT SIS (xác minh điều kiện), VietQR (tạo QR động + webhook có chữ ký), Google (OAuth + Gmail API), FCM (push mobile); retry có backoff; trang Tích hợp hiển thị trạng thái | Webhook idempotent theo `transaction_ref`; SIS lỗi không chặn sinh viên xem dữ liệu đã có |
 
-### 4.2. Kiến trúc Mobile (Flutter + Dart Null-Safety)
-Áp dụng mô hình **Clean Architecture 3 lớp**:
-- `Presentation Layer`:
-  - `Screens` (màn hình mỏng, điều hướng bằng `go_router`).
-  - `Widgets` (chia nhỏ < 150 dòng, tách biệt StatelessWidget).
-  - `State` (Riverpod `AsyncValue` tự động xử lý loading/data/error).
-- `Domain Layer`:
-  - `Entities` (Domain models thuần túy).
-  - `Repository Interfaces` (Trừu tượng hóa việc truy xuất dữ liệu).
-- `Data Layer`:
-  - `DTOs` & Serializers (chuyển đổi JSON sang model).
-  - `Remote Data Sources` (gọi HTTP qua `DioClient`).
-  - `Repository Implementations`.
-- `Core Layer`:
-  - `SecureStorageService` dùng `FlutterSecureStorage` (lưu trữ mã hóa trên Keychain iOS & KeyStore Android, cấm dùng `SharedPreferences`).
-  - `AppFailure` chuẩn hóa mọi ngoại lệ mạng, HTTP status thành thông điệp tiếng Việt thân thiện.
+Yêu cầu bổ sung cho trải nghiệm: chunk JS khởi tạo ≤ 250 KB gzip, LCP ≤ 2,5 s trên 4G, giao diện dùng được từ 360 px, mọi nội dung tiếng Việt.
 
 ---
 
-## 5. BẢO MẬT TOKEN & CƠ CHẾ ĐĂNG NHẬP
+## 7. XÁC THỰC & PHIÊN LÀM VIỆC
 
-1. **Web:**
-   - Hỗ trợ lưu trữ JWT an toàn, tự động đính kèm `Authorization: Bearer <token>` trên mỗi request.
-   - Khi Backend trả về mã lỗi `401 Unauthorized`, interceptor lập tức kích hoạt `onUnauthorized()`, xóa session và điều hướng về trang `/login`.
-2. **Mobile:**
-   - Token được lưu vào `FlutterSecureStorage`. Tuyệt đối không dùng `SharedPreferences` cho token xác thực vì SharedPreferences lưu plain text trên disk của thiết bị đã root/jailbreak.
-   - `go_router` thiết lập `redirect` bảo vệ: Chỉ sinh viên mới được vào app. Nếu tài khoản đăng nhập là Cán bộ/Quản trị viên, ứng dụng sẽ đăng xuất và điều hướng đến màn hình thông báo truy cập phiên bản Web.
+1. Người dùng chọn **Đăng nhập với Google**; Backend chỉ chấp nhận email `@fpt.edu.vn` và ánh xạ email → vai trò (Student đồng bộ từ SIS; Staff/Manager/Admin do Admin cấp).
+2. Backend trả `access token` (15 phút) + `refresh token` (httpOnly cookie, 7 ngày).
+3. **Web:** access token giữ trong bộ nhớ (Zustand), không lưu PII; `401` → thử refresh một lần → thất bại thì về `/login`.
+4. **Mobile:** token trong `FlutterSecureStorage` (Keychain / Keystore), cấm `SharedPreferences`.
+5. Chế độ demo (mock) cho phép chọn vai trò để trình diễn trước hội đồng; tắt bằng biến môi trường ở bản triển khai thật.

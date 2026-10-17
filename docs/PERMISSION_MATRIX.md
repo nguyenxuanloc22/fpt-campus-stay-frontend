@@ -1,105 +1,113 @@
 # MA TRẬN PHÂN QUYỀN (PERMISSION MATRIX)
-**CampusStay FPT – Ký Túc Xá FPT University Tân Uyên**  
-**Nguồn sự thật mã nguồn:** `packages/permissions/src/matrix.ts`
-
----
+**CampusStay FPT – Ký túc xá FPT University Tân Uyên**
+**Phiên bản:** 2.0 (17/10/2026) · **Nguồn sự thật trong code:** `packages/permissions/src/matrix.ts` (test: `packages/permissions/src/__tests__/can.test.ts`)
 
 > [!IMPORTANT]
-> **NGUYÊN TẮC BẢO MẬT CỐT LÕI:**  
-> Toàn bộ logic phân quyền ở tầng Frontend (ẩn/hiện nút bấm, bảo vệ route, render sidebar) **chỉ phục vụ trải nghiệm người dùng (UX) và điều hướng mượt mà**.  
-> Bảo mật thực tế bắt buộc phải do **Backend kiểm tra và xác thực JWT cùng Permission trên mọi request API**.
+> Phân quyền ở Frontend (ẩn/hiện nút, chặn route, dựng sidebar) **chỉ phục vụ trải nghiệm**. Bảo mật thật do **Backend** kiểm tra JWT + quyền trên **mọi** request.
+
+**Nguồn:** Use Case Diagram v2 — [`diagrams/usecase-diagram-v2.webp`](diagrams/usecase-diagram-v2.webp). Mỗi quyền truy được về ít nhất một use case (cột cuối). Quy tắc phân định: **Staff thao tác – Manager phê duyệt – Admin cấu hình – System tự động**.
 
 ---
 
-## 1. BẢNG MA TRẬN PHÂN QUYỀN CHI TIẾT
+## 1. MA TRẬN
 
-| Quyền hạn (Resource:Action) | STUDENT | STAFF | MANAGER | ADMIN | Mô tả hành động nghiệp vụ |
-|---|:---:|:---:|:---:|:---:|---|
-| **Đơn đăng ký (Application)** | | | | | |
-| `application:create` | ✅ | ❌ | ❌ | ❌ | Nộp đơn đăng ký phòng KTX mới |
-| `application:view_own` | ✅ | ❌ | ❌ | ❌ | Xem đơn đăng ký của chính mình |
-| `application:cancel_own` | ✅ | ❌ | ❌ | ❌ | Hủy đơn đăng ký khi chưa được duyệt |
-| `application:review` | ❌ | ✅ | ❌ | ❌ | Thẩm định, duyệt hoặc từ chối đơn theo barem |
-| `application:approve_exception`| ❌ | ❌ | ✅ | ❌ | Phê duyệt đặc cách các hồ sơ ngoại lệ |
-| **Tồn kho & Phòng ở (Inventory)** | | | | | |
-| `inventory:view_public` | ✅ | ✅ | ✅ | ✅ | Xem danh mục tòa, tầng, phòng, tiện ích |
-| `inventory:manage` | ❌ | ✅ | ❌ | ❌ | Cập nhật tình trạng giường (trống, ở, hỏng) |
-| `inventory:configure` | ❌ | ❌ | ❌ | ✅ | Cấu hình tòa nhà mới, thêm loại phòng |
-| **Xếp phòng (Assignment)** | | | | | |
-| `assignment:view_own` | ✅ | ❌ | ❌ | ❌ | Xem kết quả phân phòng cá nhân |
-| `assignment:manual` | ❌ | ✅ | ❌ | ❌ | Xếp phòng, chuyển giường thủ công từng ca |
-| `assignment:run_batch` | ❌ | ❌ | ❌ | ✅ | Kích hoạt engine xếp phòng tự động hàng loạt |
-| `assignment:approve_batch` | ❌ | ❌ | ✅ | ❌ | Ký duyệt nghiệm thu kết quả xếp phòng tự động |
-| **Hợp đồng lưu trú (Contract)** | | | | | |
-| `contract:view_own` | ✅ | ❌ | ❌ | ❌ | Xem hợp đồng lưu trú cá nhân |
-| `contract:sign_own` | ✅ | ❌ | ❌ | ❌ | Ký tên điện tử (e-sign) vào hợp đồng |
-| `contract:manage_all` | ❌ | ✅ | ✅ | ❌ | Tra cứu toàn bộ hợp đồng sinh viên trong KTX |
-| **Hóa đơn & Thanh toán (Invoice)**| | | | | |
-| `invoice:view_own` | ✅ | ❌ | ❌ | ❌ | Xem danh sách hóa đơn tiền phòng & tiền cọc |
-| `invoice:pay_vietqr` | ✅ | ❌ | ❌ | ❌ | Sinh mã VietQR động để chuyển khoản ngân hàng |
-| `invoice:manage` | ❌ | ✅ | ❌ | ❌ | Lập phiếu thu bổ sung, kiểm tra trạng thái |
-| `invoice:reconcile` | ❌ | ❌ | ❌ | ✅ | Đối soát dòng tiền thanh toán với sao kê ngân hàng |
-| **Bảo trì & Báo hỏng (Maintenance)** | | | | | |
-| `maintenance:create_own` | ✅ | ❌ | ❌ | ❌ | Gửi ticket báo hỏng cơ sở vật chất kèm ảnh |
-| `maintenance:view_own` | ✅ | ❌ | ❌ | ❌ | Xem tiến độ và phản hồi từ thợ kỹ thuật |
-| `maintenance:process` | ❌ | ✅ | ❌ | ❌ | Phân công thợ, cập nhật chi phí và đóng ticket |
-| **Kiểm tra & Vận hành (Operations)**| | | | | |
-| `inspection:conduct` | ❌ | ✅ | ❌ | ❌ | Thực hiện thanh tra phòng, lập biên bản vi phạm |
-| `broadcast:send` | ❌ | ✅ | ❌ | ❌ | Soạn và gửi thông báo diện rộng tới KTX |
-| `report:operational` | ❌ | ❌ | ✅ | ✅ | Xem báo cáo tỷ lệ lấp đầy, SLA, luân chuyển |
-| `report:financial` | ❌ | ❌ | ❌ | ✅ | Xem báo cáo doanh thu lũy kế và công nợ |
-| **Cấu hình & Quản trị (Admin)** | | | | | |
-| `config:system` | ❌ | ❌ | ❌ | ✅ | Cấu hình kỳ học, bảng giá, trọng số engine |
-| `integration:manage` | ❌ | ❌ | ❌ | ✅ | Quản lý kết nối API FPT SIS & Cổng VietQR |
-| `user:manage` | ❌ | ❌ | ❌ | ✅ | Quản lý danh sách tài khoản và phân quyền |
-| `audit:view` | ❌ | ❌ | ❌ | ✅ | Tra cứu nhật ký hệ thống (Audit Trail) |
+| Quyền (`resource:action`) | STU | STA | MGR | ADM | Use case tương ứng |
+|---|:-:|:-:|:-:|:-:|---|
+| **Đơn đăng ký** | | | | | |
+| `application:create` | ✅ | | | | Submit Dormitory Application (+ Validate Eligibility, Pay Deposit, Select Room Types, Select Roommate) |
+| `application:view_own` | ✅ | | | | Track Request Status |
+| `application:cancel_own` | ✅ | | | | Hủy đơn khi đang chờ vòng 2 → hoàn cọc |
+| `application:review` | | ✅ | | | Review Dormitory Applications |
+| `application:approve_exception` | | | ✅ | | Approve / Reject Dormitory Applications (đơn Staff chuyển lên) |
+| **Phòng & giường** | | | | | |
+| `inventory:view_public` | ✅ | ✅ | ✅ | ✅ | Duyệt tòa, loại phòng, giường trống |
+| `inventory:manage` | | ✅ | | | Update Room & Bed Status |
+| `inventory:configure` | | | | ✅ | Thêm tòa/phòng/loại phòng (đi kèm Configure Room & Bed Pricing) |
+| **Xếp phòng** | | | | | |
+| `assignment:view_own` | ✅ | | | | View Room Assignment |
+| `assignment:adjust_proposal` | | ✅ | | | Review / Adjust Room Assignment Proposal (gồm điều chỉnh thủ công) |
+| `assignment:approve_batch` | | | ✅ | | Review / Approve Room Assignment Proposals |
+| `assignment:configure_engine` | | | | ✅ | Configure Assignment Rules & Priorities |
+| `assignment:monitor_engine` | | | | ✅ | Monitor Assignment Engine |
+| **Hợp đồng** | | | | | |
+| `contract:view_own` / `contract:sign_own` | ✅ | | | | Nhận hợp đồng số sau khi được xếp phòng |
+| `contract:manage_all` | | ✅ | ✅ | | Tra cứu hợp đồng phục vụ vận hành |
+| **Hóa đơn & thanh toán** | | | | | |
+| `invoice:view_own` / `invoice:pay_vietqr` | ✅ | | | | View Payment, Pay Deposit, Pay Invoice |
+| `invoice:manage` | | ✅ | | | Xử lý công nợ quá hạn sau Mark Overdue Invoices, nhập chỉ số điện nước (Flow 6 mở rộng) |
+| `invoice:reconcile` | | | | ✅ | Đối soát giao dịch VietQR |
+| **Đổi phòng** | | | | | |
+| `room_change:create_own` | ✅ | | | | Submit Room Change Request, Initiate Mutual Room Swap |
+| `room_change:respond_invitation` | ✅ | | | | Respond to Swap Invitation |
+| `room_change:verify` | | ✅ | | | Theo dõi & rà soát đơn trước khi Manager quyết định (hỗ trợ vận hành, không phải use case riêng) |
+| `room_change:approve` | | | ✅ | | Approve / Reject Room Change Requests |
+| **Check-in / Check-out** | | | | | |
+| `checkin:self` | ✅ | | | | Self Check-in, Self Check-out, Submit Digital Room-Condition Report |
+| `checkin:process_manual` | | ✅ | | | Process Manual / Late Check-in |
+| `checkout:verify` | | ✅ | | | Verify Room Condition at Check-out |
+| **Bảo trì & kiểm tra** | | | | | |
+| `maintenance:create_own` / `maintenance:view_own` | ✅ | | | | Submit Maintenance Request, Track Request Status |
+| `maintenance:view_schedule` | ✅ | | | | View Maintenance Schedule |
+| `maintenance:process` | | ✅ | | | Handle Maintenance Requests, Record Maintenance Follow-ups |
+| `inspection:conduct` | | ✅ | | | Schedule Room Inspections, Inspect Room / Equipment |
+| `maintenance:approve_schedule` | | | ✅ | | Approve Periodic Maintenance Schedules |
+| **Thông báo** | | | | | |
+| `notification:view_own` | ✅ | | | | View Notifications |
+| `broadcast:send` | | ✅ | | | Communicate with residents (in-app, email, SMS) |
+| **Báo cáo** | | | | | |
+| `report:operational` | | | ✅ | ✅ | Monitor Occupancy & Operations; Generate Occupancy & Turnover Reports |
+| `report:financial` | | | ✅ | ✅ | Review Financial Reports; Generate Revenue Reports |
+| **Quản trị** | | | | | |
+| `config:system` | | | | ✅ | Configure Academic Terms, Eligibility Rules, Room & Bed Pricing |
+| `integration:manage` | | | | ✅ | Tích hợp FPT SIS, VietQR, Google |
+| `user:manage` | | | | ✅ | Manage User Accounts & Roles |
+| `audit:view` | | | | ✅ | Truy vết theo NĐ 13/2023 |
+
+### 1.1. Actor System (không cấp quyền người dùng)
+13 use case của actor System (Open/Close Registration Window, Send Registration Invitation Email, Release Expired Room Hold, Finalize Roommate Matching, Execute Room Assignment Algorithm, Cancel Unpaid Registration, Detect Assignment Conflicts, Forecast Occupancy Trends, Send Automated Reminders, Cancel No-show & Forfeit Deposit, Mark Overdue Invoices, Generate Invoice, Open Round 2 & Backfill Students) chạy bằng **tài khoản dịch vụ nội bộ** ở Backend:
+- Không có trong `matrix.ts`, không có route Frontend.
+- Mọi thay đổi dữ liệu do System thực hiện vẫn ghi **audit log** với actor = `SYSTEM`.
+- Người dùng chỉ thấy **kết quả** (trạng thái, thông báo, cảnh báo) qua các quyền `*:view_own`, `report:*`, `assignment:monitor_engine`.
 
 ---
 
-## 2. HƯỚNG DẪN SỬ DỤNG PHÂN QUYỀN TRÊN CODE WEB
+## 2. QUYỀN THEO TRANG (ROUTE GUARD)
 
-### 2.1. Kiểm tra quyền trực tiếp bằng hàm `can()`
+| Nhóm route | Quyền kiểm tra tại `<RequirePermission>` |
+|---|---|
+| `/student/*` | `application:create` |
+| `/staff/*` | `inventory:manage` |
+| `/manager/*` | `report:operational` + từng trang kiểm tra quyền phê duyệt tương ứng |
+| `/admin/*` | `config:system` |
+
+Bên trong trang, từng nút hành động bọc bằng `<Can permission="…">` theo cột quyền ở bảng trên.
+
+---
+
+## 3. CÁCH DÙNG TRONG CODE
+
 ```typescript
 import { can } from '@campusstay/permissions';
-import { ROLES } from '@campusstay/constants';
-
-if (can(user.role, 'application:review')) {
-  // Thực hiện thẩm định hồ sơ
-}
+if (can(user.role, 'room_change:approve')) { /* hiển thị nút Duyệt */ }
 ```
 
-### 2.2. Kiểm tra bằng Hook `usePermission()`
 ```tsx
-import { usePermission } from '@features/auth';
+import { Can, usePermission } from '@features/auth';
 
-export function ApplicationActionBar() {
-  const { can } = usePermission();
+const { can } = usePermission();
+{can('assignment:approve_batch') && <AppButton>Phê duyệt batch</AppButton>}
 
-  return (
-    <div>
-      {can('application:review') && <button>Duyệt đơn</button>}
-      {can('application:approve_exception') && <button>Duyệt ngoại lệ</button>}
-    </div>
-  );
-}
-```
-
-### 2.3. Ẩn/Hiện UI bằng Component `<Can>`
-```tsx
-import { Can } from '@features/auth';
-
-<Can permission="inventory:manage" fallback={<p>Chỉ xem thông tin</p>}>
-  <Button onClick={handleEditBed}>Chỉnh sửa trạng thái giường</Button>
+<Can permission="checkin:process_manual" fallback={null}>
+  <AppButton>Check-in thủ công</AppButton>
 </Can>
 ```
 
-### 2.4. Bảo vệ Route bằng `<RequirePermission>`
 ```tsx
 <Route
-  path="/manager/batch-approval"
+  path="/manager/assignment-approval"
   element={
     <RequirePermission permission="assignment:approve_batch">
-      <ManagerBatchApprovalPage />
+      <ManagerAssignmentApprovalPage />
     </RequirePermission>
   }
 />
@@ -107,6 +115,12 @@ import { Can } from '@features/auth';
 
 ---
 
-## 3. CƠ CHẾ PHÂN QUYỀN TRÊN MOBILE (FLUTTER)
-- Phân hệ Mobile được thiết kế chuyên biệt và duy nhất cho vai trò **STUDENT**.
-- Tầng điều hướng `GoRouter` kiểm tra trạng thái xác thực: Nếu tài khoản đăng nhập có vai trò là `STAFF`, `MANAGER` hoặc `ADMIN`, ứng dụng sẽ tự động đăng xuất và điều hướng người dùng tới màn hình `WebOnlyRoleNoticeScreen` để hướng dẫn sử dụng phiên bản Web.
+## 4. MOBILE (FLUTTER)
+Ứng dụng di động chỉ dành cho **STUDENT**. `GoRouter.redirect` kiểm tra vai trò sau đăng nhập; vai trò khác bị đăng xuất và chuyển tới `WebOnlyRoleNoticeScreen`.
+
+---
+
+## 5. QUY TRÌNH THAY ĐỔI QUYỀN
+1. Cập nhật use case / lý do nghiệp vụ trong [BUSINESS_FLOWS.md](BUSINESS_FLOWS.md).
+2. Sửa `permissions.ts` + `matrix.ts` và test tương ứng.
+3. Sửa bảng ở tài liệu này và `security` của endpoint trong `openapi.yaml`.

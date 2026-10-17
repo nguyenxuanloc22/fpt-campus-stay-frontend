@@ -1,31 +1,23 @@
 import type { RouteObject } from 'react-router-dom';
+import { APP_ROUTES } from '@campusstay/constants';
 import { RequirePermission } from '../guards/RequirePermission';
-import {
-  AdminDashboardPage,
-  AdminSemestersPage,
-  AdminRulesPage,
-  AdminPricingPage,
-  AdminAllocationEnginePage,
-  AdminBatchRunsPage,
-  AdminIntegrationsPage,
-  AdminUsersPage,
-  AdminFinancePage,
-  AdminAuditLogsPage,
-} from '@pages/admin';
+import { lazyPage } from './lazyPage';
 
-const wrap = (elem: React.ReactNode) => (
-  <RequirePermission permission="config:system">{elem}</RequirePermission>
+const load = () => import('@pages/admin');
+const page = (name: Parameters<typeof lazyPage<Awaited<ReturnType<typeof load>>>>[1]) => (
+  <RequirePermission permission="config:system">{lazyPage(load, name)}</RequirePermission>
 );
 
+const R = APP_ROUTES.ADMIN;
+
 export const adminRoutes: RouteObject[] = [
-  { path: '/admin/dashboard', element: wrap(<AdminDashboardPage />) },
-  { path: '/admin/semesters', element: wrap(<AdminSemestersPage />) },
-  { path: '/admin/rules', element: wrap(<AdminRulesPage />) },
-  { path: '/admin/pricing', element: wrap(<AdminPricingPage />) },
-  { path: '/admin/allocation-engine', element: wrap(<AdminAllocationEnginePage />) },
-  { path: '/admin/batch-runs', element: wrap(<AdminBatchRunsPage />) },
-  { path: '/admin/integrations', element: wrap(<AdminIntegrationsPage />) },
-  { path: '/admin/users', element: wrap(<AdminUsersPage />) },
-  { path: '/admin/finance', element: wrap(<AdminFinancePage />) },
-  { path: '/admin/audit-logs', element: wrap(<AdminAuditLogsPage />) },
+  { path: R.DASHBOARD, element: page('AdminDashboardPage') },
+  { path: R.SEMESTERS, element: page('AdminSemestersPage') },
+  { path: R.RULES, element: page('AdminRulesPage') },
+  { path: R.PRICING, element: page('AdminPricingPage') },
+  { path: R.ALLOCATION_ENGINE, element: page('AdminAllocationEnginePage') },
+  { path: R.INTEGRATIONS, element: page('AdminIntegrationsPage') },
+  { path: R.USERS, element: page('AdminUsersPage') },
+  { path: R.REPORTS, element: page('AdminReportsPage') },
+  { path: R.AUDIT_LOGS, element: page('AdminAuditLogsPage') },
 ];
