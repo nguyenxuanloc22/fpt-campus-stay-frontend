@@ -11,13 +11,23 @@ import {
   CheckCircle2,
   Clock,
   Calendar,
+  CalendarRange,
   HardDrive,
   ArrowRight,
   XCircle,
+  Scale,
+  Tags,
+  BarChart3,
 } from 'lucide-react';
 import clsx from 'clsx';
 import { APP_ROUTES } from '@campusstay/constants';
-import { StatCard, SectionCard, StatusBadge, ProgressBar, BarChart, Sparkline, AppButton, Avatar } from '@shared-ui';
+import { useAuthStore } from '@features/auth';
+import { SectionCard, StatusBadge, ProgressBar, Sparkline, AppButton, Avatar } from '@shared-ui';
+import { LatestNewsCard, QuickMenuCard, WelcomeSection, type InfoTile, type QuickItem } from '@features/dashboard';
+
+/** Tổng quan Quản trị viên — cùng khung với Tổng quan sinh viên: thẻ chào, tin mới nhất, menu nhanh, giám sát hệ thống. */
+
+const R = APP_ROUTES.ADMIN;
 
 const SERVICES = [
   { name: 'API Gateway', status: 'ok', latency: '42ms', uptime: '99.99%' },
@@ -45,92 +55,136 @@ const AUDIT = [
   { who: 'Quản trị viên', action: 'Thêm tài khoản staff lmkhoa@fpt.edu.vn', when: '15/10' },
 ];
 
+const RESOURCES = [
+  { l: 'CPU (8 vCPU)', v: 34, icon: Cpu, p: [22, 28, 31, 40, 36, 34] },
+  { l: 'RAM (32 GB)', v: 61, icon: Server, p: [55, 58, 60, 62, 61, 61] },
+  { l: 'Database connections', v: 42, icon: Database, p: [30, 35, 44, 50, 46, 42] },
+];
+
+const QUICK: QuickItem[] = [
+  { label: 'Học kỳ', to: R.SEMESTERS, icon: CalendarRange, tone: 'bg-orange-100 text-orange-600' },
+  { label: 'Quy tắc', to: R.RULES, icon: Scale, tone: 'bg-violet-100 text-violet-600' },
+  { label: 'Bảng giá', to: R.PRICING, icon: Tags, tone: 'bg-emerald-100 text-emerald-600' },
+  { label: 'Engine xếp phòng', to: R.ALLOCATION_ENGINE, icon: Cpu, tone: 'bg-sky-100 text-sky-600' },
+  { label: 'Tích hợp', to: R.INTEGRATIONS, icon: Link, tone: 'bg-sky-100 text-sky-600' },
+  { label: 'Người dùng', to: R.USERS, icon: Users, tone: 'bg-orange-100 text-orange-600' },
+  { label: 'Báo cáo', to: R.REPORTS, icon: BarChart3, tone: 'bg-emerald-100 text-emerald-600' },
+  { label: 'Audit logs', to: R.AUDIT_LOGS, icon: ShieldCheck, tone: 'bg-violet-100 text-violet-600' },
+];
+
+const SERVICE_STATE = {
+  ok: { label: 'Hoạt động', icon: CheckCircle2, iconTone: 'text-emerald-500', badge: 'bg-emerald-50 text-emerald-700' },
+  warn: { label: 'Chậm', icon: AlertTriangle, iconTone: 'text-amber-500', badge: 'bg-amber-50 text-amber-700' },
+  down: { label: 'Mất kết nối', icon: XCircle, iconTone: 'text-rose-500', badge: 'bg-rose-50 text-rose-700' },
+} as const;
+
 export function AdminDashboardPage() {
   const navigate = useNavigate();
+  const user = useAuthStore((state) => state.user);
+  const slowServices = SERVICES.filter((s) => s.status !== 'ok').length;
+
+  const tiles: InfoTile[] = [
+    { label: 'Người dùng hoạt động', value: '1.142 · 1.075 SV, 52 staff', icon: Users, tone: 'bg-orange-50 text-orange-600' },
+    { label: 'Request / phút', value: '386 · đỉnh lúc 21:00', icon: Activity, tone: 'bg-sky-50 text-sky-600' },
+    { label: 'Uptime 30 ngày', value: '99.94% · SLA 99.9%', icon: Server, tone: 'bg-emerald-50 text-emerald-600' },
+    { label: 'Dung lượng lưu trữ', value: '412 / 1.000 GB', icon: HardDrive, tone: 'bg-violet-50 text-violet-600' },
+    { label: 'Cảnh báo dịch vụ', value: slowServices ? `${slowServices} dịch vụ phản hồi chậm` : 'Tất cả ổn định', icon: AlertTriangle, tone: 'bg-rose-50 text-rose-600' },
+    { label: 'Phiên bản', value: 'CampusStay v2.3.1 · Production', icon: Database, tone: 'bg-slate-100 text-slate-600' },
+  ];
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-[#1A365D]">Trung Tâm Quản Trị Hệ Thống</h1>
-          <p className="text-xs text-slate-500 mt-1">CampusStay v2.3.1 • Môi trường Production • Máy chủ FPT Cloud HCM</p>
-        </div>
-        <div className="flex items-center gap-2 text-xs">
-          <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-amber-50 text-amber-700 font-semibold border border-amber-200">
-            <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" /> 1 dịch vụ phản hồi chậm
-          </span>
-        </div>
-      </div>
+      <WelcomeSection
+        name={user?.name}
+        subtitle="Quản trị hệ thống · Máy chủ FPT Cloud HCM"
+        actions={[
+          { label: 'Người dùng', onClick: () => navigate(R.USERS) },
+          { label: 'Audit logs', onClick: () => navigate(R.AUDIT_LOGS) },
+        ]}
+        tiles={tiles}
+      />
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
-        <StatCard label="Người dùng hoạt động" value="1.142" icon={Users} tone="navy" hint="1.075 SV • 52 staff • 15 quản lý" />
-        <StatCard label="Request / phút" value="386" icon={Activity} tone="orange" trend={{ value: '+18%', up: true }} hint="đỉnh lúc 21:00" />
-        <StatCard label="Uptime 30 ngày" value="99.94%" icon={Server} tone="emerald" hint="SLA cam kết 99.9%" />
-        <StatCard label="Dung lượng lưu trữ" value="412 / 1.000 GB" icon={HardDrive} tone="blue" hint="Hợp đồng PDF, ảnh minh chứng" />
-      </div>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+        <div className="lg:col-span-2 space-y-6">
+          <LatestNewsCard />
 
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-        <div className="xl:col-span-2 space-y-6">
           <SectionCard title="Tình trạng dịch vụ" subtitle="Health-check mỗi 30 giây" noPadding>
             <div className="grid grid-cols-1 md:grid-cols-2">
-              {SERVICES.map((s, i) => (
-                <div key={s.name} className={clsx('px-5 py-3 flex items-center gap-3 border-slate-100', i % 2 === 0 && 'md:border-r', 'border-b')}>
-                  {s.status === 'ok' ? <CheckCircle2 className="w-4 h-4 text-emerald-500" /> : s.status === 'warn' ? <AlertTriangle className="w-4 h-4 text-amber-500" /> : <XCircle className="w-4 h-4 text-rose-500" />}
-                  <div className="flex-1 min-w-0">
-                    <div className="text-xs font-semibold text-slate-800 truncate">{s.name}</div>
-                    <div className="text-[11px] text-slate-500">Uptime {s.uptime} • {s.latency}</div>
+              {SERVICES.map((s, i) => {
+                const st = SERVICE_STATE[s.status as keyof typeof SERVICE_STATE];
+                return (
+                  <div key={s.name} className={clsx('px-5 py-3 flex items-center gap-3 border-b border-slate-100', i % 2 === 0 && 'md:border-r')}>
+                    <st.icon className={clsx('w-4 h-4 shrink-0', st.iconTone)} />
+                    <div className="flex-1 min-w-0">
+                      <div className="text-xs font-semibold text-slate-800 truncate">{s.name}</div>
+                      <div className="text-[11px] text-slate-500">Uptime {s.uptime} · {s.latency}</div>
+                    </div>
+                    <span className={clsx('text-[10px] font-bold px-2 py-0.5 rounded-full', st.badge)}>{st.label}</span>
                   </div>
-                  <span className={clsx('text-[10px] font-bold px-2 py-0.5 rounded-full', s.status === 'ok' ? 'bg-emerald-50 text-emerald-700' : s.status === 'warn' ? 'bg-amber-50 text-amber-700' : 'bg-rose-50 text-rose-700')}>
-                    {s.status === 'ok' ? 'Hoạt động' : s.status === 'warn' ? 'Chậm' : 'Mất kết nối'}
-                  </span>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </SectionCard>
 
-          <SectionCard title="Lưu lượng truy cập 24 giờ" subtitle="Số request (nghìn) theo khung giờ">
-            <BarChart
-              height={180}
-              data={[
-                { label: '0h', value: 4 }, { label: '3h', value: 1 }, { label: '6h', value: 6 }, { label: '9h', value: 18 },
-                { label: '12h', value: 22 }, { label: '15h', value: 17 }, { label: '18h', value: 24 }, { label: '21h', value: 31 },
-              ]}
-              formatValue={(v) => `${v}k req`}
-            />
-          </SectionCard>
-
           <SectionCard
-            title="Tác vụ tự động gần đây (actor System)"
-            actions={<button type="button" onClick={() => navigate(APP_ROUTES.ADMIN.ALLOCATION_ENGINE)} className="text-[11px] font-semibold text-[#F26F21] hover:underline">Xem tất cả</button>}
+            title="Tác vụ tự động gần đây"
+            subtitle="Actor System"
+            actions={
+              <button type="button" onClick={() => navigate(R.ALLOCATION_ENGINE)} className="text-xs font-bold text-[#F26F21] hover:underline">
+                Xem tất cả
+              </button>
+            }
             noPadding
           >
-            <table className="w-full text-xs">
-              <tbody className="divide-y divide-slate-100">
-                {JOBS.map((j) => (
-                  <tr key={j.name}>
-                    <td className="px-5 py-3 font-semibold text-slate-800">{j.name}</td>
-                    <td className="px-5 py-3 text-slate-500">{j.time}</td>
-                    <td className="px-5 py-3 text-slate-500">{j.dur}</td>
-                    <td className="px-5 py-3 text-right"><StatusBadge status={j.status} /></td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+            <div className="overflow-x-auto">
+              <table className="w-full text-xs">
+                <tbody className="divide-y divide-slate-100">
+                  {JOBS.map((j) => (
+                    <tr key={j.name} className="hover:bg-slate-50">
+                      <td className="px-5 py-3 font-semibold text-slate-800">{j.name}</td>
+                      <td className="px-5 py-3 text-slate-500 whitespace-nowrap">{j.time}</td>
+                      <td className="px-5 py-3 text-slate-500 whitespace-nowrap">{j.dur}</td>
+                      <td className="px-5 py-3 text-right"><StatusBadge status={j.status} /></td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </SectionCard>
         </div>
 
         <div className="space-y-6">
+          <QuickMenuCard items={QUICK} />
+
+          <SectionCard title="Học kỳ đang vận hành">
+            <div className="space-y-2">
+              <div className="flex items-center gap-3 p-3 rounded-xl bg-sky-50">
+                <span className="w-9 h-9 rounded-xl bg-white text-sky-600 flex items-center justify-center shrink-0"><Calendar className="w-4 h-4" /></span>
+                <div className="text-xs">
+                  <div className="font-bold text-slate-800">Fall 2026</div>
+                  <div className="text-slate-500">01/09 – 31/12/2026 · Tuần 7/16</div>
+                </div>
+              </div>
+              <div className="flex items-center gap-3 p-3 rounded-xl bg-orange-50">
+                <span className="w-9 h-9 rounded-xl bg-white text-[#F26F21] flex items-center justify-center shrink-0"><Clock className="w-4 h-4" /></span>
+                <div className="text-xs">
+                  <div className="font-bold text-[#C2410C]">Spring 2027 — đang mở đăng ký</div>
+                  <div className="text-slate-500">14/10 – 15/11/2026 · 1.284 đơn</div>
+                </div>
+              </div>
+            </div>
+            <AppButton size="sm" variant="outline" className="w-full mt-3" rightIcon={<ArrowRight className="w-3.5 h-3.5" />} onClick={() => navigate(R.SEMESTERS)}>
+              Cấu hình kỳ học
+            </AppButton>
+          </SectionCard>
+
           <SectionCard title="Tài nguyên máy chủ">
             <div className="space-y-4 text-xs">
-              {[
-                { l: 'CPU (8 vCPU)', v: 34, icon: Cpu, p: [22, 28, 31, 40, 36, 34] },
-                { l: 'RAM (32 GB)', v: 61, icon: Server, p: [55, 58, 60, 62, 61, 61] },
-                { l: 'Database connections', v: 42, icon: Database, p: [30, 35, 44, 50, 46, 42] },
-              ].map((r) => (
+              {RESOURCES.map((r) => (
                 <div key={r.l}>
                   <div className="flex items-center justify-between mb-1">
                     <span className="flex items-center gap-1.5 text-slate-600"><r.icon className="w-3.5 h-3.5" /> {r.l}</span>
-                    <span className="font-bold">{r.v}%</span>
+                    <span className="font-bold text-slate-800">{r.v}%</span>
                   </div>
                   <ProgressBar value={r.v} tone={r.v > 80 ? 'rose' : r.v > 60 ? 'amber' : 'emerald'} />
                   <Sparkline points={r.p} className="h-6 mt-1" color="#94a3b8" />
@@ -139,25 +193,15 @@ export function AdminDashboardPage() {
             </div>
           </SectionCard>
 
-          <SectionCard title="Học kỳ đang vận hành">
-            <div className="flex items-center gap-3 p-3 rounded-xl bg-[#EBF2FB]">
-              <Calendar className="w-8 h-8 text-[#1A365D]" />
-              <div className="text-xs">
-                <div className="font-bold text-[#1A365D]">Fall 2026</div>
-                <div className="text-slate-600">01/09 – 31/12/2026 • Tuần 7/16</div>
-              </div>
-            </div>
-            <div className="flex items-center gap-3 p-3 rounded-xl bg-orange-50 mt-2">
-              <Clock className="w-8 h-8 text-[#F26F21]" />
-              <div className="text-xs">
-                <div className="font-bold text-[#F26F21]">Spring 2027 — đang mở đăng ký</div>
-                <div className="text-slate-600">14/10 – 15/11/2026 • 1.284 đơn</div>
-              </div>
-            </div>
-            <AppButton size="sm" variant="outline" className="w-full mt-3" rightIcon={<ArrowRight className="w-3.5 h-3.5" />} onClick={() => navigate(APP_ROUTES.ADMIN.SEMESTERS)}>Cấu hình kỳ học</AppButton>
-          </SectionCard>
-
-          <SectionCard title="Hoạt động quản trị" noPadding>
+          <SectionCard
+            title="Hoạt động quản trị"
+            actions={
+              <button type="button" onClick={() => navigate(R.AUDIT_LOGS)} className="text-xs font-bold text-[#F26F21] hover:underline">
+                Xem tất cả
+              </button>
+            }
+            noPadding
+          >
             <ul className="divide-y divide-slate-100">
               {AUDIT.map((a) => (
                 <li key={a.action} className="px-5 py-3 flex items-start gap-2.5">
@@ -170,19 +214,6 @@ export function AdminDashboardPage() {
               ))}
             </ul>
           </SectionCard>
-
-          <div className="grid grid-cols-2 gap-2">
-            {[
-              { l: 'Engine', icon: Cpu, to: APP_ROUTES.ADMIN.ALLOCATION_ENGINE },
-              { l: 'Tích hợp', icon: Link, to: APP_ROUTES.ADMIN.INTEGRATIONS },
-              { l: 'Người dùng', icon: Users, to: APP_ROUTES.ADMIN.USERS },
-              { l: 'Audit logs', icon: ShieldCheck, to: APP_ROUTES.ADMIN.AUDIT_LOGS },
-            ].map((q) => (
-              <button key={q.l} type="button" onClick={() => navigate(q.to)} className="p-3 rounded-xl bg-white border border-slate-200 hover:border-[#F26F21] text-xs font-semibold text-slate-700 flex items-center gap-2">
-                <q.icon className="w-4 h-4 text-[#1A365D]" /> {q.l}
-              </button>
-            ))}
-          </div>
         </div>
       </div>
     </div>

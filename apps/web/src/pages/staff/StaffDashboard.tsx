@@ -1,287 +1,154 @@
 // ──────────────────────────────────────────────────────────────
-//  StaffDashboard.tsx — CampusStay FPT Staff Dashboard
-//  Production-ready operational dashboard with standardized UI,
-//  uniform action buttons (px-4 py-2 rounded-lg), zero cluttered tables,
-//  and seamless access to the 5 operational execution domains.
+//  StaffDashboard.tsx — Tổng quan Cán bộ KTX (bố cục tham khảo FAP,
+//  cùng khung với Tổng quan sinh viên). Nút “Bàn làm việc” mở
+//  StaffPortal để xử lý 5 nghiệp vụ vận hành ngay trên trang.
 // ──────────────────────────────────────────────────────────────
 
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
-  CheckSquare,
-  Wrench,
+  ArrowLeft,
+  ArrowLeftRight,
+  BedDouble,
+  Boxes,
   CalendarCheck,
-  Bed,
-  UserCheck,
-  ArrowRight,
+  Clock,
   FileText,
   Layers,
+  LogIn,
+  LogOut,
+  Mail,
+  Megaphone,
+  Bell,
+  UserCheck,
+  Wrench,
+  ListChecks,
 } from 'lucide-react';
 import clsx from 'clsx';
+import { APP_ROUTES } from '@campusstay/constants';
+import { useAuthStore } from '@features/auth';
+import { SectionCard } from '@shared-ui';
+import { LatestNewsCard, QuickMenuCard, TaskListCard, WelcomeSection, type InfoTile, type QuickItem, type TaskItem } from '@features/dashboard';
 import { StaffPortal } from './StaffPortal';
-import {
-  STAFF_APPLICATIONS,
-  STAFF_ROOMS,
-  STAFF_MAINTENANCE_TASKS,
-  STAFF_MANUAL_CHECKINS,
-} from './staffMockData';
+import { STAFF_APPLICATIONS, STAFF_ROOMS, STAFF_MAINTENANCE_TASKS, STAFF_MANUAL_CHECKINS } from './staffMockData';
+import { ACTION_ITEMS, RECENT_CHECKINS, STAFF_PROFILE, type TaskPriority } from './dashboardMockData';
+
+const R = APP_ROUTES.STAFF;
+
+const QUICK: QuickItem[] = [
+  { label: 'Thẩm định đơn', to: R.APPLICATIONS, icon: FileText, tone: 'bg-orange-100 text-orange-600' },
+  { label: 'Xếp phòng', to: R.ASSIGNMENT, icon: Layers, tone: 'bg-violet-100 text-violet-600' },
+  { label: 'Đổi phòng', to: R.ROOM_CHANGES, icon: ArrowLeftRight, tone: 'bg-sky-100 text-sky-600' },
+  { label: 'Bảo trì', to: R.MAINTENANCE, icon: Wrench, tone: 'bg-rose-100 text-rose-600' },
+  { label: 'Check-in/out', to: R.CHECKIN_OUT, icon: CalendarCheck, tone: 'bg-emerald-100 text-emerald-600' },
+  { label: 'Phòng & giường', to: R.INVENTORY, icon: Boxes, tone: 'bg-sky-100 text-sky-600' },
+  { label: 'Gửi thông báo', to: R.BROADCAST, icon: Megaphone, tone: 'bg-orange-100 text-orange-600' },
+  { label: 'Thông báo chung', to: APP_ROUTES.COMMON.NOTIFICATIONS, icon: Bell, tone: 'bg-violet-100 text-violet-600' },
+];
+
+const PRIORITY: Record<TaskPriority, { label: string; tone: string; dot: string }> = {
+  URGENT: { label: 'Khẩn cấp', tone: 'bg-rose-100 text-rose-700', dot: 'bg-rose-500' },
+  HIGH: { label: 'Cao', tone: 'bg-orange-100 text-orange-700', dot: 'bg-[#F26F21]' },
+  MEDIUM: { label: 'Trung bình', tone: 'bg-sky-100 text-sky-700', dot: 'bg-sky-500' },
+};
+
+const TODO: TaskItem[] = ACTION_ITEMS.map((a) => ({
+  id: a.id,
+  title: a.title,
+  desc: a.subtitle,
+  to: a.route,
+  cta: a.ctaLabel,
+  dot: PRIORITY[a.priority].dot,
+  badge: { label: PRIORITY[a.priority].label, tone: PRIORITY[a.priority].tone },
+}));
 
 export function StaffDashboard() {
+  const navigate = useNavigate();
+  const user = useAuthStore((state) => state.user);
   const [viewMode, setViewMode] = useState<'overview' | 'portal'>('overview');
 
-  // Computed metrics
-  const totalRooms = STAFF_ROOMS.length;
   const totalBeds = STAFF_ROOMS.reduce((acc, r) => acc + r.beds.length, 0);
-  const availableBeds = STAFF_ROOMS.reduce(
-    (acc, r) => acc + r.beds.filter((b) => b.status === 'AVAILABLE').length,
-    0
-  );
+  const availableBeds = STAFF_ROOMS.reduce((acc, r) => acc + r.beds.filter((b) => b.status === 'AVAILABLE').length, 0);
   const pendingApps = STAFF_APPLICATIONS.filter((a) => a.status === 'PENDING_REVIEW').length;
   const activeTickets = STAFF_MAINTENANCE_TASKS.filter((t) => t.status !== 'VERIFIED_DONE').length;
   const pendingCheckins = STAFF_MANUAL_CHECKINS.filter((c) => c.status !== 'COMPLETED').length;
 
+  if (viewMode === 'portal') {
+    return (
+      <div className="space-y-4">
+        <div className="flex flex-wrap items-center justify-between gap-3 bg-white px-5 py-3 rounded-2xl border border-slate-200/80 shadow-sm">
+          <h1 className="flex items-center gap-2 text-sm font-extrabold text-slate-900">
+            <span className="w-1 h-4 rounded-full bg-gradient-to-b from-[#F26F21] to-amber-400" />
+            Bàn làm việc vận hành
+          </h1>
+          <button type="button" onClick={() => setViewMode('overview')} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 text-xs font-bold text-slate-600 hover:border-orange-300 hover:text-[#F26F21]">
+            <ArrowLeft className="w-3.5 h-3.5" /> Về tổng quan
+          </button>
+        </div>
+        <StaffPortal />
+      </div>
+    );
+  }
+
+  const tiles: InfoTile[] = [
+    { label: 'Đơn chờ thẩm định', value: `${pendingApps} đơn`, icon: FileText, tone: 'bg-orange-50 text-orange-600' },
+    { label: 'Ticket bảo trì mở', value: `${activeTickets} ticket`, icon: Wrench, tone: 'bg-rose-50 text-rose-600' },
+    { label: 'Check-in tại quầy', value: `${pendingCheckins} sinh viên chờ`, icon: UserCheck, tone: 'bg-violet-50 text-violet-600' },
+    { label: 'Giường trống sẵn sàng', value: `${availableBeds} / ${totalBeds} giường`, icon: BedDouble, tone: 'bg-emerald-50 text-emerald-600' },
+    { label: 'Email', value: user?.email ?? '—', icon: Mail, tone: 'bg-sky-50 text-sky-600' },
+    { label: 'Ca làm việc', value: STAFF_PROFILE.shift, icon: Clock, tone: 'bg-slate-100 text-slate-600' },
+  ];
+
   return (
     <div className="space-y-6">
-      {/* ── Sub-navigation Header Switcher ── */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-4 rounded-2xl border border-slate-200/80 shadow-xs">
-        <div>
-          <div className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-[#F26522]" />
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-500">
-              CampusStay FPT • Bàn Làm Việc Vận Hành
-            </span>
-          </div>
-          <h1 className="text-xl font-bold text-[#1A365D] mt-0.5">
-            Cán Bộ Ký Túc Xá — Operational Portal
-          </h1>
+      <WelcomeSection
+        name={user?.name}
+        subtitle="Cán bộ KTX · Học kỳ Fall 2026 · KTX FPT Tân Uyên"
+        actions={[
+          { label: 'Bàn làm việc', onClick: () => setViewMode('portal') },
+          { label: 'Gửi thông báo', onClick: () => navigate(R.BROADCAST) },
+        ]}
+        tiles={tiles}
+      />
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+        <div className="lg:col-span-2 space-y-6">
+          <LatestNewsCard />
+          <TaskListCard title="Việc cần xử lý" items={TODO} footer={{ label: 'Mở bàn làm việc vận hành', icon: ListChecks, onClick: () => setViewMode('portal') }} />
         </div>
 
-        <div className="flex items-center gap-2">
-          <button
-            type="button"
-            onClick={() => setViewMode('overview')}
-            className={clsx(
-              'px-4 py-2 rounded-lg font-medium text-xs sm:text-sm transition-all',
-              viewMode === 'overview'
-                ? 'bg-[#1A365D] text-white shadow-xs'
-                : 'border border-slate-200 bg-white hover:bg-slate-50 text-slate-700'
-            )}
+        <div className="space-y-6">
+          <QuickMenuCard items={QUICK} />
+
+          <SectionCard
+            title="Check-in/out hôm nay"
+            actions={
+              <button type="button" onClick={() => navigate(R.CHECKIN_OUT)} className="text-xs font-bold text-[#F26F21] hover:underline">
+                Xem tất cả
+              </button>
+            }
+            noPadding
           >
-            Tổng quan chỉ số
-          </button>
-          <button
-            type="button"
-            onClick={() => setViewMode('portal')}
-            className={clsx(
-              'px-4 py-2 rounded-lg font-medium text-xs sm:text-sm transition-all inline-flex items-center gap-1.5',
-              viewMode === 'portal'
-                ? 'bg-[#F26522] text-white shadow-xs'
-                : 'border border-slate-200 bg-white hover:bg-slate-50 text-slate-700'
-            )}
-          >
-            Tác vụ vận hành (5 Use Cases)
-          </button>
+            <ul className="divide-y divide-slate-100">
+              {RECENT_CHECKINS.map((c) => (
+                <li key={`${c.studentId}-${c.time}`} className="px-5 py-3 flex items-center gap-3">
+                  <span className={clsx('w-9 h-9 rounded-xl flex items-center justify-center shrink-0', c.type === 'IN' ? 'bg-emerald-50 text-emerald-600' : 'bg-sky-50 text-sky-600')}>
+                    {c.type === 'IN' ? <LogIn className="w-4 h-4" /> : <LogOut className="w-4 h-4" />}
+                  </span>
+                  <div className="flex-1 min-w-0">
+                    <div className="text-sm font-semibold text-slate-800 truncate">{c.name}</div>
+                    <div className="text-xs text-slate-500">{c.studentId} · {c.room}</div>
+                  </div>
+                  <div className="text-right shrink-0">
+                    <div className="text-xs font-bold text-slate-700">{c.time}</div>
+                    <div className={clsx('text-[10px] font-bold', c.type === 'IN' ? 'text-emerald-600' : 'text-sky-600')}>{c.type === 'IN' ? 'Nhận phòng' : 'Trả phòng'}</div>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </SectionCard>
         </div>
       </div>
-
-      {viewMode === 'portal' ? (
-        <StaffPortal />
-      ) : (
-        <div className="space-y-6">
-          {/* ── 4 Top Stat Cards ── */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
-            <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs">
-              <div className="flex items-start justify-between">
-                <div>
-                  <div className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
-                    Đơn đăng ký chờ duyệt
-                  </div>
-                  <div className="text-2xl font-bold text-slate-900 mt-1">{pendingApps} đơn</div>
-                  <p className="text-[11px] text-amber-600 mt-1 font-medium">
-                    Cần rà soát hồ sơ đặc thù
-                  </p>
-                </div>
-                <div className="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0">
-                  <CheckSquare className="w-5 h-5" />
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs">
-              <div className="flex items-start justify-between">
-                <div>
-                  <div className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
-                    Ticket bảo trì mở
-                  </div>
-                  <div className="text-2xl font-bold text-slate-900 mt-1">{activeTickets} ticket</div>
-                  <p className="text-[11px] text-rose-600 mt-1 font-medium">
-                    1 sự cố điện khẩn cấp sắp vượt SLA
-                  </p>
-                </div>
-                <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
-                  <Wrench className="w-5 h-5" />
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs">
-              <div className="flex items-start justify-between">
-                <div>
-                  <div className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
-                    Check-in thủ công tại quầy
-                  </div>
-                  <div className="text-2xl font-bold text-slate-900 mt-1">{pendingCheckins} sinh viên</div>
-                  <p className="text-[11px] text-purple-600 mt-1 font-medium">
-                    Chờ đối soát biên bản bàn giao
-                  </p>
-                </div>
-                <div className="w-10 h-10 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center shrink-0">
-                  <CalendarCheck className="w-5 h-5" />
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs">
-              <div className="flex items-start justify-between">
-                <div>
-                  <div className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
-                    Giường trống sẵn sàng
-                  </div>
-                  <div className="text-2xl font-bold text-slate-900 mt-1">
-                    {availableBeds} / {totalBeds} giường
-                  </div>
-                  <p className="text-[11px] text-emerald-600 mt-1 font-medium">
-                    Đã nghiệm thu sẵn sàng nhận SV
-                  </p>
-                </div>
-                <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
-                  <Bed className="w-5 h-5" />
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* ── 5 Operational Execution Hub Cards ── */}
-          <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-xs">
-            <div className="flex items-center justify-between mb-4">
-              <div>
-                <h2 className="text-base font-bold text-[#1A365D]">
-                  5 Nhiệm Vụ Vận Hành Cốt Lõi (Operational Execution)
-                </h2>
-                <p className="text-xs text-slate-500 mt-0.5">
-                  Thao tác trực tiếp theo quy trình phân công trách nhiệm KTX FPT
-                </p>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {/* 1. Review Dormitory Applications */}
-              <div className="p-4 rounded-xl border border-slate-200/90 hover:border-slate-300 bg-slate-50/50 flex flex-col justify-between gap-3">
-                <div className="space-y-1.5">
-                  <div className="w-8 h-8 rounded-lg bg-orange-100 text-[#F26522] flex items-center justify-center">
-                    <FileText className="w-4 h-4" />
-                  </div>
-                  <h3 className="text-sm font-bold text-slate-800">1. Thẩm định hồ sơ đăng ký KTX</h3>
-                  <p className="text-xs text-slate-500 leading-relaxed">
-                    Kiểm tra hồ sơ sinh viên, chứng nhận ưu tiên, đối soát nghĩa vụ trước khi đưa vào thuật toán xếp phòng.
-                  </p>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setViewMode('portal')}
-                  className="bg-[#F26522] hover:bg-[#d95314] text-white px-4 py-2 rounded-lg font-medium text-xs sm:text-sm transition-colors inline-flex items-center justify-center gap-1.5 shadow-sm w-full"
-                >
-                  Rà soát {pendingApps} đơn cần xử lý
-                  <ArrowRight className="w-3.5 h-3.5" />
-                </button>
-              </div>
-
-              {/* 2. Update Room & Bed Status */}
-              <div className="p-4 rounded-xl border border-slate-200/90 hover:border-slate-300 bg-slate-50/50 flex flex-col justify-between gap-3">
-                <div className="space-y-1.5">
-                  <div className="w-8 h-8 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center">
-                    <Bed className="w-4 h-4" />
-                  </div>
-                  <h3 className="text-sm font-bold text-slate-800">2. Cập nhật trạng thái phòng & giường</h3>
-                  <p className="text-xs text-slate-500 leading-relaxed">
-                    Khóa giường bảo trì, mở giường khả dụng, giám sát tình trạng thực tế của từng tòa nhà.
-                  </p>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setViewMode('portal')}
-                  className="border border-slate-200 bg-white hover:bg-slate-50 hover:border-slate-300 text-slate-700 px-4 py-2 rounded-lg font-medium text-xs sm:text-sm transition-colors inline-flex items-center justify-center gap-1.5 w-full"
-                >
-                  Kiểm tra {totalRooms} phòng lưu trú
-                  <ArrowRight className="w-3.5 h-3.5" />
-                </button>
-              </div>
-
-              {/* 3. Review/Adjust Room Assignment Proposal */}
-              <div className="p-4 rounded-xl border border-slate-200/90 hover:border-slate-300 bg-slate-50/50 flex flex-col justify-between gap-3">
-                <div className="space-y-1.5">
-                  <div className="w-8 h-8 rounded-lg bg-purple-100 text-purple-700 flex items-center justify-center">
-                    <Layers className="w-4 h-4" />
-                  </div>
-                  <h3 className="text-sm font-bold text-slate-800">3. Rà soát & điều chỉnh xếp phòng</h3>
-                  <p className="text-xs text-slate-500 leading-relaxed">
-                    Xử lý các xung đột phân bổ do hệ thống cảnh báo (tầng thấp, bạn cùng phòng) trước khi chuyển Manager.
-                  </p>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setViewMode('portal')}
-                  className="bg-[#F26522] hover:bg-[#d95314] text-white px-4 py-2 rounded-lg font-medium text-xs sm:text-sm transition-colors inline-flex items-center justify-center gap-1.5 shadow-sm w-full"
-                >
-                  Điều chỉnh đề xuất BR-SP27-02
-                  <ArrowRight className="w-3.5 h-3.5" />
-                </button>
-              </div>
-
-              {/* 4. Handle Maintenance Requests & Inspections */}
-              <div className="p-4 rounded-xl border border-slate-200/90 hover:border-slate-300 bg-slate-50/50 flex flex-col justify-between gap-3">
-                <div className="space-y-1.5">
-                  <div className="w-8 h-8 rounded-lg bg-rose-100 text-rose-700 flex items-center justify-center">
-                    <Wrench className="w-4 h-4" />
-                  </div>
-                  <h3 className="text-sm font-bold text-slate-800">4. Tiếp nhận & điều phối bảo trì</h3>
-                  <p className="text-xs text-slate-500 leading-relaxed">
-                    Giao việc cho kỹ thuật viên điện, nước, điều hòa và thực hiện nghiệm thu bàn giao phòng.
-                  </p>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setViewMode('portal')}
-                  className="border border-slate-200 bg-white hover:bg-slate-50 hover:border-slate-300 text-slate-700 px-4 py-2 rounded-lg font-medium text-xs sm:text-sm transition-colors inline-flex items-center justify-center gap-1.5 w-full"
-                >
-                  Theo dõi {activeTickets} sự cố kỹ thuật
-                  <ArrowRight className="w-3.5 h-3.5" />
-                </button>
-              </div>
-
-              {/* 5. Process Manual/Late Check-In & Room-Condition Verify */}
-              <div className="p-4 rounded-xl border border-slate-200/90 hover:border-slate-300 bg-slate-50/50 flex flex-col justify-between gap-3">
-                <div className="space-y-1.5">
-                  <div className="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center">
-                    <UserCheck className="w-4 h-4" />
-                  </div>
-                  <h3 className="text-sm font-bold text-slate-800">5. Check-in & xác minh biên bản bàn giao</h3>
-                  <p className="text-xs text-slate-500 leading-relaxed">
-                    Xác minh danh tính sinh viên tại quầy, kiểm kê trang thiết bị và cấp phát thẻ từ ra vào.
-                  </p>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setViewMode('portal')}
-                  className="bg-[#F26522] hover:bg-[#d95314] text-white px-4 py-2 rounded-lg font-medium text-xs sm:text-sm transition-colors inline-flex items-center justify-center gap-1.5 shadow-sm w-full"
-                >
-                  Xác nhận nhận phòng tại quầy
-                  <ArrowRight className="w-3.5 h-3.5" />
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
