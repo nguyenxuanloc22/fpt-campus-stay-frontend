@@ -115,7 +115,7 @@ export function StudentProfilePage() {
               ['0', 'Vi phạm'],
             ].map(([v, l]) => (
               <div key={l} className="px-3 py-2 rounded-xl bg-slate-50">
-                <div className="text-lg font-bold text-[#1A365D]">{v}</div>
+                <div className="text-lg font-bold text-slate-900">{v}</div>
                 <div className="text-[10px] text-slate-500">{l}</div>
               </div>
             ))}
@@ -199,7 +199,7 @@ export function StudentProfilePage() {
           <div className="space-y-6">
             <SectionCard title="Mức độ hoàn thiện hồ sơ">
               <div className="flex items-end justify-between mb-2">
-                <span className="text-2xl font-bold text-[#1A365D]">85%</span>
+                <span className="text-2xl font-bold text-slate-900">85%</span>
                 <span className="text-[11px] text-slate-500">Còn 2 mục</span>
               </div>
               <ProgressBar value={85} tone="emerald" size="md" />
@@ -293,7 +293,7 @@ export function StudentProfilePage() {
             </ul>
           </SectionCard>
           <div className="space-y-6">
-            <SectionCard title={<span className="flex items-center gap-2"><Shield className="w-4 h-4 text-[#1A365D]" /> Bảo mật tài khoản</span>}>
+            <SectionCard title={<span className="flex items-center gap-2"><Shield className="w-4 h-4 text-slate-900" /> Bảo mật tài khoản</span>}>
               <div className="space-y-4">
                 <div className="flex items-center justify-between gap-3">
                   <div>
@@ -345,7 +345,7 @@ export function StudentProfilePage() {
           <ul className="divide-y divide-slate-100">
             {ACTIVITY.map((a) => (
               <li key={a.time} className="px-5 py-3 flex items-center gap-3">
-                <div className="w-8 h-8 rounded-lg bg-slate-100 text-slate-500 flex items-center justify-center">
+                <div className="w-8 h-8 rounded-lg bg-orange-50 text-orange-600 flex items-center justify-center">
                   <a.icon className="w-4 h-4" />
                 </div>
                 <div className="flex-1 text-xs">

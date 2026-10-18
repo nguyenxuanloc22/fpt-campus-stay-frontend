@@ -1,28 +1,27 @@
-import { useEffect, useState } from 'react';
-import { NavLink } from 'react-router-dom';
+import { Link, NavLink } from 'react-router-dom';
 import {
   LayoutDashboard,
+  Megaphone,
   ClipboardList,
   BedDouble,
-  CreditCard,
-  Wrench,
   CalendarCheck,
-  Megaphone,
+  FilePlus2,
+  FileText,
+  CreditCard,
   Layers,
   CheckSquare,
   Repeat,
+  Wrench,
   ShieldCheck,
   BarChart3,
   Calendar,
   Sliders,
   DollarSign,
   Cpu,
-  Link,
-  FileText,
+  Link as LinkIcon,
   Users,
   Building,
-  PanelLeftClose,
-  PanelLeftOpen,
+  History,
 } from 'lucide-react';
 import clsx from 'clsx';
 import { useAuthStore } from '@features/auth';
@@ -34,119 +33,174 @@ interface NavItem {
   icon: React.ComponentType<{ className?: string }>;
 }
 
-/** Điều hướng theo sitemap (docs/ARCHITECTURE.md §5). Hồ sơ mở từ menu tài khoản trên Header. */
-const NAV: Record<string, NavItem[]> = {
+interface NavGroup {
+  title: string;
+  items: NavItem[];
+}
+
+const INFO_GROUP = (dashboard: string): NavGroup => ({
+  title: 'Thông tin',
+  items: [
+    { label: 'Tổng quan', to: dashboard, icon: LayoutDashboard },
+    { label: 'Thông báo chung', to: APP_ROUTES.COMMON.NOTIFICATIONS, icon: Megaphone },
+  ],
+});
+
+/** Điều hướng theo nhóm chức năng (docs/ARCHITECTURE.md §5). */
+const NAV: Record<string, NavGroup[]> = {
   [ROLES.STUDENT]: [
-    { label: 'Tổng quan', to: APP_ROUTES.STUDENT.DASHBOARD, icon: LayoutDashboard },
-    { label: 'Đăng ký lưu trú', to: APP_ROUTES.STUDENT.REGISTRATION, icon: ClipboardList },
-    { label: 'Phòng của tôi', to: APP_ROUTES.STUDENT.MY_ROOM, icon: BedDouble },
-    { label: 'Hóa đơn & thanh toán', to: APP_ROUTES.STUDENT.INVOICES, icon: CreditCard },
-    { label: 'Yêu cầu', to: APP_ROUTES.STUDENT.REQUESTS, icon: Wrench },
-    { label: 'Check-in / Check-out', to: APP_ROUTES.STUDENT.CHECKIN, icon: CalendarCheck },
+    INFO_GROUP(APP_ROUTES.STUDENT.DASHBOARD),
+    {
+      title: 'Lưu trú',
+      items: [
+        { label: 'Đăng ký lưu trú', to: APP_ROUTES.STUDENT.REGISTRATION, icon: ClipboardList },
+        { label: 'Phòng của tôi', to: APP_ROUTES.STUDENT.MY_ROOM, icon: BedDouble },
+        { label: 'Check-in / Check-out', to: APP_ROUTES.STUDENT.CHECKIN, icon: CalendarCheck },
+      ],
+    },
+    {
+      title: 'Đơn từ',
+      items: [
+        { label: 'Gửi đơn', to: APP_ROUTES.STUDENT.APPLICATION_NEW, icon: FilePlus2 },
+        { label: 'Đơn của tôi', to: APP_ROUTES.STUDENT.APPLICATIONS, icon: FileText },
+      ],
+    },
+    {
+      title: 'Tài chính',
+      items: [{ label: 'Hóa đơn & thanh toán', to: APP_ROUTES.STUDENT.INVOICES, icon: CreditCard }],
+    },
   ],
   [ROLES.STAFF]: [
-    { label: 'Tổng quan', to: APP_ROUTES.STAFF.DASHBOARD, icon: LayoutDashboard },
-    { label: 'Phòng & giường', to: APP_ROUTES.STAFF.INVENTORY, icon: Layers },
-    { label: 'Đơn đăng ký', to: APP_ROUTES.STAFF.APPLICATIONS, icon: CheckSquare },
-    { label: 'Xếp phòng', to: APP_ROUTES.STAFF.ASSIGNMENT, icon: Building },
-    { label: 'Đổi phòng', to: APP_ROUTES.STAFF.ROOM_CHANGES, icon: Repeat },
-    { label: 'Check-in / Check-out', to: APP_ROUTES.STAFF.CHECKIN_OUT, icon: CalendarCheck },
-    { label: 'Bảo trì & kiểm tra', to: APP_ROUTES.STAFF.MAINTENANCE, icon: Wrench },
-    { label: 'Gửi thông báo', to: APP_ROUTES.STAFF.BROADCAST, icon: Megaphone },
+    INFO_GROUP(APP_ROUTES.STAFF.DASHBOARD),
+    {
+      title: 'Phòng & lưu trú',
+      items: [
+        { label: 'Phòng & giường', to: APP_ROUTES.STAFF.INVENTORY, icon: Layers },
+        { label: 'Xếp phòng', to: APP_ROUTES.STAFF.ASSIGNMENT, icon: Building },
+        { label: 'Check-in / Check-out', to: APP_ROUTES.STAFF.CHECKIN_OUT, icon: CalendarCheck },
+      ],
+    },
+    {
+      title: 'Đơn từ',
+      items: [
+        { label: 'Đơn đăng ký', to: APP_ROUTES.STAFF.APPLICATIONS, icon: CheckSquare },
+        { label: 'Đổi phòng', to: APP_ROUTES.STAFF.ROOM_CHANGES, icon: Repeat },
+      ],
+    },
+    {
+      title: 'Vận hành',
+      items: [
+        { label: 'Bảo trì & kiểm tra', to: APP_ROUTES.STAFF.MAINTENANCE, icon: Wrench },
+        { label: 'Gửi thông báo', to: APP_ROUTES.STAFF.BROADCAST, icon: Megaphone },
+      ],
+    },
   ],
   [ROLES.MANAGER]: [
-    { label: 'Tổng quan vận hành', to: APP_ROUTES.MANAGER.DASHBOARD, icon: LayoutDashboard },
-    { label: 'Trung tâm phê duyệt', to: APP_ROUTES.MANAGER.APPROVALS, icon: ShieldCheck },
-    { label: 'Duyệt xếp phòng', to: APP_ROUTES.MANAGER.ASSIGNMENT_APPROVAL, icon: CheckSquare },
-    { label: 'Báo cáo', to: APP_ROUTES.MANAGER.REPORTS, icon: BarChart3 },
+    INFO_GROUP(APP_ROUTES.MANAGER.DASHBOARD),
+    {
+      title: 'Phê duyệt',
+      items: [
+        { label: 'Trung tâm phê duyệt', to: APP_ROUTES.MANAGER.APPROVALS, icon: ShieldCheck },
+        { label: 'Duyệt xếp phòng', to: APP_ROUTES.MANAGER.ASSIGNMENT_APPROVAL, icon: CheckSquare },
+      ],
+    },
+    { title: 'Báo cáo', items: [{ label: 'Báo cáo vận hành', to: APP_ROUTES.MANAGER.REPORTS, icon: BarChart3 }] },
   ],
   [ROLES.ADMIN]: [
-    { label: 'Tổng quan hệ thống', to: APP_ROUTES.ADMIN.DASHBOARD, icon: LayoutDashboard },
-    { label: 'Kỳ học', to: APP_ROUTES.ADMIN.SEMESTERS, icon: Calendar },
-    { label: 'Luật điều kiện', to: APP_ROUTES.ADMIN.RULES, icon: Sliders },
-    { label: 'Loại phòng & giá', to: APP_ROUTES.ADMIN.PRICING, icon: DollarSign },
-    { label: 'Engine xếp phòng', to: APP_ROUTES.ADMIN.ALLOCATION_ENGINE, icon: Cpu },
-    { label: 'Tích hợp', to: APP_ROUTES.ADMIN.INTEGRATIONS, icon: Link },
-    { label: 'Người dùng & vai trò', to: APP_ROUTES.ADMIN.USERS, icon: Users },
-    { label: 'Báo cáo', to: APP_ROUTES.ADMIN.REPORTS, icon: BarChart3 },
-    { label: 'Nhật ký kiểm toán', to: APP_ROUTES.ADMIN.AUDIT_LOGS, icon: FileText },
+    INFO_GROUP(APP_ROUTES.ADMIN.DASHBOARD),
+    {
+      title: 'Cấu hình',
+      items: [
+        { label: 'Kỳ học', to: APP_ROUTES.ADMIN.SEMESTERS, icon: Calendar },
+        { label: 'Luật điều kiện', to: APP_ROUTES.ADMIN.RULES, icon: Sliders },
+        { label: 'Loại phòng & giá', to: APP_ROUTES.ADMIN.PRICING, icon: DollarSign },
+        { label: 'Engine xếp phòng', to: APP_ROUTES.ADMIN.ALLOCATION_ENGINE, icon: Cpu },
+      ],
+    },
+    {
+      title: 'Hệ thống',
+      items: [
+        { label: 'Người dùng & vai trò', to: APP_ROUTES.ADMIN.USERS, icon: Users },
+        { label: 'Tích hợp', to: APP_ROUTES.ADMIN.INTEGRATIONS, icon: LinkIcon },
+        { label: 'Nhật ký kiểm toán', to: APP_ROUTES.ADMIN.AUDIT_LOGS, icon: History },
+      ],
+    },
+    { title: 'Báo cáo', items: [{ label: 'Báo cáo', to: APP_ROUTES.ADMIN.REPORTS, icon: BarChart3 }] },
   ],
-};
-
-const COMMON_NAV: NavItem = { label: 'Thông báo chung', to: APP_ROUTES.COMMON.NOTIFICATIONS, icon: Megaphone };
-const STORAGE_KEY = 'campusstay_sidebar_collapsed';
-
-const readCollapsed = () => {
-  try {
-    return localStorage.getItem(STORAGE_KEY) === '1';
-  } catch {
-    return false;
-  }
 };
 
 function Item({ item, collapsed }: { item: NavItem; collapsed: boolean }) {
   return (
     <NavLink
       to={item.to}
+      end
       title={collapsed ? item.label : undefined}
       className={({ isActive }) =>
         clsx(
-          'relative flex items-center gap-3 rounded-xl text-sm font-medium transition',
-          collapsed ? 'justify-center h-10 w-10 mx-auto' : 'px-3 py-2.5',
-          isActive ? 'bg-slate-100 text-slate-900 font-semibold' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'
+          'group flex items-center gap-3 rounded-xl transition',
+          collapsed ? 'justify-center p-1.5' : 'px-2 py-1.5',
+          isActive ? 'bg-orange-50' : 'hover:bg-slate-50'
         )
       }
     >
       {({ isActive }) => (
         <>
-          {isActive && !collapsed && <span className="absolute left-0 top-2 bottom-2 w-1 rounded-r-full bg-[#F26F21]" />}
-          <item.icon className={clsx('w-[18px] h-[18px] shrink-0', isActive && 'text-[#F26F21]')} />
-          {!collapsed && <span className="truncate">{item.label}</span>}
+          <span
+            className={clsx(
+              'w-9 h-9 rounded-lg flex items-center justify-center shrink-0 transition',
+              isActive ? 'bg-[#F26F21] text-white shadow-sm shadow-orange-500/30' : 'bg-slate-100 text-slate-500 group-hover:bg-white group-hover:text-[#F26F21]'
+            )}
+          >
+            <item.icon className="w-[18px] h-[18px]" />
+          </span>
+          {!collapsed && (
+            <span className={clsx('text-sm font-semibold truncate', isActive ? 'text-[#F26F21]' : 'text-slate-700')}>{item.label}</span>
+          )}
         </>
       )}
     </NavLink>
   );
 }
 
-export function Sidebar() {
+export function Sidebar({ collapsed }: { collapsed: boolean }) {
   const role = useAuthStore((state) => state.user?.role);
-  const navItems = (role && NAV[role]) || [];
-  const [collapsed, setCollapsed] = useState(readCollapsed);
-
-  useEffect(() => {
-    try {
-      localStorage.setItem(STORAGE_KEY, collapsed ? '1' : '0');
-    } catch {
-      /* bộ nhớ trình duyệt không khả dụng — bỏ qua */
-    }
-  }, [collapsed]);
+  const groups = (role && NAV[role]) || [];
 
   return (
     <aside
       className={clsx(
-        'bg-white border-r border-slate-200 flex flex-col shrink-0 h-[calc(100vh-4rem)] sticky top-16 transition-[width] duration-200',
-        collapsed ? 'w-[72px]' : 'w-64'
+        'bg-white border-r border-slate-200 flex flex-col shrink-0 h-screen sticky top-0 transition-[width] duration-200 z-20',
+        collapsed ? 'w-[76px]' : 'w-[264px]'
       )}
     >
-      <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-1" aria-label="Điều hướng chính">
-        {!collapsed && <div className="px-3 pb-2 text-[11px] font-semibold uppercase tracking-wider text-slate-400">Chức năng</div>}
-        {navItems.map((item) => <Item key={item.to} item={item} collapsed={collapsed} />)}
+      <Link to="/" className="h-16 shrink-0 flex items-center gap-3 px-4 border-b border-slate-200">
+        <span className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#F26F21] to-[#FF9A4D] text-white flex items-center justify-center font-black text-xs shadow-sm shrink-0">FPT</span>
+        {!collapsed && (
+          <span className="min-w-0">
+            <span className="block text-sm font-extrabold text-slate-900 leading-tight">CampusStay</span>
+            <span className="block text-[11px] font-semibold text-[#F26F21] tracking-wide">FPT UNIVERSITY</span>
+          </span>
+        )}
+      </Link>
+
+      <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-5" aria-label="Điều hướng chính">
+        {groups.map((g) => (
+          <div key={g.title}>
+            {collapsed ? (
+              <div className="mx-3 mb-2 border-t border-slate-200" />
+            ) : (
+              <div className="px-2 pb-2 mb-1 border-b border-slate-100 text-[11px] font-bold uppercase tracking-[0.12em] text-[#F26F21]">{g.title}</div>
+            )}
+            <div className="space-y-0.5">
+              {g.items.map((item) => <Item key={item.to} item={item} collapsed={collapsed} />)}
+            </div>
+          </div>
+        ))}
       </nav>
-      <div className="px-3 py-3 border-t border-slate-200 space-y-1">
-        <Item item={COMMON_NAV} collapsed={collapsed} />
-        <button
-          type="button"
-          onClick={() => setCollapsed((v) => !v)}
-          aria-label={collapsed ? 'Mở rộng thanh điều hướng' : 'Thu gọn thanh điều hướng'}
-          className={clsx(
-            'flex items-center gap-3 rounded-xl text-sm text-slate-400 hover:bg-slate-50 hover:text-slate-700 transition',
-            collapsed ? 'justify-center h-10 w-10 mx-auto' : 'w-full px-3 py-2.5'
-          )}
-        >
-          {collapsed ? <PanelLeftOpen className="w-[18px] h-[18px]" /> : <PanelLeftClose className="w-[18px] h-[18px]" />}
-          {!collapsed && <span>Thu gọn</span>}
-        </button>
-      </div>
+
+      {!collapsed && (
+        <div className="px-4 py-3 border-t border-slate-100 text-[11px] text-slate-400">© 2026 FPT University · Tân Uyên</div>
+      )}
     </aside>
   );
 }

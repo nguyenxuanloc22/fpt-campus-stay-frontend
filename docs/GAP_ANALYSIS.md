@@ -37,9 +37,19 @@ Mức độ: 🔴 sai nghiệp vụ (phải sửa trước bảo vệ) · 🟠 t
 | Đăng ký | Thứ tự: kiểm tra điều kiện (bắt buộc sinh viên FPTU) → thời gian lưu trú (đến kỳ 9) → 3 loại phòng 2/4/6 người có hình minh họa & mã tiện nghi → bạn cùng phòng (chỉ phòng 2 người) → xác nhận chi phí (cọc % + cọc điện nước, có tổng) → VietQR |
 | Student | Bỏ trang Tra cứu phòng; Tổng quan rút gọn; Hóa đơn bỏ thẻ thống kê, thông tin chuyển khoản, điện nước — chỉ VietQR; Phòng của tôi thiết kế lại (tài sản có mã ID, báo hỏng theo mã) |
 | Admin | “Loại phòng & giá”: 3 loại phòng, giá theo kỳ, cấu hình % cọc và cọc điện nước |
-| Giao diện | Tông trung tính, cam là màu nhấn duy nhất (CONVENTIONS §8.3) |
+| Giao diện | Tông trung tính, cam là màu nhấn duy nhất (đã thay ở Đợt 4) |
 
-**Còn lại:** áp phong cách tối giản cho các trang Staff / Manager / Admin; gộp nhánh `openapi.yaml` theo trạng thái/quyền mới (kế hoạch bước 1) · cập nhật 3 Activity Diagram (G26) · nối API thật thay dữ liệu mẫu.
+### 1.3. Đợt 4 — bố cục kiểu FAP, đơn từ, màu sắc
+
+| Nhóm | Thay đổi |
+|---|---|
+| Bố cục chung | Sidebar toàn chiều cao, nhóm chức năng có tiêu đề in hoa màu cam, mục có ô icon; Header có nút thu gọn, tiêu đề + breadcrumb, cơ sở |
+| Thông báo quan trọng | Popup sau đăng nhập cho mọi vai trò (thông báo ghim), “Không hiển thị lại trong phiên đăng nhập này”; dữ liệu chung `systemAnnouncements.ts` cho popup, trang Thông báo chung và Tổng quan |
+| Đơn từ (Student) | Thay trang “Yêu cầu” bằng **Gửi đơn** (6 loại: báo hỏng, đổi phòng, hoàn tiền, gia hạn thanh toán, xác nhận cư trú, khác) và **Đơn của tôi** (lọc, chi tiết, tiến trình, lời mời hoán đổi, lịch bảo trì) — BUSINESS_FLOWS F3.5 |
+| Tổng quan Student | Thẻ “Xin chào” gradient cam + ô thông tin, tin mới nhất có lọc danh mục, menu nhanh, việc cần làm |
+| Màu sắc | Chuyển từ đơn sắc sang cam – trắng có sắc nhấn nhẹ (CONVENTIONS §8.3); StatCard, SectionCard, PageHeader có vạch / ô màu |
+
+**Còn lại:** thiết kế lại Tổng quan Staff / Manager / Admin theo bố cục mới; gộp nhánh `openapi.yaml` theo trạng thái/quyền mới (kế hoạch bước 1) · cập nhật 3 Activity Diagram (G26) · nối API thật thay dữ liệu mẫu.
 
 ---
 

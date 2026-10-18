@@ -32,7 +32,7 @@ export function Modal({ open, onClose, title, subtitle, children, footer, size =
       <div className={clsx('relative w-full bg-white rounded-2xl shadow-xl flex flex-col max-h-[90vh]', SIZES[size])}>
         <div className="flex items-start justify-between gap-4 px-6 py-4 border-b border-slate-100">
           <div>
-            <h3 className="text-base font-bold text-[#1A365D]">{title}</h3>
+            <h3 className="text-base font-extrabold text-slate-900">{title}</h3>
             {subtitle && <p className="text-xs text-slate-500 mt-0.5">{subtitle}</p>}
           </div>
           <button

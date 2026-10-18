@@ -108,11 +108,13 @@ Clean Architecture 3 lớp: Presentation (Screen, Widget, Riverpod `AsyncValue`)
 
 ## 5. SƠ ĐỒ TRANG (SITEMAP) — VỪA ĐỦ, KHÔNG DƯ
 
-Nguyên tắc: **một trang = một nhóm use case liên quan**; các use case cùng đối tượng dữ liệu gom vào Tabs. Use case của actor **System** không có trang riêng — kết quả của chúng hiển thị trong trang nghiệp vụ tương ứng (ví dụ: đồng hồ giữ chỗ ở trang Đăng ký, cảnh báo xung đột ở trang Duyệt xếp phòng, dự báo ở trang Báo cáo). Tổng **29 trang** (6 Student + 2 dùng chung + 8 Staff + 4 Manager + 9 Admin). Chi tiết chênh lệch so với code hiện tại xem [GAP_ANALYSIS.md](GAP_ANALYSIS.md).
+Nguyên tắc: **một trang = một nhóm use case liên quan**; các use case cùng đối tượng dữ liệu gom vào Tabs. Use case của actor **System** không có trang riêng — kết quả của chúng hiển thị trong trang nghiệp vụ tương ứng (ví dụ: đồng hồ giữ chỗ ở trang Đăng ký, cảnh báo xung đột ở trang Duyệt xếp phòng, dự báo ở trang Báo cáo). Tổng **30 trang** (7 Student + 2 dùng chung + 8 Staff + 4 Manager + 9 Admin). Chi tiết chênh lệch so với code hiện tại xem [GAP_ANALYSIS.md](GAP_ANALYSIS.md).
 
 **Thông báo có hai loại, tách biệt:**
 - **Thông báo cá nhân** — chuông trên Header, cạnh thông tin người dùng: chỉ những gì liên quan trực tiếp tới người đó hoặc phòng của họ (kết quả xếp phòng, lời mời hoán đổi, hóa đơn sắp đến hạn, lịch sửa thiết bị).
-- **Thông báo chung** — trang `/notifications`, mọi vai trò truy cập từ cuối Sidebar: thông báo hệ thống diện rộng do Quản trị viên cấu hình hoặc Ban quản lý KTX gửi.
+- **Thông báo chung** — trang `/notifications` (nhóm “Thông tin” trên Sidebar, mọi vai trò): thông báo hệ thống diện rộng do Quản trị viên cấu hình hoặc Ban quản lý KTX gửi. Thông báo được **ghim quan trọng** hiện thành popup “Thông báo quan trọng” ngay sau khi đăng nhập; tick “Không hiển thị lại trong phiên đăng nhập này” để ẩn đến lần đăng nhập sau.
+
+**Bố cục chung 4 vai trò (tham khảo FAP):** Sidebar toàn chiều cao, logo ở đầu, chức năng chia theo **nhóm có tiêu đề chữ in hoa màu cam** (Student: THÔNG TIN · LƯU TRÚ · ĐƠN TỪ · TÀI CHÍNH; Staff: THÔNG TIN · PHÒNG & LƯU TRÚ · ĐƠN TỪ · VẬN HÀNH; Manager: THÔNG TIN · PHÊ DUYỆT · BÁO CÁO; Admin: THÔNG TIN · CẤU HÌNH · HỆ THỐNG · BÁO CÁO), mỗi mục có ô icon, mục đang chọn tô cam. Header: nút thu gọn Sidebar, tiêu đề trang + breadcrumb, cơ sở, chuông, tài khoản.
 
 ### 5.0. Dùng chung — 2 trang
 | Trang | Route | Nội dung |
@@ -120,14 +122,15 @@ Nguyên tắc: **một trang = một nhóm use case liên quan**; các use case 
 | Thông báo chung | `/notifications` | View Notifications (thông báo hệ thống) |
 | Hồ sơ cá nhân | `/profile` (mở từ menu tài khoản) | Sinh viên: hồ sơ đồng bộ SIS; vai trò khác: thông tin tài khoản. Có cài đặt nhận thông báo |
 
-### 5.1. Student — 6 trang
+### 5.1. Student — 7 trang
 | Trang | Route | Use case phủ |
 |---|---|---|
-| Tổng quan | `/student/dashboard` | Việc cần làm, tiến trình đơn (Track Request Status), thông báo chung mới nhất |
+| Tổng quan | `/student/dashboard` | Thẻ “Xin chào” + thông tin sinh viên (trạng thái, MSSV, email, phòng, số tiền cần trả), tin mới nhất có lọc theo danh mục, menu nhanh, việc cần làm, tiến trình đơn |
 | Đăng ký lưu trú | `/student/registration` | Submit Dormitory Application: Validate Eligibility → thời gian lưu trú → Select Room Types → Select Roommate (chỉ phòng 2 người) → xác nhận chi phí → Pay Deposit |
 | Phòng của tôi | `/student/my-room` | View Room Assignment, tài sản trong phòng (mã ID, báo hỏng), bạn cùng phòng, lịch lưu trú, hợp đồng số |
 | Hóa đơn & thanh toán | `/student/invoices` | View Payment, Pay Invoice (chỉ VietQR) |
-| Yêu cầu | `/student/requests` | Submit Room Change Request, Initiate Mutual Swap, Respond to Swap Invitation, Submit Maintenance Request (chọn tài sản theo mã), Track Request Status, View Maintenance Schedule |
+| Gửi đơn | `/student/applications/new` | Một nơi gửi **nhiều loại đơn**: báo hỏng (Submit Maintenance Request, chọn tài sản theo mã), đổi / hoán đổi phòng (Submit Room Change Request, Initiate Mutual Swap), hoàn tiền, gia hạn thời hạn thanh toán, xác nhận cư trú, đơn khác |
+| Đơn của tôi | `/student/applications` | Track Request Status (lọc, chi tiết + tiến trình, hủy / xác nhận hoàn tất), Respond to Swap Invitation, View Maintenance Schedule |
 | Check-in / Check-out | `/student/checkin` | Self Check-in, Self Check-out, Submit Digital Room-Condition Report |
 
 Không có trang tra cứu phòng/giường trống cho sinh viên — sơ đồ phòng và tình trạng giường là dữ liệu vận hành nội bộ. Sinh viên chỉ thấy **3 loại phòng** (2, 4, 6 người) kèm hình minh họa, tiện nghi và mức còn chỗ (Còn chỗ / Sắp hết / Hết chỗ), không thấy số lượng cụ thể.

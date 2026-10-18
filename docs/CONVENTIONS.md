@@ -130,16 +130,17 @@ Bốn nhóm yêu cầu phi chức năng trong Phiếu đăng ký (mục 3.2.d) �
 ### 8.2. Bộ component dùng chung (`shared-ui`) — bắt buộc dùng, không tự dựng lại
 `AppButton`, `StatusBadge`, `PageHeader`, `StatCard`, `SectionCard`, `Tabs`, `Modal`, `ProgressBar`, `Avatar`, `EmptyState`, `Skeleton`, `BarChart`/`DonutChart`/`Sparkline`, `useToast`.
 
-### 8.3. Phong cách tối giản (bắt buộc)
-- **Ít màu:** nền trắng / `slate-50`, chữ `slate-900` / `slate-500`, viền `slate-200`. **Cam FPT là màu nhấn duy nhất** (hành động chính, mục đang chọn, số tiền cần trả). Không dùng nền gradient, không tô màu nền các khối thông tin theo nhiều sắc.
-- **Ít icon:** chỉ dùng icon khi giúp nhận diện nhanh (điều hướng, hành động, trạng thái). Không đặt icon trang trí trong thẻ số liệu hay tiêu đề khối.
-- Màu xanh/vàng/đỏ chỉ xuất hiện trong `StatusBadge` và cảnh báo thật sự.
+### 8.3. Màu sắc: cam – trắng FPTU, điểm nhấn nhẹ (bắt buộc)
+- **Chủ đạo cam – trắng:** nền trang `slate-100`, thẻ trắng bo `rounded-2xl`, chữ `slate-900` / `slate-500`. Cam FPT `#F26F21` cho hành động chính, mục đang chọn, tiêu đề nhóm Sidebar, vạch nhấn tiêu đề (PageHeader, SectionCard). Khối nổi bật (thẻ chào mừng, banner việc cần làm, popup thông báo quan trọng) dùng gradient cam `#F26F21 → #FF9A4D`.
+- **Không đơn sắc:** mỗi loại thông tin có **một sắc nhẹ riêng** (nền `*-50/100`, chữ `*-600/700`) để dễ phân biệt — loại đơn (báo hỏng cam, đổi phòng xanh trời, hoàn tiền xanh lá, gia hạn vàng, xác nhận cư trú tím), danh mục thông báo, ô thông tin sinh viên, menu nhanh. `StatCard` có ô icon gradient theo `tone` và vạch màu trên đầu thẻ.
+- **Giới hạn:** tối đa ~5 sắc nhấn trên một màn hình, luôn ở mức nhạt; không dùng nền đậm ngoài cam. Màu trạng thái vẫn theo `StatusBadge`.
+- **Icon có chủ đích:** icon đặt trong ô màu bo góc (Sidebar, ô thông tin, loại đơn, menu nhanh); không rải icon trang trí trong đoạn văn.
 - Chỉ hiển thị số liệu tổng quan khi người dùng cần ra quyết định từ nó; trang thao tác (hóa đơn, yêu cầu) không cần hàng thẻ thống kê.
 
 ### 8.4. Quy tắc bố cục để giao diện không rối
 - Mỗi trang theo khung: **PageHeader** (tiêu đề + 1–2 hành động chính) → **tối đa 4 StatCard** (nếu thật sự cần) → nội dung chính → cột phụ (nếu có).
 - Header: logo + breadcrumb bên trái; **chuông thông báo cá nhân** và **menu tài khoản** (hồ sơ, đổi mật khẩu, cài đặt, đăng xuất) bên phải.
-- Sidebar thu gọn / mở rộng được, ghi nhớ lựa chọn; “Thông báo chung” cố định ở cuối Sidebar cho mọi vai trò.
+- Sidebar thu gọn / mở rộng được (nút trên Header), ghi nhớ lựa chọn; chức năng chia nhóm với tiêu đề in hoa màu cam; nhóm “Thông tin” (Tổng quan, Thông báo chung) luôn đứng đầu cho mọi vai trò.
 - Mỗi trang **tối đa 1 nút primary** (màu cam). Các hành động khác dùng `outline`/`ghost`.
 - Gom chức năng liên quan vào **Tabs** trong cùng một trang thay vì tạo trang mới (ví dụ: “Bảo trì” và “Kiểm tra phòng”).
 - Chi tiết bản ghi mở bằng **Modal**; chỉ tạo route riêng khi cần chia sẻ link.

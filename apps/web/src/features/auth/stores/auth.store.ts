@@ -15,7 +15,8 @@ export interface AuthState {
   logout: () => void;
 }
 
-const session = (user: User) => ({ token: `mock-jwt-${user.id}`, user, isAuthenticated: true });
+/** Mỗi lần đăng nhập sinh token mới để phân biệt phiên (dùng cho popup thông báo quan trọng). */
+const session = (user: User) => ({ token: `mock-jwt-${user.id}-${Date.now()}`, user, isAuthenticated: true });
 
 export const useAuthStore = create<AuthState>()(
   persist(

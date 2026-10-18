@@ -15,6 +15,7 @@ export const studentRoutes: RouteObject[] = [
   { path: R.REGISTRATION, element: page('StudentRegistrationPage') },
   { path: R.MY_ROOM, element: page('StudentMyRoomPage') },
   { path: R.INVOICES, element: page('StudentInvoicesPage') },
-  { path: R.REQUESTS, element: page('StudentRequestsPage') },
+  { path: R.APPLICATIONS, element: page('StudentApplicationsPage') },
+  { path: R.APPLICATION_NEW, element: page('StudentSubmitApplicationPage') },
   { path: R.CHECKIN, element: page('StudentCheckinPage') },
 ];

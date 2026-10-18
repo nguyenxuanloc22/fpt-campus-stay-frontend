@@ -16,7 +16,10 @@ export const APP_ROUTES = {
     REGISTRATION: '/student/registration',
     MY_ROOM: '/student/my-room',
     INVOICES: '/student/invoices',
-    REQUESTS: '/student/requests',
+    /** Đơn từ: danh sách đơn đã gửi */
+    APPLICATIONS: '/student/applications',
+    /** Đơn từ: gửi đơn mới (báo hỏng, đổi phòng, hoàn tiền, gia hạn thanh toán…) */
+    APPLICATION_NEW: '/student/applications/new',
     CHECKIN: '/student/checkin',
   },
   STAFF: {

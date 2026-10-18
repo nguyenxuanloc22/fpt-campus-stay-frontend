@@ -120,6 +120,23 @@ Proposal: `PENDING_APPROVAL → APPROVED | REJECTED`. Phân bổ: `ASSIGNED → 
 
 ---
 
+## F3.5. Đơn từ của sinh viên (Gửi đơn / Đơn của tôi)
+
+Sinh viên gửi mọi loại đơn tại **Gửi đơn**; mỗi loại được chuyển đến đúng người xử lý và theo dõi chung tại **Đơn của tôi** (Track Request Status). Dữ liệu mẫu: `apps/web/src/features/applications/studentApplications.ts`.
+
+| Loại đơn | Thông tin riêng | Người xử lý | Thời hạn | Luồng chi tiết |
+|---|---|---|---|---|
+| Báo hỏng thiết bị | Mã tài sản trong phòng, mức độ (bình thường / khẩn cấp), ảnh | Staff · tổ kỹ thuật | 2 – 72 giờ | F5 |
+| Đổi / hoán đổi phòng | MSSV đối tác hoặc chờ ghép | Manager duyệt | Trong đợt đổi phòng | F4 |
+| Hoàn tiền | Loại (hoàn cọc, thanh toán trùng, chấm dứt sớm), số tiền, mã giao dịch VietQR | Staff · Phòng Tài chính | 15 ngày làm việc | F6 |
+| Gia hạn thời hạn thanh toán | Hóa đơn, hạn mong muốn (≤ 14 ngày) | Staff | 2 ngày làm việc | F6 |
+| Xác nhận cư trú KTX | Mục đích, số bản | Staff | 3 ngày làm việc | — |
+| Đơn khác | Tiêu đề, nội dung | Staff | 3 ngày làm việc | — |
+
+Trạng thái chung hiển thị cho sinh viên: Đã gửi → Đang xử lý (→ Chờ bạn phản hồi với hoán đổi) → Đã duyệt → Hoàn tất; hoặc Bị từ chối / Đã hủy. Sinh viên được hủy khi đơn còn “Đã gửi / Chờ bạn phản hồi”; đơn báo hỏng đã sửa xong cần sinh viên **xác nhận hoàn tất**. Trạng thái chi tiết của từng nghiệp vụ vẫn theo State Diagram ở F4, F5.
+
+---
+
 ## F4. Đổi phòng / hoán đổi phòng
 
 1. Student A **Submit Room Change Request**; có thể *extend* **Initiate Mutual Room Swap** bằng cách nhập mã SV của Student B.

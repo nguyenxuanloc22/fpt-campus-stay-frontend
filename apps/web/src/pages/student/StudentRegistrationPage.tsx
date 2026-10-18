@@ -183,7 +183,7 @@ export function StudentRegistrationPage() {
             <span
               className={clsx(
                 'w-7 h-7 rounded-full text-xs font-bold flex items-center justify-center',
-                i < stepIdx && 'bg-slate-900 text-white',
+                i < stepIdx && 'bg-emerald-500 text-white',
                 i === stepIdx && 'bg-[#F26F21] text-white',
                 i > stepIdx && 'bg-slate-100 text-slate-400'
               )}
@@ -246,7 +246,7 @@ export function StudentRegistrationPage() {
           </div>
           <div className="mt-5 flex flex-wrap gap-2">
             {terms.map((t) => (
-              <span key={t.semester} className={clsx('px-3 py-1.5 rounded-full text-xs font-semibold border', t.semester <= endSemester ? 'bg-slate-900 text-white border-slate-900' : 'bg-white text-slate-400 border-slate-200')}>
+              <span key={t.semester} className={clsx('px-3 py-1.5 rounded-full text-xs font-semibold border', t.semester <= endSemester ? 'bg-[#F26F21] text-white border-[#F26F21]' : 'bg-white text-slate-400 border-slate-200')}>
                 {t.label}
               </span>
             ))}
@@ -314,7 +314,7 @@ export function StudentRegistrationPage() {
                 key={m}
                 type="button"
                 onClick={() => setMode(m)}
-                className={clsx('p-3 rounded-xl border text-sm font-semibold', mode === m ? 'border-slate-900 bg-slate-900 text-white' : 'border-slate-200 text-slate-600 hover:border-slate-300')}
+                className={clsx('p-3 rounded-xl border text-sm font-semibold', mode === m ? 'border-[#F26F21] bg-orange-50 text-[#C2410C]' : 'border-slate-200 text-slate-600 hover:border-slate-300')}
               >
                 {label}
               </button>

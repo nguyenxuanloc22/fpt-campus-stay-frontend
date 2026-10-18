@@ -90,12 +90,12 @@ export function StudentMyRoomPage() {
 
       {/* Việc cần làm cho kỳ tiếp theo */}
       {!signed && (
-        <div className="flex flex-col sm:flex-row sm:items-center gap-3 px-5 py-4 rounded-2xl bg-slate-900 text-white">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-3 px-5 py-4 rounded-2xl bg-gradient-to-r from-[#F26F21] to-[#FF9A4D] text-white shadow-lg shadow-orange-500/20">
           <div className="flex-1">
             <div className="text-sm font-semibold">Đã xếp phòng Spring 2027: {ROOM.code} · Giường {ROOM.bed}</div>
-            <div className="text-xs text-slate-300">Ký hợp đồng {NEXT_CONTRACT} trước khi check-in (02/01 – 05/01/2027).</div>
+            <div className="text-xs text-white/85">Ký hợp đồng {NEXT_CONTRACT} trước khi check-in (02/01 – 05/01/2027).</div>
           </div>
-          <AppButton leftIcon={<PenLine className="w-4 h-4" />} onClick={() => setSignOpen(true)}>Ký hợp đồng</AppButton>
+          <AppButton variant="outline" leftIcon={<PenLine className="w-4 h-4" />} onClick={() => setSignOpen(true)}>Ký hợp đồng</AppButton>
         </div>
       )}
 
@@ -125,7 +125,7 @@ export function StudentMyRoomPage() {
                       <td className="px-5 py-2.5 text-right">
                         <button
                           type="button"
-                          onClick={() => navigate(APP_ROUTES.STUDENT.REQUESTS, { state: { assetId: a.id, assetName: a.name } })}
+                          onClick={() => navigate(APP_ROUTES.STUDENT.APPLICATION_NEW, { state: { assetId: a.id, assetName: a.name } })}
                           className="inline-flex items-center gap-1 whitespace-nowrap text-xs font-semibold text-slate-500 hover:text-[#F26F21]"
                         >
                           <Wrench className="w-3.5 h-3.5" /> Báo hỏng

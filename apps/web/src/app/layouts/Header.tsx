@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
-import { Bell, ChevronDown, ChevronRight, LogOut, Lock, Settings, User as UserIcon } from 'lucide-react';
-import { useNavigate, Link, useLocation } from 'react-router-dom';
+import { Bell, ChevronDown, ChevronRight, LogOut, Lock, MapPin, Menu, Settings, User as UserIcon } from 'lucide-react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import clsx from 'clsx';
 import { useAuthStore } from '@features/auth';
 import { PERSONAL_NOTIFICATIONS } from '@features/notifications/personalNotifications';
@@ -15,13 +15,13 @@ const BREADCRUMB_LABELS: Record<string, string> = {
   dashboard: 'Tổng quan',
   registration: 'Đăng ký lưu trú',
   'my-room': 'Phòng của tôi',
+  new: 'Gửi đơn',
   invoices: 'Hóa đơn',
-  requests: 'Yêu cầu',
+  applications: 'Đơn từ',
   checkin: 'Check-in / Check-out',
   notifications: 'Thông báo chung',
   profile: 'Hồ sơ cá nhân',
   inventory: 'Phòng & giường',
-  applications: 'Đơn đăng ký',
   assignment: 'Xếp phòng',
   'room-changes': 'Đổi phòng',
   'checkin-out': 'Check-in / Check-out',
@@ -159,7 +159,7 @@ function UserMenu() {
         onClick={() => setOpen((v) => !v)}
         className="flex items-center gap-2.5 pl-1 pr-2 py-1 rounded-xl hover:bg-slate-50 border border-transparent hover:border-slate-200"
       >
-        <span className="w-9 h-9 rounded-full bg-[#F26F21] text-white text-xs font-bold flex items-center justify-center">{initials}</span>
+        <span className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#F26F21] to-[#FF9A4D] text-white text-xs font-bold flex items-center justify-center">{initials}</span>
         <span className="hidden md:block text-left">
           <span className="block text-sm font-bold text-slate-900 leading-tight max-w-[180px] truncate">{user.name}</span>
           <span className="block text-[11px] text-slate-500">{subtitle}</span>
@@ -170,7 +170,7 @@ function UserMenu() {
       {open && (
         <div className="absolute right-0 top-12 w-72 bg-white rounded-2xl border border-slate-200 shadow-xl overflow-hidden z-40">
           <div className="px-4 py-4 flex items-center gap-3 bg-slate-50/70 border-b border-slate-100">
-            <span className="w-11 h-11 rounded-full bg-[#F26F21] text-white text-sm font-bold flex items-center justify-center shrink-0">{initials}</span>
+            <span className="w-11 h-11 rounded-xl bg-gradient-to-br from-[#F26F21] to-[#FF9A4D] text-white text-sm font-bold flex items-center justify-center shrink-0">{initials}</span>
             <div className="min-w-0">
               <div className="text-sm font-bold text-slate-900 truncate">{user.name}</div>
               <div className="text-xs text-slate-500">{subtitle}</div>
@@ -237,32 +237,44 @@ function UserMenu() {
   );
 }
 
-export function Header() {
+export function Header({ onToggleSidebar }: { onToggleSidebar: () => void }) {
   const { pathname } = useLocation();
   const segments = pathname.split('/').filter(Boolean);
   const crumbs = segments
     .filter((s) => !['student', 'staff', 'manager', 'admin'].includes(s))
-    .map((s) => BREADCRUMB_LABELS[s] ?? s);
+    .map((s) => (s === 'applications' && segments[0] === 'staff' ? 'Đơn đăng ký' : BREADCRUMB_LABELS[s] ?? s));
+  const isStudentAppList = segments[0] === 'student' && segments[segments.length - 1] === 'applications';
+  const title = isStudentAppList ? 'Đơn của tôi' : crumbs[crumbs.length - 1] ?? 'Tổng quan';
 
   return (
-    <header className="h-16 bg-white border-b border-slate-200 px-4 sm:px-6 flex items-center justify-between sticky top-0 z-30">
+    <header className="h-16 bg-white/90 backdrop-blur border-b border-slate-200 px-4 sm:px-6 flex items-center justify-between sticky top-0 z-30">
       <div className="flex items-center gap-3 min-w-0">
-        <Link to="/" className="flex items-center gap-2.5 shrink-0">
-          <span className="w-9 h-9 rounded-xl bg-[#F26F21] text-white flex items-center justify-center font-black text-[11px]">FPT</span>
-          <span className="hidden sm:block font-bold text-sm text-slate-900">CampusStay</span>
-        </Link>
-        {crumbs.length > 0 && (
-          <nav aria-label="Breadcrumb" className="hidden md:flex items-center gap-1.5 pl-3 border-l border-slate-200 text-xs text-slate-500 min-w-0">
-            {crumbs.map((c, i) => (
-              <span key={c} className="flex items-center gap-1.5 min-w-0">
-                {i > 0 && <ChevronRight className="w-3 h-3 text-slate-300" />}
-                <span className={clsx('truncate', i === crumbs.length - 1 && 'font-semibold text-slate-800')}>{c}</span>
-              </span>
-            ))}
-          </nav>
-        )}
+        <button
+          type="button"
+          onClick={onToggleSidebar}
+          aria-label="Thu gọn / mở rộng thanh điều hướng"
+          className="w-10 h-10 rounded-xl bg-slate-50 border border-slate-200 hover:bg-orange-50 hover:text-[#F26F21] text-slate-600 flex items-center justify-center"
+        >
+          <Menu className="w-5 h-5" />
+        </button>
+        <div className="min-w-0">
+          <div className="text-base font-bold text-slate-900 truncate">{title}</div>
+          {crumbs.length > 1 && (
+            <nav aria-label="Breadcrumb" className="hidden md:flex items-center gap-1 text-[11px] text-slate-400">
+              {crumbs.map((c, i) => (
+                <span key={c} className="flex items-center gap-1">
+                  {i > 0 && <ChevronRight className="w-3 h-3" />}
+                  {c}
+                </span>
+              ))}
+            </nav>
+          )}
+        </div>
       </div>
       <div className="flex items-center gap-2 shrink-0">
+        <span className="hidden lg:flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-semibold text-slate-600">
+          <MapPin className="w-4 h-4 text-[#F26F21]" /> Cơ sở Tân Uyên (Bình Dương)
+        </span>
         <NotificationBell />
         <UserMenu />
       </div>

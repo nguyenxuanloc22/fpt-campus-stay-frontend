@@ -149,12 +149,12 @@ export function StudentCheckinPage() {
       <PageHeader title="Check-in / Check-out" description="Tự nhận và trả phòng bằng mã QR, kèm biên bản hiện trạng số" />
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="md:col-span-2 p-5 rounded-2xl bg-slate-900 text-white flex flex-col sm:flex-row sm:items-center gap-4">
-          <div className="w-14 h-14 rounded-2xl bg-white/10 flex items-center justify-center"><KeyRound className="w-7 h-7 text-orange-300" /></div>
+        <div className="md:col-span-2 p-5 rounded-2xl bg-gradient-to-r from-[#F26F21] to-[#FF9A4D] text-white shadow-lg shadow-orange-500/20 flex flex-col sm:flex-row sm:items-center gap-4">
+          <div className="w-14 h-14 rounded-2xl bg-white/20 flex items-center justify-center"><KeyRound className="w-7 h-7 text-white" /></div>
           <div className="flex-1">
-            <div className="text-xs text-slate-300">Phân bổ học kỳ {ASSIGNMENT.term}</div>
+            <div className="text-xs text-white/85">Phân bổ học kỳ {ASSIGNMENT.term}</div>
             <div className="text-lg font-bold">Phòng {ASSIGNMENT.room} · Giường {ASSIGNMENT.bed}</div>
-            <div className="text-xs text-slate-300">{ASSIGNMENT.building} · Khung check-in {ASSIGNMENT.window}</div>
+            <div className="text-xs text-white/85">{ASSIGNMENT.building} · Khung check-in {ASSIGNMENT.window}</div>
           </div>
           <StatusBadge status={step === 'DONE' ? 'CHECKED_IN' : 'ASSIGNED'} customLabel={step === 'DONE' ? undefined : 'Chờ nhận phòng'} />
         </div>
@@ -238,9 +238,9 @@ export function StudentCheckinPage() {
             {step === 'ACCESS' && (
               <SectionCard title="Bước 3 — Thông tin truy cập phòng">
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
-                  <div className="p-4 rounded-xl bg-[#EBF2FB]"><KeyRound className="w-5 h-5 text-[#1A365D]" /><div className="text-slate-500 mt-2">Thẻ từ ra vào</div><div className="font-bold text-[#1A365D]">Đã kích hoạt trên thẻ SV</div></div>
-                  <div className="p-4 rounded-xl bg-[#EBF2FB]"><MapPin className="w-5 h-5 text-[#1A365D]" /><div className="text-slate-500 mt-2">Phòng</div><div className="font-bold text-[#1A365D]">A204 · Tầng 2 · Giường G1</div></div>
-                  <div className="p-4 rounded-xl bg-[#EBF2FB]"><Wifi className="w-5 h-5 text-[#1A365D]" /><div className="text-slate-500 mt-2">Wi-Fi</div><div className="font-bold text-[#1A365D]">FPTU-DORM-A · đăng nhập SV</div></div>
+                  <div className="p-4 rounded-xl bg-orange-50"><KeyRound className="w-5 h-5 text-orange-600" /><div className="text-slate-500 mt-2">Thẻ từ ra vào</div><div className="font-bold text-[#1A365D]">Đã kích hoạt trên thẻ SV</div></div>
+                  <div className="p-4 rounded-xl bg-sky-50"><MapPin className="w-5 h-5 text-sky-600" /><div className="text-slate-500 mt-2">Phòng</div><div className="font-bold text-[#1A365D]">A204 · Tầng 2 · Giường G1</div></div>
+                  <div className="p-4 rounded-xl bg-emerald-50"><Wifi className="w-5 h-5 text-emerald-600" /><div className="text-slate-500 mt-2">Wi-Fi</div><div className="font-bold text-[#1A365D]">FPTU-DORM-A · đăng nhập SV</div></div>
                 </div>
                 <p className="text-xs text-slate-600 mt-4">Nhận chìa khóa tủ cá nhân tại quầy sảnh, sau đó lên phòng và lập biên bản hiện trạng trong vòng 24 giờ.</p>
                 <AppButton className="mt-4" onClick={() => setStep('REPORT')}>Lập biên bản hiện trạng</AppButton>
@@ -260,7 +260,7 @@ export function StudentCheckinPage() {
               <SectionCard>
                 <div className="text-center py-6">
                   <CheckCircle2 className="w-12 h-12 text-emerald-500 mx-auto mb-3" />
-                  <div className="text-lg font-bold text-[#1A365D]">Bạn đã nhận phòng A204</div>
+                  <div className="text-lg font-bold text-slate-900">Bạn đã nhận phòng A204</div>
                   <p className="text-xs text-slate-500 mt-1">{issues ? `${issues} hạng mục có vấn đề đã được gửi tới bộ phận bảo trì.` : 'Biên bản hiện trạng đã được lưu.'}</p>
                 </div>
               </SectionCard>
