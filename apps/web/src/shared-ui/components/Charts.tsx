@@ -1,4 +1,5 @@
 import clsx from 'clsx';
+import { CHART_COLORS } from '../tokens/colors';
 
 export interface BarDatum {
   label: string;
@@ -23,18 +24,18 @@ export function BarChart({ data, height = 180, formatValue = (v) => String(v), p
       <div className="flex items-end gap-2 sm:gap-3" style={{ height }}>
         {data.map((d) => (
           <div key={d.label} className="flex-1 h-full flex flex-col justify-end items-center group relative">
-            <div className="absolute top-0 -translate-y-full hidden group-hover:block bg-slate-800 text-white text-[10px] px-2 py-1 rounded whitespace-nowrap z-10">
+            <div className="absolute top-0 -translate-y-full hidden group-hover:block bg-ink text-surface text-label px-2 py-1 rounded whitespace-nowrap z-10">
               {d.label}: {formatValue(d.value)}
               {d.secondary !== undefined && ` / ${formatValue(d.secondary)}`}
             </div>
             <div className="w-full flex items-end justify-center gap-0.5 h-full">
               <div
-                className="w-full max-w-7 bg-[#F26F21] rounded-t-md transition-all group-hover:opacity-80"
+                className="w-full max-w-7 bg-brand-ink rounded-t-md transition-opacity group-hover:opacity-80"
                 style={{ height: `${(d.value / max) * 100}%` }}
               />
               {d.secondary !== undefined && (
                 <div
-                  className="w-full max-w-7 bg-[#1A365D]/80 rounded-t-md transition-all group-hover:opacity-80"
+                  className="w-full max-w-7 bg-ink/80 rounded-t-md transition-opacity group-hover:opacity-80"
                   style={{ height: `${(d.secondary / max) * 100}%` }}
                 />
               )}
@@ -42,21 +43,21 @@ export function BarChart({ data, height = 180, formatValue = (v) => String(v), p
           </div>
         ))}
       </div>
-      <div className="flex gap-2 sm:gap-3 mt-2 border-t border-slate-100 pt-2">
+      <div className="flex gap-2 sm:gap-3 mt-2 border-t border-line pt-2">
         {data.map((d) => (
-          <div key={d.label} className="flex-1 text-center text-[10px] text-slate-500 truncate">
+          <div key={d.label} className="flex-1 text-center text-label text-ink-muted truncate">
             {d.label}
           </div>
         ))}
       </div>
       {hasSecondary && (primaryLabel || secondaryLabel) && (
-        <div className="flex items-center justify-center gap-4 mt-3 text-[11px] text-slate-600">
+        <div className="flex items-center justify-center gap-4 mt-3 text-label text-ink-muted">
           <span className="flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 rounded-sm bg-[#F26F21]" />
+            <span className="w-2.5 h-2.5 rounded-sm bg-brand-ink" />
             {primaryLabel}
           </span>
           <span className="flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 rounded-sm bg-[#1A365D]/80" />
+            <span className="w-2.5 h-2.5 rounded-sm bg-ink/80" />
             {secondaryLabel}
           </span>
         </div>
@@ -86,7 +87,7 @@ export function DonutChart({ segments, size = 150, centerLabel, centerValue }: D
     <div className="flex flex-col sm:flex-row items-center gap-5">
       <div className="relative shrink-0" style={{ width: size, height: size }}>
         <svg viewBox="0 0 42 42" className="w-full h-full">
-          <circle cx="21" cy="21" r={radius} fill="transparent" stroke="#f1f5f9" strokeWidth="5" />
+          <circle cx="21" cy="21" r={radius} fill="transparent" stroke={CHART_COLORS.track} strokeWidth="5" />
           {segments.map((s) => {
             const pct = (s.value / total) * 100;
             const el = (
@@ -108,21 +109,21 @@ export function DonutChart({ segments, size = 150, centerLabel, centerValue }: D
         </svg>
         {(centerValue || centerLabel) && (
           <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
-            {centerValue && <span className="text-lg font-bold text-slate-800 leading-none">{centerValue}</span>}
-            {centerLabel && <span className="text-[10px] text-slate-500 mt-1">{centerLabel}</span>}
+            {centerValue && <span className="text-lg font-bold text-ink leading-none">{centerValue}</span>}
+            {centerLabel && <span className="text-label text-ink-muted mt-1">{centerLabel}</span>}
           </div>
         )}
       </div>
       <ul className="space-y-2 text-xs w-full">
         {segments.map((s) => (
           <li key={s.label} className="flex items-center justify-between gap-3">
-            <span className="flex items-center gap-2 text-slate-600">
+            <span className="flex items-center gap-2 text-ink-muted">
               <span className="w-2.5 h-2.5 rounded-full" style={{ background: s.color }} />
               {s.label}
             </span>
-            <span className="font-semibold text-slate-800">
+            <span className="font-semibold text-ink">
               {s.value.toLocaleString('vi-VN')}{' '}
-              <span className="text-slate-400 font-normal">({Math.round((s.value / total) * 100)}%)</span>
+              <span className="text-ink-subtle font-normal">({Math.round((s.value / total) * 100)}%)</span>
             </span>
           </li>
         ))}
@@ -137,7 +138,7 @@ interface SparklineProps {
   color?: string;
 }
 
-export function Sparkline({ points, className, color = '#F26F21' }: SparklineProps) {
+export function Sparkline({ points, className, color = CHART_COLORS.brand }: SparklineProps) {
   const max = Math.max(...points);
   const min = Math.min(...points);
   const range = max - min || 1;

@@ -59,38 +59,38 @@ export function StudentMyRoomPage() {
   return (
     <div className="space-y-6 max-w-6xl">
       {/* Thẻ phòng */}
-      <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden grid grid-cols-1 md:grid-cols-[280px_1fr]">
-        <RoomTypeIllustration type={ROOM.typeId} className="w-full h-full min-h-[180px] bg-slate-50" />
+      <div className="bg-white rounded-2xl border border-line overflow-hidden grid grid-cols-1 md:grid-cols-[280px_1fr]">
+        <RoomTypeIllustration type={ROOM.typeId} className="w-full h-full min-h-[180px] bg-surface-muted" />
         <div className="p-6">
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div>
-              <div className="text-sm text-slate-500">Phòng của tôi · {ROOM.term}</div>
+              <div className="text-sm text-ink-muted">Phòng của tôi · {ROOM.term}</div>
               <div className="flex items-baseline gap-3 mt-1">
-                <h1 className="text-4xl font-bold text-slate-900 tracking-tight">{ROOM.code}</h1>
-                <span className="text-lg font-semibold text-slate-500">Giường {ROOM.bed}</span>
+                <h1 className="text-4xl font-bold text-ink tracking-tight">{ROOM.code}</h1>
+                <span className="text-lg font-semibold text-ink-muted">Giường {ROOM.bed}</span>
               </div>
-              <div className="text-sm text-slate-600 mt-1">{ROOM.building} · Tầng {ROOM.floor} · {type.name}</div>
+              <div className="text-sm text-ink-muted mt-1">{ROOM.building} · Tầng {ROOM.floor} · {type.name}</div>
             </div>
             <StatusBadge status="CHECKED_IN" customLabel="Đang ở" />
           </div>
           <div className="mt-6">
-            <div className="flex justify-between text-xs text-slate-500 mb-1.5">
+            <div className="flex justify-between text-xs text-ink-muted mb-1.5">
               <span>{ROOM.period}</span>
               <span>{ROOM.daysStayed}/{ROOM.daysTotal} ngày</span>
             </div>
             <ProgressBar value={ROOM.daysStayed} max={ROOM.daysTotal} tone="navy" size="md" />
           </div>
           <div className="mt-5 grid grid-cols-3 gap-3 text-sm">
-            <div><div className="text-xs text-slate-500">Hợp đồng</div><div className="font-semibold text-slate-900">{ROOM.contract}</div></div>
-            <div><div className="text-xs text-slate-500">Thành viên</div><div className="font-semibold text-slate-900">{ROOMMATES.length}/{type.capacity} người</div></div>
-            <div><div className="text-xs text-slate-500">Phí kỳ</div><div className="font-semibold text-slate-900">{type.pricePerTerm.toLocaleString('vi-VN')} ₫</div></div>
+            <div><div className="text-xs text-ink-muted">Hợp đồng</div><div className="font-semibold text-ink">{ROOM.contract}</div></div>
+            <div><div className="text-xs text-ink-muted">Thành viên</div><div className="font-semibold text-ink">{ROOMMATES.length}/{type.capacity} người</div></div>
+            <div><div className="text-xs text-ink-muted">Phí kỳ</div><div className="font-semibold text-ink">{type.pricePerTerm.toLocaleString('vi-VN')} ₫</div></div>
           </div>
         </div>
       </div>
 
       {/* Việc cần làm cho kỳ tiếp theo */}
       {!signed && (
-        <div className="flex flex-col sm:flex-row sm:items-center gap-3 px-5 py-4 rounded-2xl bg-gradient-to-r from-[#F26F21] to-[#FF9A4D] text-white shadow-lg shadow-orange-500/20">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-3 px-5 py-4 rounded-2xl bg-gradient-to-r from-brand to-brand text-white shadow-lg shadow-orange-500/20">
           <div className="flex-1">
             <div className="text-sm font-semibold">Đã xếp phòng Spring 2027: {ROOM.code} · Giường {ROOM.bed}</div>
             <div className="text-xs text-white/85">Ký hợp đồng {NEXT_CONTRACT} trước khi check-in (02/01 – 05/01/2027).</div>
@@ -104,7 +104,7 @@ export function StudentMyRoomPage() {
         <SectionCard className="lg:col-span-2" title="Tài sản trong phòng" subtitle="Mỗi thiết bị có mã riêng — dùng mã này khi báo hỏng" noPadding>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
-              <thead className="text-xs text-slate-500 bg-slate-50">
+              <thead className="text-xs text-ink-muted bg-surface-muted">
                 <tr>
                   <th className="text-left font-medium px-5 py-2.5">Mã tài sản</th>
                   <th className="text-left font-medium px-5 py-2.5">Thiết bị</th>
@@ -112,21 +112,21 @@ export function StudentMyRoomPage() {
                   <th className="px-5 py-2.5" />
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100">
+              <tbody className="divide-y divide-line">
                 {assets.map((a) => {
                   const st = ASSET_STATUS[a.id];
                   return (
                     <tr key={a.id}>
-                      <td className="px-5 py-2.5 whitespace-nowrap"><code className="text-xs text-slate-600">{a.id}</code></td>
-                      <td className="px-5 py-2.5 text-slate-900">{a.name}</td>
+                      <td className="px-5 py-2.5 whitespace-nowrap"><code className="text-xs text-ink-muted">{a.id}</code></td>
+                      <td className="px-5 py-2.5 text-ink">{a.name}</td>
                       <td className="px-5 py-2.5">
-                        <span className={clsx('text-xs font-medium', st?.tone === 'repair' ? 'text-amber-600' : 'text-slate-500')}>{st?.label ?? 'Bình thường'}</span>
+                        <span className={clsx('text-xs font-medium', st?.tone === 'repair' ? 'text-amber-600' : 'text-ink-muted')}>{st?.label ?? 'Bình thường'}</span>
                       </td>
                       <td className="px-5 py-2.5 text-right">
                         <button
                           type="button"
                           onClick={() => navigate(APP_ROUTES.STUDENT.APPLICATION_NEW, { state: { assetId: a.id, assetName: a.name } })}
-                          className="inline-flex items-center gap-1 whitespace-nowrap text-xs font-semibold text-slate-500 hover:text-[#F26F21]"
+                          className="inline-flex items-center gap-1 whitespace-nowrap text-xs font-semibold text-ink-muted hover:text-brand-ink"
                         >
                           <Wrench className="w-3.5 h-3.5" /> Báo hỏng
                         </button>
@@ -142,17 +142,17 @@ export function StudentMyRoomPage() {
         <div className="space-y-6">
           {/* Bạn cùng phòng */}
           <SectionCard title="Bạn cùng phòng" noPadding>
-            <ul className="divide-y divide-slate-100">
+            <ul className="divide-y divide-line">
               {ROOMMATES.map((m) => (
                 <li key={m.id} className="px-5 py-3 flex items-center gap-3">
                   <Avatar name={m.name} size="sm" />
                   <div className="flex-1 min-w-0">
-                    <div className="text-sm font-semibold text-slate-900 truncate">{m.name}{m.isMe && <span className="text-slate-400 font-normal"> (bạn)</span>}</div>
-                    <div className="text-xs text-slate-500 truncate">{m.major}{!m.isMe && ` · ${maskPhone(m.phone)}`}</div>
+                    <div className="text-sm font-semibold text-ink truncate">{m.name}{m.isMe && <span className="text-ink-subtle font-normal"> (bạn)</span>}</div>
+                    <div className="text-xs text-ink-muted truncate">{m.major}{!m.isMe && ` · ${maskPhone(m.phone)}`}</div>
                   </div>
-                  <span className="text-xs font-semibold text-slate-500">{m.bed}</span>
+                  <span className="text-xs font-semibold text-ink-muted">{m.bed}</span>
                   {!m.isMe && (
-                    <a href={`mailto:${m.id.toLowerCase()}@fpt.edu.vn`} aria-label={`Gửi email cho ${m.name}`} className="text-slate-400 hover:text-slate-900">
+                    <a href={`mailto:${m.id.toLowerCase()}@fpt.edu.vn`} aria-label={`Gửi email cho ${m.name}`} className="text-ink-subtle hover:text-ink">
                       <Mail className="w-4 h-4" />
                     </a>
                   )}
@@ -166,10 +166,10 @@ export function StudentMyRoomPage() {
             <ol className="space-y-3">
               {STAY.map((s) => (
                 <li key={s.term} className="flex items-center gap-3">
-                  <span className={clsx('w-2 h-2 rounded-full shrink-0', s.status === 'CHECKED_IN' ? 'bg-[#F26F21]' : 'bg-slate-300')} />
+                  <span className={clsx('w-2 h-2 rounded-full shrink-0', s.status === 'CHECKED_IN' ? 'bg-brand-ink' : 'bg-slate-300')} />
                   <div className="flex-1 min-w-0">
-                    <div className="text-sm font-semibold text-slate-900">{s.term} <span className="text-xs font-normal text-slate-400">· Kỳ {s.semester}</span></div>
-                    <div className="text-xs text-slate-500">{s.room}</div>
+                    <div className="text-sm font-semibold text-ink">{s.term} <span className="text-xs font-normal text-ink-subtle">· Kỳ {s.semester}</span></div>
+                    <div className="text-xs text-ink-muted">{s.room}</div>
                   </div>
                   <StatusBadge status={s.status} />
                 </li>
@@ -179,18 +179,18 @@ export function StudentMyRoomPage() {
 
           {/* Hợp đồng */}
           <SectionCard title="Hợp đồng" noPadding>
-            <ul className="divide-y divide-slate-100">
+            <ul className="divide-y divide-line">
               {[
                 { code: NEXT_CONTRACT, term: 'Spring 2027', status: signed ? 'SIGNED' : 'DRAFT' },
                 { code: ROOM.contract, term: 'Fall 2026', status: 'ACTIVE' },
               ].map((c) => (
                 <li key={c.code} className="px-5 py-3 flex items-center gap-3">
                   <div className="flex-1">
-                    <div className="text-sm font-semibold text-slate-900">{c.code}</div>
-                    <div className="text-xs text-slate-500">{c.term}</div>
+                    <div className="text-sm font-semibold text-ink">{c.code}</div>
+                    <div className="text-xs text-ink-muted">{c.term}</div>
                   </div>
                   <StatusBadge status={c.status} customLabel={c.status === 'DRAFT' ? 'Chờ ký' : undefined} />
-                  <button type="button" aria-label={`Tải ${c.code}`} onClick={() => show(`Đang tải ${c.code}.pdf`)} className="text-slate-400 hover:text-slate-900">
+                  <button type="button" aria-label={`Tải ${c.code}`} onClick={() => show(`Đang tải ${c.code}.pdf`)} className="text-ink-subtle hover:text-ink">
                     <Download className="w-4 h-4" />
                   </button>
                 </li>
@@ -225,9 +225,9 @@ export function StudentMyRoomPage() {
           inputMode="numeric"
           aria-label="Mã OTP"
           placeholder="••••••"
-          className="w-full px-3 py-3 text-center text-xl tracking-[0.6em] font-bold border border-slate-200 rounded-lg"
+          className="w-full px-3 py-3 text-center text-xl tracking-[0.6em] font-bold border border-line rounded-lg"
         />
-        <p className="text-xs text-slate-500 mt-3">Chữ ký điện tử có giá trị pháp lý theo Luật Giao dịch điện tử 2023.</p>
+        <p className="text-xs text-ink-muted mt-3">Chữ ký điện tử có giá trị pháp lý theo Luật Giao dịch điện tử 2023.</p>
       </Modal>
       {toastNode}
     </div>

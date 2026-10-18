@@ -47,7 +47,7 @@ const SCHEDULE = [
 ];
 
 function StateBadge({ state }: { state: ApplicationState }) {
-  return <span className={clsx('inline-flex items-center px-2 py-0.5 rounded-full border text-[11px] font-bold whitespace-nowrap', STATE_TONE[state])}>{STATE_LABEL[state]}</span>;
+  return <span className={clsx('inline-flex items-center px-2 py-0.5 rounded-full border text-label font-bold whitespace-nowrap', STATE_TONE[state])}>{STATE_LABEL[state]}</span>;
 }
 
 export function StudentApplicationsPage() {
@@ -104,11 +104,11 @@ export function StudentApplicationsPage() {
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {summary.map((s) => (
-          <div key={s.label} className="relative overflow-hidden rounded-2xl bg-white border border-slate-200 p-4 shadow-sm">
+          <div key={s.label} className="relative overflow-hidden rounded-2xl bg-white border border-line p-4 shadow-sm">
             <div className={clsx('absolute -right-6 -top-6 w-20 h-20 rounded-full bg-gradient-to-br opacity-15', s.tone)} />
             <div className={clsx('w-8 h-1.5 rounded-full bg-gradient-to-r mb-3', s.tone)} />
-            <div className="text-2xl font-extrabold text-slate-900 tabular-nums">{s.value}</div>
-            <div className="text-xs font-semibold text-slate-500">{s.label}</div>
+            <div className="text-2xl font-extrabold text-ink tabular-nums">{s.value}</div>
+            <div className="text-xs font-semibold text-ink-muted">{s.label}</div>
           </div>
         ))}
       </div>
@@ -125,21 +125,21 @@ export function StudentApplicationsPage() {
 
       {tab === 'mine' && (
         <SectionCard noPadding>
-          <div className="p-4 border-b border-slate-100 flex flex-col lg:flex-row gap-3 lg:items-center">
+          <div className="p-4 border-b border-line flex flex-col lg:flex-row gap-3 lg:items-center">
             <div className="flex gap-1.5 flex-wrap">
               {(['ALL', 'OPEN', 'DONE'] as StateFilter[]).map((f) => (
-                <button key={f} type="button" onClick={() => setStateFilter(f)} className={clsx('px-3 py-1.5 rounded-full text-xs font-bold border transition', stateFilter === f ? 'bg-[#F26F21] text-white border-[#F26F21]' : 'bg-white text-slate-600 border-slate-200 hover:border-orange-300')}>
+                <button key={f} type="button" onClick={() => setStateFilter(f)} className={clsx('px-3 py-1.5 rounded-full text-xs font-bold border transition', stateFilter === f ? 'bg-brand-ink text-white border-brand' : 'bg-white text-ink-muted border-line hover:border-orange-300')}>
                   {f === 'ALL' ? 'Tất cả' : f === 'OPEN' ? 'Đang xử lý' : 'Đã đóng'}
                 </button>
               ))}
             </div>
-            <select value={typeFilter} onChange={(e) => setTypeFilter(e.target.value as 'ALL' | ApplicationType)} className="lg:ml-auto px-3 py-2 text-xs rounded-lg border border-slate-200 bg-white">
+            <select value={typeFilter} onChange={(e) => setTypeFilter(e.target.value as 'ALL' | ApplicationType)} className="lg:ml-auto px-3 py-2 text-xs rounded-lg border border-line bg-white">
               <option value="ALL">Mọi loại đơn</option>
               {APPLICATION_TYPES.map((t) => <option key={t.type} value={t.type}>{t.title}</option>)}
             </select>
             <div className="relative lg:w-60">
-              <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
-              <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Tìm mã đơn, tiêu đề…" className="w-full pl-9 pr-3 py-2 text-xs rounded-lg border border-slate-200 bg-white" />
+              <Search className="w-4 h-4 text-ink-subtle absolute left-3 top-1/2 -translate-y-1/2" />
+              <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Tìm mã đơn, tiêu đề…" className="w-full pl-9 pr-3 py-2 text-xs rounded-lg border border-line bg-white" />
             </div>
           </div>
 
@@ -148,7 +148,7 @@ export function StudentApplicationsPage() {
               <EmptyState title="Không có đơn phù hợp" description="Thử bỏ bớt bộ lọc hoặc gửi đơn mới." actionText="Gửi đơn mới" onAction={() => navigate(APP_ROUTES.STUDENT.APPLICATION_NEW)} />
             </div>
           ) : (
-            <ul className="divide-y divide-slate-100">
+            <ul className="divide-y divide-line">
               {list.map((a) => {
                 const v = APPLICATION_VISUAL[a.type];
                 return (
@@ -158,12 +158,12 @@ export function StudentApplicationsPage() {
                         <v.icon className="w-5 h-5" />
                       </span>
                       <span className="flex-1 min-w-0">
-                        <span className="block text-sm font-bold text-slate-800 truncate">{a.title}</span>
-                        <span className="block text-[11px] text-slate-500">{a.id} · {typeMeta(a.type).title} · {a.created}</span>
+                        <span className="block text-sm font-bold text-ink truncate">{a.title}</span>
+                        <span className="block text-label text-ink-muted">{a.id} · {typeMeta(a.type).title} · {a.created}</span>
                       </span>
-                      {a.state === 'APPROVED' && a.type === 'MAINTENANCE' && <span className="hidden md:inline text-[11px] font-semibold text-teal-700">Chờ bạn xác nhận</span>}
+                      {a.state === 'APPROVED' && a.type === 'MAINTENANCE' && <span className="hidden md:inline text-label font-semibold text-teal-700">Chờ bạn xác nhận</span>}
                       <StateBadge state={a.state} />
-                      <ChevronRight className="w-4 h-4 text-slate-300 shrink-0" />
+                      <ChevronRight className="w-4 h-4 text-ink-subtle shrink-0" />
                     </button>
                   </li>
                 );
@@ -183,14 +183,14 @@ export function StudentApplicationsPage() {
                 <div className="flex flex-col md:flex-row md:items-center gap-4">
                   <Avatar name={i.from} size="md" />
                   <div className="flex-1">
-                    <div className="text-sm font-bold text-slate-800">{i.from} ({i.fromId}) muốn hoán đổi phòng với bạn</div>
-                    <div className="text-xs text-slate-600 mt-1 flex items-center gap-2">
+                    <div className="text-sm font-bold text-ink">{i.from} ({i.fromId}) muốn hoán đổi phòng với bạn</div>
+                    <div className="text-xs text-ink-muted mt-1 flex items-center gap-2">
                       <span className="px-2 py-0.5 rounded-md bg-sky-50 text-sky-700 font-semibold">{i.fromRoom}</span>
-                      <ArrowLeftRight className="w-3.5 h-3.5 text-slate-400" />
+                      <ArrowLeftRight className="w-3.5 h-3.5 text-ink-subtle" />
                       <span className="px-2 py-0.5 rounded-md bg-orange-50 text-orange-700 font-semibold">{i.myRoom} (phòng của bạn)</span>
                     </div>
-                    <p className="text-xs text-slate-500 mt-1 italic">“{i.reason}”</p>
-                    <p className="text-[11px] text-amber-700 mt-1">Hạn phản hồi: {i.expires}</p>
+                    <p className="text-xs text-ink-muted mt-1 italic">“{i.reason}”</p>
+                    <p className="text-label text-amber-700 mt-1">Hạn phản hồi: {i.expires}</p>
                   </div>
                   {i.answered ? (
                     <StatusBadge status={i.answered === 'ACCEPTED' ? 'PROCESSING' : 'REJECTED'} customLabel={i.answered === 'ACCEPTED' ? 'Đã chấp nhận · chờ duyệt' : 'Đã từ chối'} />
@@ -209,18 +209,18 @@ export function StudentApplicationsPage() {
 
       {tab === 'schedule' && (
         <SectionCard title="Lịch bảo trì định kỳ" subtitle="Đã được Ban quản lý phê duyệt" noPadding>
-          <ul className="divide-y divide-slate-100">
+          <ul className="divide-y divide-line">
             {SCHEDULE.map((s) => (
               <li key={s.title} className="px-5 py-3.5 flex items-center gap-4">
                 <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-orange-500 to-amber-400 text-white flex flex-col items-center justify-center shrink-0 shadow-sm">
                   <span className="text-sm font-extrabold leading-none">{s.date.slice(0, 2)}</span>
-                  <span className="text-[10px]">T{Number(s.date.slice(3, 5))}</span>
+                  <span className="text-label">T{Number(s.date.slice(3, 5))}</span>
                 </div>
                 <div className="flex-1">
-                  <div className="text-sm font-bold text-slate-800">{s.title}</div>
-                  <div className="text-[11px] text-slate-500 flex items-center gap-1"><CalendarClock className="w-3 h-3" />{s.time} · {s.impact}</div>
+                  <div className="text-sm font-bold text-ink">{s.title}</div>
+                  <div className="text-label text-ink-muted flex items-center gap-1"><CalendarClock className="w-3 h-3" />{s.time} · {s.impact}</div>
                 </div>
-                {s.mine && <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-rose-50 text-rose-600">Ảnh hưởng phòng bạn</span>}
+                {s.mine && <span className="text-label font-bold px-2 py-0.5 rounded-full bg-rose-50 text-rose-600">Ảnh hưởng phòng bạn</span>}
               </li>
             ))}
           </ul>
@@ -251,31 +251,31 @@ export function StudentApplicationsPage() {
           <div className="space-y-5 text-sm">
             <div className="flex flex-wrap items-center gap-2">
               <StateBadge state={selected.state} />
-              <span className="inline-flex items-center gap-1 text-[11px] text-slate-500"><UserCog className="w-3.5 h-3.5 text-sky-500" />{typeMeta(selected.type).handler}</span>
-              <span className="inline-flex items-center gap-1 text-[11px] text-slate-500"><Clock className="w-3.5 h-3.5 text-amber-500" />{typeMeta(selected.type).sla}</span>
+              <span className="inline-flex items-center gap-1 text-label text-ink-muted"><UserCog className="w-3.5 h-3.5 text-sky-500" />{typeMeta(selected.type).handler}</span>
+              <span className="inline-flex items-center gap-1 text-label text-ink-muted"><Clock className="w-3.5 h-3.5 text-amber-500" />{typeMeta(selected.type).sla}</span>
             </div>
             {Object.keys(selected.fields).length > 0 && (
               <dl className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 {Object.entries(selected.fields).map(([k, val]) => (
-                  <div key={k} className="rounded-xl bg-slate-50 border border-slate-100 px-3 py-2">
-                    <dt className="text-[11px] text-slate-500">{k}</dt>
-                    <dd className="text-sm font-semibold text-slate-800">{val}</dd>
+                  <div key={k} className="rounded-xl bg-surface-muted border border-line px-3 py-2">
+                    <dt className="text-label text-ink-muted">{k}</dt>
+                    <dd className="text-sm font-semibold text-ink">{val}</dd>
                   </div>
                 ))}
               </dl>
             )}
             <div>
-              <div className="text-xs font-bold text-slate-700 mb-1">Nội dung</div>
-              <p className="text-slate-600 leading-relaxed">{selected.detail}</p>
+              <div className="text-xs font-bold text-ink mb-1">Nội dung</div>
+              <p className="text-ink-muted leading-relaxed">{selected.detail}</p>
             </div>
             <div>
-              <div className="text-xs font-bold text-slate-700 mb-2">Tiến trình xử lý</div>
+              <div className="text-xs font-bold text-ink mb-2">Tiến trình xử lý</div>
               <ol className="relative border-l-2 border-orange-100 ml-2 space-y-3">
                 {selected.timeline.map((e, i) => (
                   <li key={e.time + e.text} className="pl-4 relative">
-                    <span className={clsx('absolute -left-[7px] top-1 w-3 h-3 rounded-full ring-2 ring-white', i === selected.timeline.length - 1 ? 'bg-[#F26F21]' : 'bg-orange-200')} />
-                    <div className="text-[11px] font-bold text-slate-500">{e.time}</div>
-                    <div className="text-sm text-slate-700">{e.text}</div>
+                    <span className={clsx('absolute -left-[7px] top-1 w-3 h-3 rounded-full ring-2 ring-white', i === selected.timeline.length - 1 ? 'bg-brand-ink' : 'bg-orange-200')} />
+                    <div className="text-label font-bold text-ink-muted">{e.time}</div>
+                    <div className="text-sm text-ink">{e.text}</div>
                   </li>
                 ))}
               </ol>

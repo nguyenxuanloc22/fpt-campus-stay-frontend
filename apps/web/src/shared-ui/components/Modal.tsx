@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useId } from 'react';
 import clsx from 'clsx';
 import { X } from 'lucide-react';
 
@@ -12,9 +12,12 @@ interface ModalProps {
   size?: 'sm' | 'md' | 'lg' | 'xl';
 }
 
-const SIZES = { sm: 'max-w-md', md: 'max-w-lg', lg: 'max-w-2xl', xl: 'max-w-4xl' };
+const SIZES = { sm: 'sm:max-w-md', md: 'sm:max-w-lg', lg: 'sm:max-w-2xl', xl: 'sm:max-w-4xl' };
 
+/** Hộp thoại: trên mobile là bottom sheet (nút ở tầm ngón cái), từ 640px là hộp giữa màn hình. */
 export function Modal({ open, onClose, title, subtitle, children, footer, size = 'md' }: ModalProps) {
+  const titleId = useId();
+
   useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => {
@@ -27,25 +30,32 @@ export function Modal({ open, onClose, title, subtitle, children, footer, size =
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-slate-900/50 backdrop-blur-[2px]" onClick={onClose} />
-      <div className={clsx('relative w-full bg-white rounded-2xl shadow-xl flex flex-col max-h-[90vh]', SIZES[size])}>
-        <div className="flex items-start justify-between gap-4 px-6 py-4 border-b border-slate-100">
-          <div>
-            <h3 className="text-base font-extrabold text-slate-900">{title}</h3>
-            {subtitle && <p className="text-xs text-slate-500 mt-0.5">{subtitle}</p>}
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center sm:p-4">
+      <div className="absolute inset-0 bg-ink/50" onClick={onClose} aria-hidden="true" />
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={titleId}
+        className={clsx('relative w-full bg-surface rounded-t-card sm:rounded-card shadow-overlay flex flex-col max-h-[90dvh]', SIZES[size])}
+      >
+        <div className="flex items-start justify-between gap-4 px-4 sm:px-6 py-4 border-b border-line">
+          <div className="min-w-0">
+            <h2 id={titleId} className="text-section font-semibold text-ink">{title}</h2>
+            {subtitle && <p className="text-label text-ink-muted mt-1">{subtitle}</p>}
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="p-1.5 rounded-lg text-slate-400 hover:bg-slate-100 hover:text-slate-700"
+            className="-mr-2 -mt-1 w-touch h-touch shrink-0 inline-flex items-center justify-center rounded-control text-ink-muted hover:bg-surface-sunken hover:text-ink"
             aria-label="Đóng"
           >
-            <X className="w-4 h-4" />
+            <X className="w-5 h-5" aria-hidden="true" />
           </button>
         </div>
-        <div className="px-6 py-5 overflow-y-auto">{children}</div>
-        {footer && <div className="px-6 py-4 border-t border-slate-100 flex flex-wrap justify-end gap-2">{footer}</div>}
+        <div className="px-4 sm:px-6 py-4 overflow-y-auto">{children}</div>
+        {footer && (
+          <div className="px-4 sm:px-6 py-4 pb-[max(1rem,env(safe-area-inset-bottom))] border-t border-line flex flex-wrap justify-end gap-2">{footer}</div>
+        )}
       </div>
     </div>
   );

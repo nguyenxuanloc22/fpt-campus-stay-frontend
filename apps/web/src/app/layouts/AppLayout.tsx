@@ -1,7 +1,10 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { Outlet } from 'react-router-dom';
+import clsx from 'clsx';
+import { useAuthStore } from '@features/auth';
 import { Header } from './Header';
 import { Sidebar } from './Sidebar';
+import { StudentTabBar } from './StudentTabBar';
 import { ImportantAnnouncementsModal } from './ImportantAnnouncementsModal';
 
 const COLLAPSE_KEY = 'campusstay_sidebar_collapsed';
@@ -14,28 +17,43 @@ const readCollapsed = () => {
   }
 };
 
-export function AppLayout() {
-  const [collapsed, setCollapsed] = useState(readCollapsed);
+const saveCollapsed = (value: boolean) => {
+  try {
+    localStorage.setItem(COLLAPSE_KEY, value ? '1' : '0');
+  } catch {
+    /* bỏ qua khi trình duyệt chặn storage */
+  }
+};
 
-  const toggle = () =>
-    setCollapsed((c) => {
-      try {
-        localStorage.setItem(COLLAPSE_KEY, c ? '0' : '1');
-      } catch {
-        /* bỏ qua khi trình duyệt chặn storage */
-      }
-      return !c;
-    });
+export function AppLayout() {
+  const isStudent = useAuthStore((s) => s.user?.role === 'STUDENT');
+  const [collapsed, setCollapsed] = useState(readCollapsed);
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
+
+  const toggleCollapse = () => {
+    saveCollapsed(!collapsed);
+    setCollapsed(!collapsed);
+  };
+  const openMobileNav = useCallback(() => setMobileNavOpen(true), []);
+  const closeMobileNav = useCallback(() => setMobileNavOpen(false), []);
 
   return (
-    <div className="min-h-screen bg-slate-100 flex font-sans">
-      <Sidebar collapsed={collapsed} />
+    <div className="min-h-dvh bg-page flex">
+      <Sidebar collapsed={collapsed} onToggleCollapse={toggleCollapse} mobileOpen={mobileNavOpen} onCloseMobile={closeMobileNav} />
       <div className="flex-1 min-w-0 flex flex-col">
-        <Header onToggleSidebar={toggle} />
-        <main className="flex-1 p-5 md:p-7 max-w-[1400px] mx-auto w-full overflow-x-hidden">
+        <Header onToggleSidebar={openMobileNav} />
+        <main
+          id="main"
+          className={clsx(
+            'flex-1 w-full max-w-content mx-auto px-4 py-6 sm:px-6 lg:px-8',
+            // Chừa chỗ cho thanh tab dưới đáy của sinh viên trên mobile
+            isStudent && 'pb-[calc(var(--spacing-tabbar)+env(safe-area-inset-bottom)+1.5rem)] sm:pb-6'
+          )}
+        >
           <Outlet />
         </main>
       </div>
+      {isStudent && <StudentTabBar onMore={openMobileNav} />}
       <ImportantAnnouncementsModal />
     </div>
   );

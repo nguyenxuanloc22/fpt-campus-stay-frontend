@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { CheckSquare, Check, X, Cpu, User, Search, Download, AlertTriangle, CheckCircle2, Clock, Layers, ChevronDown } from 'lucide-react';
 import clsx from 'clsx';
-import { PageHeader, StatCard, SectionCard, StatusBadge, AppButton, ProgressBar, DonutChart, Modal, useToast } from '@shared-ui';
+import { PageHeader, StatCard, SectionCard, StatusBadge, AppButton, ProgressBar, DonutChart, Modal, useToast, CHART_COLORS } from '@shared-ui';
 import type { AssignmentProposalStatus } from '@campusstay/constants';
 
 /**
@@ -110,19 +110,19 @@ export function ManagerAssignmentApprovalPage() {
               key={b.code}
               type="button"
               onClick={() => { setOpenCode(b.code); setExcluded([]); }}
-              className={clsx('w-full text-left p-4 rounded-2xl border bg-white transition', openCode === b.code ? 'border-[#F26F21] ring-2 ring-orange-100' : 'border-slate-200 hover:border-slate-300')}
+              className={clsx('w-full text-left p-4 rounded-2xl border bg-white transition', openCode === b.code ? 'border-brand ring-2 ring-orange-100' : 'border-line hover:border-line-strong')}
             >
               <div className="flex items-center justify-between mb-2">
-                <span className={clsx('flex items-center gap-1.5 text-[10px] font-bold px-2 py-0.5 rounded-full', b.source === 'ENGINE' ? 'bg-[#EBF2FB] text-[#1A365D]' : 'bg-purple-50 text-purple-700')}>
+                <span className={clsx('flex items-center gap-1.5 text-label font-bold px-2 py-0.5 rounded-full', b.source === 'ENGINE' ? 'bg-surface-sunken text-ink' : 'bg-purple-50 text-purple-700')}>
                   {b.source === 'ENGINE' ? <Cpu className="w-3 h-3" /> : <User className="w-3 h-3" />}
                   {b.source === 'ENGINE' ? 'VÒNG 1' : 'VÒNG 2'}
                 </span>
                 <StatusBadge status={b.status} customLabel={b.status === 'PENDING_APPROVAL' ? 'Chờ duyệt' : undefined} />
               </div>
-              <div className="text-xs font-bold text-slate-800">{b.title}</div>
-              <div className="text-[11px] text-slate-500 mt-0.5">{b.code} • {b.createdBy} • {b.created}</div>
+              <div className="text-xs font-bold text-ink">{b.title}</div>
+              <div className="text-label text-ink-muted mt-0.5">{b.code} • {b.createdBy} • {b.created}</div>
               <div className="mt-3">
-                <div className="flex justify-between text-[11px] text-slate-500 mb-1">
+                <div className="flex justify-between text-label text-ink-muted mb-1">
                   <span>{b.matched}/{b.total} khớp NV</span>
                   <span>{b.flagged} cảnh báo</span>
                 </div>
@@ -151,10 +151,10 @@ export function ManagerAssignmentApprovalPage() {
                 centerValue={`${Math.round((open.matched / open.total) * 100)}%`}
                 centerLabel="khớp NV"
                 segments={[
-                  { label: 'Khớp NV 1', value: Math.round(open.matched * 0.78), color: '#10B981' },
-                  { label: 'Khớp NV 2–3', value: open.matched - Math.round(open.matched * 0.78), color: '#3B82F6' },
-                  { label: 'Không khớp', value: open.total - open.matched - open.flagged, color: '#F59E0B' },
-                  { label: 'Cảnh báo', value: open.flagged, color: '#F43F5E' },
+                  { label: 'Khớp NV 1', value: Math.round(open.matched * 0.78), color: CHART_COLORS.green },
+                  { label: 'Khớp NV 2–3', value: open.matched - Math.round(open.matched * 0.78), color: CHART_COLORS.blue },
+                  { label: 'Không khớp', value: open.total - open.matched - open.flagged, color: CHART_COLORS.amber },
+                  { label: 'Cảnh báo', value: open.flagged, color: CHART_COLORS.red },
                 ]}
               />
               <div className="space-y-2 text-xs">
@@ -165,9 +165,9 @@ export function ManagerAssignmentApprovalPage() {
                   ['Giường còn trống sau batch', '84 giường'],
                   ['Thời gian chạy', '2 phút 14 giây'],
                 ].map(([k, v]) => (
-                  <div key={k} className="flex justify-between p-2 rounded-lg bg-slate-50">
-                    <span className="text-slate-500">{k}</span>
-                    <span className="font-semibold text-slate-800">{v}</span>
+                  <div key={k} className="flex justify-between p-2 rounded-lg bg-surface-muted">
+                    <span className="text-ink-muted">{k}</span>
+                    <span className="font-semibold text-ink">{v}</span>
                   </div>
                 ))}
               </div>
@@ -175,21 +175,21 @@ export function ManagerAssignmentApprovalPage() {
           </SectionCard>
 
           <SectionCard noPadding>
-            <div className="p-4 border-b border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-3">
-              <div className="text-xs font-bold text-[#1A365D] flex items-center gap-1.5"><CheckSquare className="w-4 h-4" /> Chi tiết phân bổ (mẫu {open.allocations.length} dòng)</div>
+            <div className="p-4 border-b border-line flex flex-col md:flex-row md:items-center justify-between gap-3">
+              <div className="text-xs font-bold text-ink flex items-center gap-1.5"><CheckSquare className="w-4 h-4" /> Chi tiết phân bổ (mẫu {open.allocations.length} dòng)</div>
               <div className="flex items-center gap-3">
-                <label className="flex items-center gap-1.5 text-xs text-slate-600">
-                  <input type="checkbox" checked={onlyFlagged} onChange={(e) => setOnlyFlagged(e.target.checked)} className="accent-[#F26F21]" /> Chỉ dòng cần chú ý
+                <label className="flex items-center gap-1.5 text-xs text-ink-muted">
+                  <input type="checkbox" checked={onlyFlagged} onChange={(e) => setOnlyFlagged(e.target.checked)} className="accent-brand-ink" /> Chỉ dòng cần chú ý
                 </label>
                 <div className="relative">
-                  <Search className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-1/2 -translate-y-1/2" />
-                  <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Tìm..." className="pl-8 pr-3 py-1.5 text-xs rounded-lg border border-slate-200 w-40" />
+                  <Search className="w-3.5 h-3.5 text-ink-subtle absolute left-2.5 top-1/2 -translate-y-1/2" />
+                  <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Tìm..." className="pl-8 pr-3 py-1.5 text-xs rounded-lg border border-line w-40" />
                 </div>
               </div>
             </div>
             <div className="overflow-x-auto">
               <table className="w-full text-xs">
-                <thead className="bg-slate-50 text-slate-500">
+                <thead className="bg-surface-muted text-ink-muted">
                   <tr>
                     <th className="text-left font-semibold px-4 py-2.5">Sinh viên</th>
                     <th className="text-left font-semibold px-4 py-2.5">Điểm</th>
@@ -199,11 +199,11 @@ export function ManagerAssignmentApprovalPage() {
                     {open.status === 'PENDING_APPROVAL' && <th className="px-4 py-2.5 text-right">Cần sửa</th>}
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100">
+                <tbody className="divide-y divide-line">
                   {rows.map((a) => (
                     <tr key={a.studentId} className={clsx(excluded.includes(a.studentId) && 'opacity-40 line-through')}>
-                      <td className="px-4 py-2.5"><div className="font-semibold text-slate-800">{a.name}</div><div className="text-[11px] text-slate-400">{a.studentId} • {a.gender}</div></td>
-                      <td className="px-4 py-2.5 font-bold text-[#1A365D]">{a.score}</td>
+                      <td className="px-4 py-2.5"><div className="font-semibold text-ink">{a.name}</div><div className="text-label text-ink-subtle">{a.studentId} • {a.gender}</div></td>
+                      <td className="px-4 py-2.5 font-bold text-ink">{a.score}</td>
                       <td className="px-4 py-2.5">{a.wish}</td>
                       <td className="px-4 py-2.5 font-bold">{a.room}</td>
                       <td className="px-4 py-2.5">
@@ -225,7 +225,7 @@ export function ManagerAssignmentApprovalPage() {
                 </tbody>
               </table>
             </div>
-            <div className="px-4 py-3 border-t text-[11px] text-slate-500 flex items-center gap-1">
+            <div className="px-4 py-3 border-t text-label text-ink-muted flex items-center gap-1">
               <ChevronDown className="w-3.5 h-3.5" /> Hiển thị mẫu. Xuất batch để xem toàn bộ {open.total} dòng. {excluded.length > 0 && <strong className="text-rose-600 ml-1">{excluded.length} dòng được đánh dấu để Staff điều chỉnh lại.</strong>}
             </div>
           </SectionCard>
@@ -245,7 +245,7 @@ export function ManagerAssignmentApprovalPage() {
         }
       >
         {confirm && (
-          <div className="text-xs text-slate-700 space-y-2">
+          <div className="text-xs text-ink space-y-2">
             <p>Batch <strong>{confirm.batch.code}</strong> — {confirm.batch.title}</p>
             {confirm.action === 'APPROVED' ? (
               <p>Hệ thống sẽ phát hành <strong>{confirm.batch.total - excluded.length}</strong> hợp đồng điện tử và gửi email cho sinh viên. Thao tác này không thể hoàn tác.</p>

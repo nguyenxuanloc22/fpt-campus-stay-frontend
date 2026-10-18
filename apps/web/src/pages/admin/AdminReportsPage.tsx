@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Download, FileSpreadsheet, FileText, Building2, Wallet, Repeat, TrendingUp, CalendarRange, Mail } from 'lucide-react';
 import clsx from 'clsx';
-import { PageHeader, StatCard, SectionCard, Tabs, BarChart, DonutChart, ProgressBar, AppButton, useToast } from '@shared-ui';
+import { PageHeader, StatCard, SectionCard, Tabs, BarChart, DonutChart, ProgressBar, AppButton, useToast, CHART_COLORS } from '@shared-ui';
 
 /**
  * Generate Occupancy, Revenue & Turnover Reports (Admin) + Forecast Occupancy Trends (System).
@@ -41,7 +41,7 @@ export function AdminReportsPage() {
         description="Công suất, doanh thu, luân chuyển và dự báo — xuất theo kỳ học"
         actions={
           <>
-            <select value={term} onChange={(e) => setTerm(e.target.value)} className="px-3 py-2 text-xs rounded-lg border border-slate-200 bg-white">
+            <select value={term} onChange={(e) => setTerm(e.target.value)} className="px-3 py-2 text-xs rounded-lg border border-line bg-white">
               <option value="FA26">Học kỳ Fall 2026</option>
               <option value="SU26">Học kỳ Summer 2026</option>
               <option value="SP26">Học kỳ Spring 2026</option>
@@ -78,7 +78,7 @@ export function AdminReportsPage() {
                 const pct = (b.used / b.beds) * 100;
                 return (
                   <li key={b.b}>
-                    <div className="flex justify-between mb-1"><span className="font-semibold text-slate-700">{b.b}</span><span>{b.used}/{b.beds} · <strong>{pct.toFixed(1)}%</strong></span></div>
+                    <div className="flex justify-between mb-1"><span className="font-semibold text-ink">{b.b}</span><span>{b.used}/{b.beds} · <strong>{pct.toFixed(1)}%</strong></span></div>
                     <ProgressBar value={pct} tone={pct > 95 ? 'rose' : pct > 88 ? 'amber' : 'emerald'} size="md" />
                   </li>
                 );
@@ -91,10 +91,10 @@ export function AdminReportsPage() {
               centerValue={used.toLocaleString('vi-VN')}
               centerLabel="đang ở"
               segments={[
-                { label: '4 giường máy lạnh', value: 668, color: '#F26F21' },
-                { label: '6 giường', value: 249, color: '#1A365D' },
-                { label: '4 giường quạt', value: 118, color: '#3B82F6' },
-                { label: '2 giường', value: 40, color: '#10B981' },
+                { label: '4 giường máy lạnh', value: 668, color: CHART_COLORS.brand },
+                { label: '6 giường', value: 249, color: CHART_COLORS.neutral },
+                { label: '4 giường quạt', value: 118, color: CHART_COLORS.blue },
+                { label: '2 giường', value: 40, color: CHART_COLORS.green },
               ]}
             />
           </SectionCard>
@@ -125,7 +125,7 @@ export function AdminReportsPage() {
                 ['Hoàn cọc (hủy đơn, vòng 2)', '9,5 tr ₫'],
                 ['Giữ lại do no-show', '6,0 tr ₫'],
               ].map(([k, v]) => (
-                <li key={k} className="flex justify-between p-2.5 rounded-lg bg-slate-50"><span className="text-slate-600">{k}</span><span className="font-bold">{v}</span></li>
+                <li key={k} className="flex justify-between p-2.5 rounded-lg bg-surface-muted"><span className="text-ink-muted">{k}</span><span className="font-bold">{v}</span></li>
               ))}
             </ul>
           </SectionCard>
@@ -141,7 +141,7 @@ export function AdminReportsPage() {
               ['Đổi / hoán đổi phòng', '49'],
               ['No-show', '12'],
             ].map(([k, v]) => (
-              <div key={k} className="p-3 rounded-xl bg-slate-50"><div className="text-slate-400">{k}</div><div className="text-xl font-bold text-slate-800">{v}</div></div>
+              <div key={k} className="p-3 rounded-xl bg-surface-muted"><div className="text-ink-subtle">{k}</div><div className="text-xl font-bold text-ink">{v}</div></div>
             ))}
           </div>
           <BarChart
@@ -173,7 +173,7 @@ export function AdminReportsPage() {
               ]}
               formatValue={(v) => `${v}%`}
             />
-            <p className="text-[11px] text-slate-500 mt-2">* Giá trị dự báo. Fall 2027 dự kiến vượt 95% — cân nhắc mở thêm tầng 6 Tòa C.</p>
+            <p className="text-label text-ink-muted mt-2">* Giá trị dự báo. Fall 2027 dự kiến vượt 95% — cân nhắc mở thêm tầng 6 Tòa C.</p>
           </SectionCard>
           <SectionCard title="Giường trống dự kiến Spring 2027">
             <ul className="space-y-2 text-xs">
@@ -183,8 +183,8 @@ export function AdminReportsPage() {
                 ['4 giường quạt', 19, 'emerald'],
                 ['2 giường', 2, 'amber'],
               ].map(([k, v, t]) => (
-                <li key={String(k)} className="flex justify-between p-2.5 rounded-lg bg-slate-50">
-                  <span className="text-slate-600">{k}</span>
+                <li key={String(k)} className="flex justify-between p-2.5 rounded-lg bg-surface-muted">
+                  <span className="text-ink-muted">{k}</span>
                   <span className={clsx('font-bold', t === 'rose' ? 'text-rose-600' : t === 'amber' ? 'text-amber-600' : 'text-emerald-600')}>{v}</span>
                 </li>
               ))}
@@ -197,25 +197,25 @@ export function AdminReportsPage() {
         <SectionCard title="Xuất báo cáo">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {TEMPLATES.map((r) => (
-              <button key={r.name} type="button" onClick={() => show(`Đang tạo “${r.name}” (${r.f})`)} className="p-3 rounded-xl border border-slate-200 hover:border-[#F26F21] text-left flex items-center gap-3">
-                <div className="w-9 h-9 rounded-lg bg-[#EBF2FB] text-[#1A365D] flex items-center justify-center">{r.f === 'Excel' ? <FileSpreadsheet className="w-4 h-4" /> : <FileText className="w-4 h-4" />}</div>
-                <div className="flex-1 text-xs"><div className="font-semibold text-slate-800">{r.name}</div><div className="text-slate-500">{r.f}</div></div>
-                <Download className="w-4 h-4 text-slate-400" />
+              <button key={r.name} type="button" onClick={() => show(`Đang tạo “${r.name}” (${r.f})`)} className="p-3 rounded-xl border border-line hover:border-brand text-left flex items-center gap-3">
+                <div className="w-9 h-9 rounded-lg bg-surface-sunken text-ink flex items-center justify-center">{r.f === 'Excel' ? <FileSpreadsheet className="w-4 h-4" /> : <FileText className="w-4 h-4" />}</div>
+                <div className="flex-1 text-xs"><div className="font-semibold text-ink">{r.name}</div><div className="text-ink-muted">{r.f}</div></div>
+                <Download className="w-4 h-4 text-ink-subtle" />
               </button>
             ))}
           </div>
         </SectionCard>
         <SectionCard title="Gửi báo cáo định kỳ" noPadding>
-          <ul className="divide-y divide-slate-100">
+          <ul className="divide-y divide-line">
             {[
               { n: 'Công suất tuần', f: 'Thứ Hai 07:00', to: 'Trưởng ban KTX' },
               { n: 'Doanh thu & công nợ tháng', f: 'Ngày 1 hằng tháng', to: 'Phòng Tài chính' },
               { n: 'Dự báo công suất kỳ tới', f: 'Trước khi mở cửa sổ đăng ký', to: 'Ban Giám hiệu' },
             ].map((r) => (
               <li key={r.n} className="px-5 py-3 flex items-center gap-3 text-xs">
-                <Mail className="w-4 h-4 text-[#F26F21]" />
-                <div className="flex-1"><div className="font-semibold text-slate-800">{r.n}</div><div className="text-slate-500 flex items-center gap-1"><CalendarRange className="w-3 h-3" />{r.f} · gửi {r.to}</div></div>
-                <span className="text-[11px] font-semibold text-emerald-600">Đang bật</span>
+                <Mail className="w-4 h-4 text-brand-ink" />
+                <div className="flex-1"><div className="font-semibold text-ink">{r.n}</div><div className="text-ink-muted flex items-center gap-1"><CalendarRange className="w-3 h-3" />{r.f} · gửi {r.to}</div></div>
+                <span className="text-label font-semibold text-emerald-600">Đang bật</span>
               </li>
             ))}
           </ul>

@@ -124,13 +124,13 @@ export function ManagerApprovalsPage() {
               <div className="flex flex-col lg:flex-row gap-4">
                 <Avatar name={a.name} size="md" />
                 <div className="flex-1 text-xs space-y-2">
-                  <div className="text-sm font-bold text-slate-800">{a.name} <span className="font-normal text-slate-400">{a.studentId} · {a.code}</span></div>
-                  <div className="text-slate-500">{a.roomType}</div>
+                  <div className="text-sm font-bold text-ink">{a.name} <span className="font-normal text-ink-subtle">{a.studentId} · {a.code}</span></div>
+                  <div className="text-ink-muted">{a.roomType}</div>
                   <div className="p-2.5 rounded-lg bg-rose-50 text-rose-800 flex gap-2"><AlertTriangle className="w-4 h-4 shrink-0" />{a.flag}</div>
-                  <div className="p-2.5 rounded-lg bg-slate-50 text-slate-700 flex gap-2"><MessageSquare className="w-4 h-4 shrink-0 text-slate-400" /><span><strong>{a.staff}:</strong> {a.staffNote}</span></div>
+                  <div className="p-2.5 rounded-lg bg-surface-muted text-ink flex gap-2"><MessageSquare className="w-4 h-4 shrink-0 text-ink-subtle" /><span><strong>{a.staff}:</strong> {a.staffNote}</span></div>
                   <div className="flex flex-wrap gap-2">
                     {a.docs.map((d) => (
-                      <button key={d} type="button" onClick={() => show(`Đang mở ${d}`, 'info')} className="inline-flex items-center gap-1 px-2 py-1 rounded-md border border-slate-200 text-[11px] text-slate-600 hover:border-[#F26F21]">
+                      <button key={d} type="button" onClick={() => show(`Đang mở ${d}`, 'info')} className="inline-flex items-center gap-1 px-2 py-1 rounded-md border border-line text-label text-ink-muted hover:border-brand">
                         <FileText className="w-3 h-3 text-rose-500" />{d}
                       </button>
                     ))}
@@ -148,20 +148,20 @@ export function ManagerApprovalsPage() {
           {changes.map((c) => (
             <SectionCard key={c.id}>
               <div className="flex items-center justify-between mb-3">
-                <span className={clsx('text-[10px] font-bold px-2 py-0.5 rounded flex items-center gap-1', c.kind === 'SWAP' ? 'bg-purple-100 text-purple-700' : 'bg-blue-100 text-blue-700')}>
+                <span className={clsx('text-label font-bold px-2 py-0.5 rounded flex items-center gap-1', c.kind === 'SWAP' ? 'bg-purple-100 text-purple-700' : 'bg-blue-100 text-blue-700')}>
                   {c.kind === 'SWAP' ? <ArrowLeftRight className="w-3 h-3" /> : <Repeat className="w-3 h-3" />}{c.kind === 'SWAP' ? 'Hoán đổi' : 'Đổi phòng'} · {c.id}
                 </span>
-                {c.verified && <span className="text-[11px] font-semibold text-emerald-600 flex items-center gap-1"><ShieldCheck className="w-3.5 h-3.5" />Staff đã xác minh</span>}
+                {c.verified && <span className="text-label font-semibold text-emerald-600 flex items-center gap-1"><ShieldCheck className="w-3.5 h-3.5" />Staff đã xác minh</span>}
               </div>
               <div className="flex items-center gap-2 text-xs">
-                <div className="flex-1 p-2.5 rounded-lg bg-slate-50"><div className="font-semibold">{c.a.name}</div><div className="text-slate-500">{c.a.room}</div></div>
+                <div className="flex-1 p-2.5 rounded-lg bg-surface-muted"><div className="font-semibold">{c.a.name}</div><div className="text-ink-muted">{c.a.room}</div></div>
                 <ArrowLeftRight className="w-4 h-4 text-purple-500 shrink-0" />
-                <div className="flex-1 p-2.5 rounded-lg bg-slate-50"><div className="font-semibold">{c.b?.name}</div><div className="text-slate-500">{c.b?.room}</div></div>
+                <div className="flex-1 p-2.5 rounded-lg bg-surface-muted"><div className="font-semibold">{c.b?.name}</div><div className="text-ink-muted">{c.b?.room}</div></div>
               </div>
-              <p className="text-xs text-slate-600 mt-3">{c.reason}</p>
-              <p className="text-[11px] text-emerald-700 mt-2 flex items-center gap-1"><Users className="w-3.5 h-3.5" />Hai sinh viên đã đồng ý hoán đổi</p>
-              {c.warnings.map((w) => <p key={w} className="text-[11px] text-amber-700 mt-1 flex items-center gap-1"><AlertTriangle className="w-3.5 h-3.5" />{w}</p>)}
-              {c.warnings.length === 0 && <p className="text-[11px] text-emerald-700 mt-1 flex items-center gap-1"><CheckCircle2 className="w-3.5 h-3.5" />Đủ điều kiện đổi phòng</p>}
+              <p className="text-xs text-ink-muted mt-3">{c.reason}</p>
+              <p className="text-label text-emerald-700 mt-2 flex items-center gap-1"><Users className="w-3.5 h-3.5" />Hai sinh viên đã đồng ý hoán đổi</p>
+              {c.warnings.map((w) => <p key={w} className="text-label text-amber-700 mt-1 flex items-center gap-1"><AlertTriangle className="w-3.5 h-3.5" />{w}</p>)}
+              {c.warnings.length === 0 && <p className="text-label text-emerald-700 mt-1 flex items-center gap-1"><CheckCircle2 className="w-3.5 h-3.5" />Đủ điều kiện đổi phòng</p>}
               <div className="flex justify-end mt-4"><Actions type="room-changes" id={c.id} title={`yêu cầu ${c.id}`} decision={c.decision} /></div>
             </SectionCard>
           ))}
@@ -170,22 +170,22 @@ export function ManagerApprovalsPage() {
 
       {tab === 'schedules' && (
         <SectionCard noPadding>
-          <ul className="divide-y divide-slate-100">
+          <ul className="divide-y divide-line">
             {schedules.map((s) => (
               <li key={s.id} className="px-5 py-4 flex flex-col lg:flex-row lg:items-center gap-4 text-xs">
                 <div className="w-11 h-11 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center shrink-0"><CalendarClock className="w-5 h-5" /></div>
                 <div className="flex-1">
-                  <div className="text-sm font-bold text-slate-800">{s.title}</div>
-                  <div className="text-slate-500">{s.id} · {s.scope} · {s.repeat}</div>
-                  <div className="text-slate-600 mt-1">{s.when}</div>
+                  <div className="text-sm font-bold text-ink">{s.title}</div>
+                  <div className="text-ink-muted">{s.id} · {s.scope} · {s.repeat}</div>
+                  <div className="text-ink-muted mt-1">{s.when}</div>
                   <div className="text-amber-700 mt-0.5">Ảnh hưởng: {s.impact}</div>
-                  <div className="text-[11px] text-slate-400 mt-0.5">Đề xuất bởi {s.proposer}</div>
+                  <div className="text-label text-ink-subtle mt-0.5">Đề xuất bởi {s.proposer}</div>
                 </div>
                 <Actions type="schedules" id={s.id} title={`lịch ${s.id}`} decision={s.decision} />
               </li>
             ))}
           </ul>
-          <div className="px-5 py-3 border-t text-[11px] text-slate-500">Sau khi duyệt, hệ thống tự tạo yêu cầu bảo trì đúng lịch và thông báo cho sinh viên các phòng bị ảnh hưởng.</div>
+          <div className="px-5 py-3 border-t text-label text-ink-muted">Sau khi duyệt, hệ thống tự tạo yêu cầu bảo trì đúng lịch và thông báo cho sinh viên các phòng bị ảnh hưởng.</div>
         </SectionCard>
       )}
 
@@ -203,10 +203,10 @@ export function ManagerApprovalsPage() {
           </>
         }
       >
-        <label className="block text-xs font-semibold text-slate-700 mb-1">
+        <label className="block text-xs font-semibold text-ink mb-1">
           Ý kiến {confirm?.action === 'REJECTED' ? '(bắt buộc — gửi kèm thông báo cho sinh viên)' : '(không bắt buộc)'}
         </label>
-        <textarea value={note} onChange={(e) => setNote(e.target.value)} rows={3} className="w-full px-3 py-2 text-xs border border-slate-200 rounded-lg" />
+        <textarea value={note} onChange={(e) => setNote(e.target.value)} rows={3} className="w-full px-3 py-2 text-xs border border-line rounded-lg" />
       </Modal>
 
       {toastNode}

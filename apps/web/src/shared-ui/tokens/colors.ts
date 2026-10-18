@@ -1,24 +1,25 @@
-export const FPT_COLORS = {
-  orange: {
-    primary: '#F26F21',
-    hover: '#D95A12',
-    light: '#FFF2EA',
-    border: '#FED7AA',
-  },
-  navy: {
-    primary: '#1A365D',
-    dark: '#0F2341',
-    light: '#EBF2FB',
-    border: '#CBD5E1',
-  },
-  status: {
-    success: '#10B981',
-    successBg: '#ECFDF5',
-    warning: '#F59E0B',
-    warningBg: '#FFFBEB',
-    error: '#EF4444',
-    errorBg: '#FEF2F2',
-    info: '#3B82F6',
-    infoBg: '#EFF6FF',
-  },
+/**
+ * Token màu cho code JS (fill/stroke của biểu đồ SVG). Giá trị thật nằm ở `src/index.css` (@theme) —
+ * ở đây chỉ tham chiếu CSS variable để không có nguồn thứ hai.
+ */
+export const CHART_COLORS = {
+  brand: 'var(--color-chart-1)',
+  blue: 'var(--color-chart-2)',
+  green: 'var(--color-chart-3)',
+  amber: 'var(--color-chart-4)',
+  red: 'var(--color-chart-5)',
+  neutral: 'var(--color-chart-6)',
+  track: 'var(--color-chart-track)',
+} as const;
+
+export const TOKEN_COLORS = {
+  ink: 'var(--color-ink)',
+  inkSubtle: 'var(--color-ink-subtle)',
+  line: 'var(--color-line)',
+  lineStrong: 'var(--color-line-strong)',
+  surface: 'var(--color-surface)',
+  surfaceSunken: 'var(--color-surface-sunken)',
+  brand: 'var(--color-brand)',
+  brandInk: 'var(--color-brand-ink)',
+  brandSoft: 'var(--color-brand-soft)',
 } as const;

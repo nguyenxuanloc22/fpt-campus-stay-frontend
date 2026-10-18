@@ -65,7 +65,7 @@ export function AdminRulesPage() {
       <PageHeader
         title="Luật điều kiện"
         description="Điều kiện để sinh viên được mời và được nộp đơn đăng ký KTX — dữ liệu lấy từ FPT SIS"
-        badge={<span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-[#EBF2FB] text-[#1A365D]">Phiên bản v12</span>}
+        badge={<span className="text-label font-bold px-2 py-0.5 rounded-full bg-surface-sunken text-ink">Phiên bản v12</span>}
         actions={
           <>
             <AppButton size="sm" variant="outline" leftIcon={<RotateCcw className="w-4 h-4" />} disabled={!dirty} onClick={() => { setRules(INITIAL); setDirty(false); }}>Hoàn tác</AppButton>
@@ -88,20 +88,20 @@ export function AdminRulesPage() {
           }
           noPadding
         >
-          <ul className="divide-y divide-slate-100">
+          <ul className="divide-y divide-line">
             {rules.map((r) => (
               <li key={r.id} className={clsx('px-4 py-3 flex flex-col lg:flex-row lg:items-center gap-2', !r.enabled && 'opacity-50')}>
-                <input value={r.name} onChange={(e) => update(r.id, { name: e.target.value })} className="flex-1 px-2.5 py-1.5 text-xs font-semibold border border-transparent hover:border-slate-200 rounded-lg" />
-                <select value={r.field} onChange={(e) => update(r.id, { field: e.target.value })} className="px-2 py-1.5 text-xs border border-slate-200 rounded-lg bg-white">
+                <input value={r.name} onChange={(e) => update(r.id, { name: e.target.value })} className="flex-1 px-2.5 py-1.5 text-xs font-semibold border border-transparent hover:border-line rounded-lg" />
+                <select value={r.field} onChange={(e) => update(r.id, { field: e.target.value })} className="px-2 py-1.5 text-xs border border-line rounded-lg bg-white">
                   {FIELDS.map((f) => <option key={f.id} value={f.id}>{f.label}</option>)}
                 </select>
-                <select value={r.operator} onChange={(e) => update(r.id, { operator: e.target.value })} className="px-1.5 py-1.5 text-xs border border-slate-200 rounded-lg bg-white">
+                <select value={r.operator} onChange={(e) => update(r.id, { operator: e.target.value })} className="px-1.5 py-1.5 text-xs border border-line rounded-lg bg-white">
                   {['=', '!=', '>=', '<=', '>', '<'].map((o) => <option key={o}>{o}</option>)}
                 </select>
-                <input value={r.value} onChange={(e) => update(r.id, { value: e.target.value })} className="w-28 px-2 py-1.5 text-xs border border-slate-200 rounded-lg" />
-                <label className="flex items-center gap-1 text-[11px] font-semibold text-rose-700"><input type="checkbox" checked={r.blocking} onChange={(e) => update(r.id, { blocking: e.target.checked })} className="accent-rose-600" />Chặn</label>
-                <label className="flex items-center gap-1 text-[11px] font-semibold text-slate-600"><input type="checkbox" checked={r.enabled} onChange={(e) => update(r.id, { enabled: e.target.checked })} className="accent-[#F26F21]" />Bật</label>
-                <button type="button" onClick={() => { setRules(rules.filter((x) => x.id !== r.id)); setDirty(true); }} className="text-slate-400 hover:text-rose-600" aria-label="Xóa luật"><Trash2 className="w-4 h-4" /></button>
+                <input value={r.value} onChange={(e) => update(r.id, { value: e.target.value })} className="w-28 px-2 py-1.5 text-xs border border-line rounded-lg" />
+                <label className="flex items-center gap-1 text-label font-semibold text-rose-700"><input type="checkbox" checked={r.blocking} onChange={(e) => update(r.id, { blocking: e.target.checked })} className="accent-rose-600" />Chặn</label>
+                <label className="flex items-center gap-1 text-label font-semibold text-ink-muted"><input type="checkbox" checked={r.enabled} onChange={(e) => update(r.id, { enabled: e.target.checked })} className="accent-brand-ink" />Bật</label>
+                <button type="button" onClick={() => { setRules(rules.filter((x) => x.id !== r.id)); setDirty(true); }} className="text-ink-subtle hover:text-rose-600" aria-label="Xóa luật"><Trash2 className="w-4 h-4" /></button>
               </li>
             ))}
           </ul>
@@ -109,36 +109,36 @@ export function AdminRulesPage() {
 
         <div className="space-y-6">
           <SectionCard title={<span className="flex items-center gap-2"><FlaskConical className="w-4 h-4 text-purple-600" />Kiểm tra thử</span>}>
-            <p className="text-[11px] text-slate-500 mb-3">Áp dụng bộ luật hiện tại lên dữ liệu SIS của một sinh viên.</p>
+            <p className="text-label text-ink-muted mb-3">Áp dụng bộ luật hiện tại lên dữ liệu SIS của một sinh viên.</p>
             <div className="flex gap-2">
-              <input value={testId} onChange={(e) => setTestId(e.target.value.toUpperCase())} className="flex-1 px-3 py-2 text-xs border border-slate-200 rounded-lg" />
+              <input value={testId} onChange={(e) => setTestId(e.target.value.toUpperCase())} className="flex-1 px-3 py-2 text-xs border border-line rounded-lg" />
               <AppButton size="sm" onClick={runTest}>Chạy</AppButton>
             </div>
             {result && (
               <div className={clsx('mt-3 p-3 rounded-lg text-xs space-y-1', result.ok ? 'bg-emerald-50 text-emerald-800' : 'bg-rose-50 text-rose-800')}>
                 <div className="font-bold">{result.ok ? '✓ Đủ điều kiện đăng ký' : '✗ Không đủ điều kiện'}</div>
                 {result.failed.map((f) => <div key={f}>Không thỏa: {f}</div>)}
-                {result.soft.map((s) => <div key={s} className="text-slate-600">{s}</div>)}
+                {result.soft.map((s) => <div key={s} className="text-ink-muted">{s}</div>)}
               </div>
             )}
           </SectionCard>
 
           <SectionCard title={<span className="flex items-center gap-2"><History className="w-4 h-4" />Phiên bản</span>} noPadding>
-            <ul className="divide-y divide-slate-100">
+            <ul className="divide-y divide-line">
               {VERSIONS.map((v, i) => (
                 <li key={v.v} className="px-5 py-3 text-xs">
                   <div className="flex items-center justify-between">
-                    <span className="font-bold text-slate-800">{v.v}</span>
-                    {i === 0 ? <StatusBadge status="ACTIVE" customLabel="Hiện hành" /> : <button type="button" onClick={() => show(`Đã khôi phục ${v.v} vào bản nháp`, 'info')} className="text-[11px] font-semibold text-[#F26F21]">Khôi phục</button>}
+                    <span className="font-bold text-ink">{v.v}</span>
+                    {i === 0 ? <StatusBadge status="ACTIVE" customLabel="Hiện hành" /> : <button type="button" onClick={() => show(`Đã khôi phục ${v.v} vào bản nháp`, 'info')} className="text-label font-semibold text-brand-ink">Khôi phục</button>}
                   </div>
-                  <div className="text-slate-600">{v.note}</div>
-                  <div className="text-[11px] text-slate-400">{v.by} · {v.when}</div>
+                  <div className="text-ink-muted">{v.note}</div>
+                  <div className="text-label text-ink-subtle">{v.by} · {v.when}</div>
                 </li>
               ))}
             </ul>
           </SectionCard>
 
-          <div className="p-3 rounded-xl bg-blue-50 text-[11px] text-blue-800 flex gap-2">
+          <div className="p-3 rounded-xl bg-blue-50 text-label text-blue-800 flex gap-2">
             <Info className="w-4 h-4 shrink-0" /> Trọng số ưu tiên khi xếp phòng (ngày nộp, nguyện vọng, bạn cùng phòng, ngành/năm) cấu hình tại trang Engine xếp phòng.
           </div>
         </div>

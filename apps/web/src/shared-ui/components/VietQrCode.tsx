@@ -45,7 +45,7 @@ export function VietQrCode({ value, size = 192 }: VietQrCodeProps) {
         const x = i % GRID;
         const y = Math.floor(i / GRID);
         const fill = isFinder(x, y) ? finderOn(x, y) : on;
-        return fill ? <rect key={i} x={x} y={y} width={1} height={1} fill="#0f172a" /> : null;
+        return fill ? <rect key={i} x={x} y={y} width={1} height={1} fill="var(--color-ink)" /> : null;
       })}
     </svg>
   );

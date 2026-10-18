@@ -12,3 +12,15 @@ export const maskPhone = (phone: string) => {
   const digits = phone.replace(/\D/g, '');
   return digits.length < 7 ? phone : `${digits.slice(0, 4)} *** ${digits.slice(-3)}`;
 };
+
+/** Số ngày còn lại tới hạn "dd/mm/yyyy" (âm nếu đã quá hạn) — chỉ dùng để hiển thị. */
+export const daysUntil = (ddmmyyyy: string, today = new Date()) => {
+  const [d, m, y] = ddmmyyyy.split('/').map(Number);
+  if (!d || !m || !y) return 0;
+  const due = new Date(y, m - 1, d).getTime();
+  const start = new Date(today.getFullYear(), today.getMonth(), today.getDate()).getTime();
+  return Math.round((due - start) / 86_400_000);
+};
+
+/** 3 → "Còn 3 ngày", 0 → "Hạn hôm nay", -2 → "Quá hạn 2 ngày" */
+export const formatDaysLeft = (days: number) => (days > 0 ? `Còn ${days} ngày` : days === 0 ? 'Hạn hôm nay' : `Quá hạn ${-days} ngày`);

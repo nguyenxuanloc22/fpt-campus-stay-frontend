@@ -117,7 +117,7 @@ export function StaffBroadcastPage() {
                     key={id}
                     type="button"
                     onClick={() => setAudience(id)}
-                    className={clsx('p-3 rounded-xl border text-xs font-semibold flex flex-col items-center gap-1.5', audience === id ? 'border-[#F26F21] bg-orange-50 text-[#F26F21]' : 'border-slate-200 text-slate-600')}
+                    className={clsx('p-3 rounded-xl border text-xs font-semibold flex flex-col items-center gap-1.5', audience === id ? 'border-brand bg-orange-50 text-brand-ink' : 'border-line text-ink-muted')}
                   >
                     <Icon className="w-4 h-4" />
                     {label}
@@ -126,28 +126,28 @@ export function StaffBroadcastPage() {
               </div>
               {(audience === 'BUILDING' || audience === 'FLOOR' || audience === 'ROOM') && (
                 <div className="flex flex-wrap gap-2 mt-4">
-                  <select value={building} onChange={(e) => setBuilding(e.target.value)} className="px-3 py-2 text-xs border border-slate-200 rounded-lg bg-white">
+                  <select value={building} onChange={(e) => setBuilding(e.target.value)} className="px-3 py-2 text-xs border border-line rounded-lg bg-white">
                     {['A', 'B', 'C', 'D'].map((b) => (
                       <option key={b} value={b}>Tòa {b}</option>
                     ))}
                   </select>
                   {audience !== 'BUILDING' && (
-                    <select className="px-3 py-2 text-xs border border-slate-200 rounded-lg bg-white">
+                    <select className="px-3 py-2 text-xs border border-line rounded-lg bg-white">
                       {[1, 2, 3, 4, 5].map((f) => (
                         <option key={f}>Tầng {f}</option>
                       ))}
                     </select>
                   )}
-                  {audience === 'ROOM' && <input placeholder="VD: A204, A205" className="px-3 py-2 text-xs border border-slate-200 rounded-lg" />}
+                  {audience === 'ROOM' && <input placeholder="VD: A204, A205" className="px-3 py-2 text-xs border border-line rounded-lg" />}
                 </div>
               )}
-              <div className="mt-4 text-xs text-slate-600">
-                Ước tính <strong className="text-[#1A365D]">{recipients.toLocaleString('vi-VN')}</strong> sinh viên sẽ nhận thông báo.
+              <div className="mt-4 text-xs text-ink-muted">
+                Ước tính <strong className="text-ink">{recipients.toLocaleString('vi-VN')}</strong> sinh viên sẽ nhận thông báo.
               </div>
             </SectionCard>
 
             <SectionCard title="2. Nội dung" actions={
-              <select onChange={(e) => applyTemplate(e.target.value)} defaultValue="" className="px-2.5 py-1.5 text-xs border border-slate-200 rounded-lg bg-white">
+              <select onChange={(e) => applyTemplate(e.target.value)} defaultValue="" className="px-2.5 py-1.5 text-xs border border-line rounded-lg bg-white">
                 <option value="" disabled>Dùng mẫu có sẵn...</option>
                 {TEMPLATES.map((t) => (
                   <option key={t.id} value={t.id}>{t.name}</option>
@@ -157,8 +157,8 @@ export function StaffBroadcastPage() {
               <div className="space-y-4 text-xs">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
-                    <label className="block font-semibold text-slate-700 mb-1">Danh mục</label>
-                    <select value={category} onChange={(e) => setCategory(e.target.value)} className="w-full px-3 py-2 border border-slate-200 rounded-lg bg-white">
+                    <label className="block font-semibold text-ink mb-1">Danh mục</label>
+                    <select value={category} onChange={(e) => setCategory(e.target.value)} className="w-full px-3 py-2 border border-line rounded-lg bg-white">
                       <option value="KTX">Ký túc xá</option>
                       <option value="MAINTENANCE">Bảo trì</option>
                       <option value="SAFETY">An toàn</option>
@@ -172,19 +172,19 @@ export function StaffBroadcastPage() {
                   </label>
                 </div>
                 <div>
-                  <label className="block font-semibold text-slate-700 mb-1">Tiêu đề</label>
-                  <input value={title} onChange={(e) => setTitle(e.target.value)} maxLength={120} className="w-full px-3 py-2 border border-slate-200 rounded-lg" placeholder="Tiêu đề ngắn gọn, rõ ràng" />
-                  <div className="text-right text-[10px] text-slate-400 mt-0.5">{title.length}/120</div>
+                  <label className="block font-semibold text-ink mb-1">Tiêu đề</label>
+                  <input value={title} onChange={(e) => setTitle(e.target.value)} maxLength={120} className="w-full px-3 py-2 border border-line rounded-lg" placeholder="Tiêu đề ngắn gọn, rõ ràng" />
+                  <div className="text-right text-label text-ink-subtle mt-0.5">{title.length}/120</div>
                 </div>
                 <div>
-                  <label className="block font-semibold text-slate-700 mb-1">Nội dung</label>
-                  <textarea value={body} onChange={(e) => setBody(e.target.value)} rows={6} className="w-full px-3 py-2 border border-slate-200 rounded-lg" placeholder="Nội dung chi tiết..." />
-                  <div className="flex justify-between text-[10px] text-slate-400 mt-0.5">
+                  <label className="block font-semibold text-ink mb-1">Nội dung</label>
+                  <textarea value={body} onChange={(e) => setBody(e.target.value)} rows={6} className="w-full px-3 py-2 border border-line rounded-lg" placeholder="Nội dung chi tiết..." />
+                  <div className="flex justify-between text-label text-ink-subtle mt-0.5">
                     <span>{channels.includes('SMS') && body.length > 160 ? `SMS sẽ bị chia thành ${Math.ceil(body.length / 160)} tin` : ''}</span>
                     <span>{body.length} ký tự</span>
                   </div>
                 </div>
-                <button type="button" className="flex items-center gap-1.5 text-[#1A365D] font-semibold"><Paperclip className="w-3.5 h-3.5" /> Đính kèm tệp (PDF, ảnh)</button>
+                <button type="button" className="flex items-center gap-1.5 text-ink font-semibold"><Paperclip className="w-3.5 h-3.5" /> Đính kèm tệp (PDF, ảnh)</button>
               </div>
             </SectionCard>
 
@@ -195,18 +195,18 @@ export function StaffBroadcastPage() {
                     key={c.id}
                     type="button"
                     onClick={() => toggleChannel(c.id)}
-                    className={clsx('p-3 rounded-xl border text-xs font-semibold flex flex-col items-center gap-1', channels.includes(c.id) ? 'border-[#1A365D] bg-[#EBF2FB] text-[#1A365D]' : 'border-slate-200 text-slate-600')}
+                    className={clsx('p-3 rounded-xl border text-xs font-semibold flex flex-col items-center gap-1', channels.includes(c.id) ? 'border-ink bg-surface-sunken text-ink' : 'border-line text-ink-muted')}
                   >
                     <c.icon className="w-4 h-4" />
                     {c.label}
-                    {c.cost && <span className="text-[10px] font-normal text-slate-400">{c.cost}</span>}
+                    {c.cost && <span className="text-label font-normal text-ink-subtle">{c.cost}</span>}
                   </button>
                 ))}
               </div>
               <div className="flex flex-wrap items-center gap-4 text-xs">
-                <label className="flex items-center gap-2"><input type="radio" checked={schedule === 'now'} onChange={() => setSchedule('now')} className="accent-[#F26F21]" /> Gửi ngay</label>
-                <label className="flex items-center gap-2"><input type="radio" checked={schedule === 'later'} onChange={() => setSchedule('later')} className="accent-[#F26F21]" /> Hẹn giờ</label>
-                {schedule === 'later' && <input type="datetime-local" defaultValue="2026-10-18T07:00" className="px-3 py-1.5 border border-slate-200 rounded-lg" />}
+                <label className="flex items-center gap-2"><input type="radio" checked={schedule === 'now'} onChange={() => setSchedule('now')} className="accent-brand-ink" /> Gửi ngay</label>
+                <label className="flex items-center gap-2"><input type="radio" checked={schedule === 'later'} onChange={() => setSchedule('later')} className="accent-brand-ink" /> Hẹn giờ</label>
+                {schedule === 'later' && <input type="datetime-local" defaultValue="2026-10-18T07:00" className="px-3 py-1.5 border border-line rounded-lg" />}
               </div>
               <div className="flex justify-end gap-2 mt-5 pt-4 border-t">
                 <AppButton variant="outline" onClick={() => show('Đã lưu bản nháp', 'info')}>Lưu nháp</AppButton>
@@ -219,26 +219,26 @@ export function StaffBroadcastPage() {
 
           <div className="space-y-6">
             <SectionCard title={<span className="flex items-center gap-2"><Smartphone className="w-4 h-4" /> Xem trước trên điện thoại</span>}>
-              <div className="mx-auto w-60 rounded-[2rem] border-8 border-slate-800 bg-slate-100 p-3 min-h-96">
-                <div className="text-center text-[10px] text-slate-500 mb-3">09:41</div>
+              <div className="mx-auto w-60 rounded-[2rem] border-8 border-slate-800 bg-surface-sunken p-3 min-h-96">
+                <div className="text-center text-label text-ink-muted mb-3">09:41</div>
                 <div className={clsx('rounded-xl bg-white p-3 shadow-sm', urgent && 'ring-2 ring-rose-400')}>
                   <div className="flex items-center gap-2 mb-1.5">
-                    <div className="w-5 h-5 rounded bg-[#F26F21] text-white text-[9px] font-bold flex items-center justify-center">CS</div>
-                    <span className="text-[10px] font-semibold text-slate-600">CampusStay • bây giờ</span>
+                    <div className="w-5 h-5 rounded bg-brand-ink text-white text-[9px] font-bold flex items-center justify-center">CS</div>
+                    <span className="text-label font-semibold text-ink-muted">CampusStay • bây giờ</span>
                   </div>
                   {urgent && <div className="text-[9px] font-bold text-rose-600 mb-0.5">⚠ KHẨN CẤP</div>}
-                  <div className="text-[11px] font-bold text-slate-800 leading-snug">{title || 'Tiêu đề thông báo'}</div>
-                  <div className="text-[10px] text-slate-600 mt-1 line-clamp-6">{body || 'Nội dung thông báo sẽ hiển thị ở đây...'}</div>
+                  <div className="text-label font-bold text-ink leading-snug">{title || 'Tiêu đề thông báo'}</div>
+                  <div className="text-label text-ink-muted mt-1 line-clamp-6">{body || 'Nội dung thông báo sẽ hiển thị ở đây...'}</div>
                 </div>
               </div>
             </SectionCard>
             <SectionCard title="Mẫu thông báo" noPadding>
-              <ul className="divide-y divide-slate-100">
+              <ul className="divide-y divide-line">
                 {TEMPLATES.map((t) => (
                   <li key={t.id}>
-                    <button type="button" onClick={() => applyTemplate(t.id)} className="w-full px-5 py-3 text-left hover:bg-slate-50 flex items-center gap-2 text-xs">
-                      <FileText className="w-4 h-4 text-[#1A365D]" />
-                      <span className="font-semibold text-slate-700">{t.name}</span>
+                    <button type="button" onClick={() => applyTemplate(t.id)} className="w-full px-5 py-3 text-left hover:bg-surface-muted flex items-center gap-2 text-xs">
+                      <FileText className="w-4 h-4 text-ink" />
+                      <span className="font-semibold text-ink">{t.name}</span>
                     </button>
                   </li>
                 ))}
@@ -250,7 +250,7 @@ export function StaffBroadcastPage() {
         <SectionCard noPadding>
           <div className="overflow-x-auto">
             <table className="w-full text-xs">
-              <thead className="bg-slate-50 text-slate-500">
+              <thead className="bg-surface-muted text-ink-muted">
                 <tr>
                   <th className="text-left font-semibold px-5 py-3">Thông báo</th>
                   <th className="text-left font-semibold px-5 py-3">Đối tượng</th>
@@ -259,19 +259,19 @@ export function StaffBroadcastPage() {
                   <th className="text-left font-semibold px-5 py-3">Trạng thái</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100">
+              <tbody className="divide-y divide-line">
                 {history.map((h, i) => (
-                  <tr key={i} className="hover:bg-slate-50">
+                  <tr key={i} className="hover:bg-surface-muted">
                     <td className="px-5 py-3">
-                      <div className="font-semibold text-slate-800">{h.title}</div>
-                      <div className="text-[11px] text-slate-400">{h.sent} • {h.by}</div>
+                      <div className="font-semibold text-ink">{h.title}</div>
+                      <div className="text-label text-ink-subtle">{h.sent} • {h.by}</div>
                     </td>
-                    <td className="px-5 py-3 text-slate-600">{h.audience}</td>
+                    <td className="px-5 py-3 text-ink-muted">{h.audience}</td>
                     <td className="px-5 py-3">
                       <div className="flex gap-1">
                         {h.channels.map((c) => {
                           const ch = CHANNELS.find((x) => x.id === c);
-                          return ch ? <span key={c} title={ch.label} className="w-6 h-6 rounded-md bg-slate-100 flex items-center justify-center"><ch.icon className="w-3 h-3 text-slate-600" /></span> : null;
+                          return ch ? <span key={c} title={ch.label} className="w-6 h-6 rounded-md bg-surface-sunken flex items-center justify-center"><ch.icon className="w-3 h-3 text-ink-muted" /></span> : null;
                         })}
                       </div>
                     </td>
@@ -279,7 +279,7 @@ export function StaffBroadcastPage() {
                       {h.status === 'COMPLETED' ? (
                         <div className="flex items-center gap-2"><ProgressBar value={h.read} tone="emerald" /><span className="font-semibold">{h.read}%</span></div>
                       ) : (
-                        <span className="text-slate-400">—</span>
+                        <span className="text-ink-subtle">—</span>
                       )}
                     </td>
                     <td className="px-5 py-3">
@@ -290,7 +290,7 @@ export function StaffBroadcastPage() {
               </tbody>
             </table>
           </div>
-          <div className="px-5 py-3 border-t text-[11px] text-slate-500 flex items-center gap-1.5">
+          <div className="px-5 py-3 border-t text-label text-ink-muted flex items-center gap-1.5">
             <BarChart3 className="w-3.5 h-3.5" /> Tỷ lệ đọc được tính trên kênh in-app & push. <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 ml-2" /> Email đã gửi thành công 99.2%.
           </div>
         </SectionCard>

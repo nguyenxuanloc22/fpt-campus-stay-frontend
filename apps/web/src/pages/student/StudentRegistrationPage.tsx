@@ -136,9 +136,9 @@ export function StudentRegistrationPage() {
         <PageHeader title="Đăng ký lưu trú" />
         <SectionCard>
           <div className="text-center py-6">
-            <XCircle className="w-10 h-10 text-slate-400 mx-auto mb-3" />
-            <div className="text-base font-bold text-slate-900">Hết thời gian giữ chỗ</div>
-            <p className="text-sm text-slate-500 mt-1">Bạn chưa đóng cọc trong 15 phút nên chỗ đã được nhả lại. Bạn chưa bị trừ tiền.</p>
+            <XCircle className="w-10 h-10 text-ink-subtle mx-auto mb-3" />
+            <div className="text-base font-bold text-ink">Hết thời gian giữ chỗ</div>
+            <p className="text-sm text-ink-muted mt-1">Bạn chưa đóng cọc trong 15 phút nên chỗ đã được nhả lại. Bạn chưa bị trừ tiền.</p>
             <AppButton className="mt-5" onClick={restart}>Đăng ký lại</AppButton>
           </div>
         </SectionCard>
@@ -153,16 +153,16 @@ export function StudentRegistrationPage() {
         <SectionCard>
           <div className="text-center py-4">
             <CheckCircle2 className="w-12 h-12 text-emerald-500 mx-auto mb-3" />
-            <div className="text-lg font-bold text-slate-900">Đăng ký thành công</div>
-            <p className="text-sm text-slate-500 mt-1">Mã đơn <strong className="text-slate-900">APP-SP27-004812</strong> · Biên nhận đã gửi tới {user?.email}</p>
+            <div className="text-lg font-bold text-ink">Đăng ký thành công</div>
+            <p className="text-sm text-ink-muted mt-1">Mã đơn <strong className="text-ink">APP-SP27-004812</strong> · Biên nhận đã gửi tới {user?.email}</p>
           </div>
           <dl className="grid grid-cols-2 gap-3 text-sm mt-4">
-            <div className="p-3 rounded-xl bg-slate-50"><dt className="text-xs text-slate-500">Loại phòng</dt><dd className="font-semibold">{room?.name}</dd></div>
-            <div className="p-3 rounded-xl bg-slate-50"><dt className="text-xs text-slate-500">Thời gian</dt><dd className="font-semibold">{stayTerms[0]?.label} → {stayTerms[stayTerms.length - 1]?.label}</dd></div>
-            <div className="p-3 rounded-xl bg-slate-50"><dt className="text-xs text-slate-500">Đã thanh toán</dt><dd className="font-semibold">{formatVnd(totalNow)}</dd></div>
-            <div className="p-3 rounded-xl bg-slate-50"><dt className="text-xs text-slate-500">Trạng thái</dt><dd><StatusBadge status="PROCESSING" customLabel="Chờ xếp phòng" /></dd></div>
+            <div className="p-3 rounded-xl bg-surface-muted"><dt className="text-xs text-ink-muted">Loại phòng</dt><dd className="font-semibold">{room?.name}</dd></div>
+            <div className="p-3 rounded-xl bg-surface-muted"><dt className="text-xs text-ink-muted">Thời gian</dt><dd className="font-semibold">{stayTerms[0]?.label} → {stayTerms[stayTerms.length - 1]?.label}</dd></div>
+            <div className="p-3 rounded-xl bg-surface-muted"><dt className="text-xs text-ink-muted">Đã thanh toán</dt><dd className="font-semibold">{formatVnd(totalNow)}</dd></div>
+            <div className="p-3 rounded-xl bg-surface-muted"><dt className="text-xs text-ink-muted">Trạng thái</dt><dd><StatusBadge status="PROCESSING" customLabel="Chờ xếp phòng" /></dd></div>
           </dl>
-          <p className="text-xs text-slate-500 mt-4">Kết quả xếp phòng và hợp đồng sẽ hiển thị tại “Phòng của tôi”. Phần phí phòng còn lại thanh toán khi check-in.</p>
+          <p className="text-xs text-ink-muted mt-4">Kết quả xếp phòng và hợp đồng sẽ hiển thị tại “Phòng của tôi”. Phần phí phòng còn lại thanh toán khi check-in.</p>
         </SectionCard>
         {toastNode}
       </div>
@@ -184,23 +184,23 @@ export function StudentRegistrationPage() {
               className={clsx(
                 'w-7 h-7 rounded-full text-xs font-bold flex items-center justify-center',
                 i < stepIdx && 'bg-emerald-500 text-white',
-                i === stepIdx && 'bg-[#F26F21] text-white',
-                i > stepIdx && 'bg-slate-100 text-slate-400'
+                i === stepIdx && 'bg-brand-ink text-white',
+                i > stepIdx && 'bg-surface-sunken text-ink-subtle'
               )}
             >
               {i < stepIdx ? <Check className="w-3.5 h-3.5" /> : i + 1}
             </span>
-            <span className={clsx('text-xs font-semibold', i === stepIdx ? 'text-slate-900' : 'text-slate-400')}>{STEP_LABEL[s]}</span>
-            {i < steps.length - 1 && <span className="w-6 h-px bg-slate-200" />}
+            <span className={clsx('text-xs font-semibold', i === stepIdx ? 'text-ink' : 'text-ink-subtle')}>{STEP_LABEL[s]}</span>
+            {i < steps.length - 1 && <span className="w-6 h-px bg-line" />}
           </li>
         ))}
       </ol>
 
       {holdLeft !== null && stepIdx >= steps.indexOf('room') && (
-        <div className="flex items-center gap-3 px-4 py-3 rounded-xl border border-slate-200 bg-white text-sm">
-          <Timer className="w-4 h-4 text-[#F26F21] shrink-0" />
-          <span className="flex-1 text-slate-600">Hệ thống đang giữ chỗ <strong className="text-slate-900">{room?.name}</strong> cho bạn. Hoàn tất thanh toán trước khi hết giờ.</span>
-          <span className={clsx('font-bold tabular-nums', holdLeft < 180 ? 'text-rose-600' : 'text-slate-900')}>{formatCountdown(holdLeft)}</span>
+        <div className="flex items-center gap-3 px-4 py-3 rounded-xl border border-line bg-white text-sm">
+          <Timer className="w-4 h-4 text-brand-ink shrink-0" />
+          <span className="flex-1 text-ink-muted">Hệ thống đang giữ chỗ <strong className="text-ink">{room?.name}</strong> cho bạn. Hoàn tất thanh toán trước khi hết giờ.</span>
+          <span className={clsx('font-bold tabular-nums', holdLeft < 180 ? 'text-rose-600' : 'text-ink')}>{formatCountdown(holdLeft)}</span>
         </div>
       )}
 
@@ -213,14 +213,14 @@ export function StudentRegistrationPage() {
               ['Email', user?.email ?? '—'],
               ['Khóa · Kỳ hiện tại', `${STUDENT_SEMESTER.cohort} · Kỳ ${STUDENT_SEMESTER.current}`],
             ].map(([k, v]) => (
-              <div key={k} className="p-3 rounded-xl bg-slate-50 min-w-0"><dt className="text-xs text-slate-500">{k}</dt><dd className="font-semibold text-slate-900 truncate">{v}</dd></div>
+              <div key={k} className="p-3 rounded-xl bg-surface-muted min-w-0"><dt className="text-xs text-ink-muted">{k}</dt><dd className="font-semibold text-ink truncate">{v}</dd></div>
             ))}
           </dl>
           <ul className="space-y-2.5">
             {checks.map((c) => (
               <li key={c.label} className="flex items-center gap-2.5 text-sm">
                 {c.ok ? <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" /> : <XCircle className="w-4 h-4 text-rose-500 shrink-0" />}
-                <span className={c.ok ? 'text-slate-700' : 'text-rose-700 font-semibold'}>{c.label}</span>
+                <span className={c.ok ? 'text-ink' : 'text-rose-700 font-semibold'}>{c.label}</span>
               </li>
             ))}
           </ul>
@@ -232,26 +232,26 @@ export function StudentRegistrationPage() {
         <SectionCard title="Thời gian lưu trú" subtitle="Mỗi năm có 3 kỳ: Spring, Summer, Fall. Bạn được đăng ký lưu trú tối đa đến kỳ 9.">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             <div>
-              <div className="text-xs font-semibold text-slate-500 mb-1.5">Kỳ bắt đầu (hệ thống tự xác định)</div>
-              <div className="px-3 py-2.5 rounded-lg bg-slate-50 border border-slate-200 text-sm font-semibold text-slate-900">
+              <div className="text-xs font-semibold text-ink-muted mb-1.5">Kỳ bắt đầu (hệ thống tự xác định)</div>
+              <div className="px-3 py-2.5 rounded-lg bg-surface-muted border border-line text-sm font-semibold text-ink">
                 {terms[0]!.label} · Kỳ {terms[0]!.semester}
               </div>
             </div>
             <div>
-              <label htmlFor="end-term" className="block text-xs font-semibold text-slate-500 mb-1.5">Lưu trú đến hết kỳ</label>
-              <select id="end-term" value={endSemester} onChange={(e) => setEndSemester(Number(e.target.value))} className="w-full px-3 py-2.5 rounded-lg border border-slate-200 bg-white text-sm">
+              <label htmlFor="end-term" className="block text-xs font-semibold text-ink-muted mb-1.5">Lưu trú đến hết kỳ</label>
+              <select id="end-term" value={endSemester} onChange={(e) => setEndSemester(Number(e.target.value))} className="w-full px-3 py-2.5 rounded-lg border border-line bg-white text-sm">
                 {terms.map((t) => <option key={t.semester} value={t.semester}>{t.label} · Kỳ {t.semester}</option>)}
               </select>
             </div>
           </div>
           <div className="mt-5 flex flex-wrap gap-2">
             {terms.map((t) => (
-              <span key={t.semester} className={clsx('px-3 py-1.5 rounded-full text-xs font-semibold border', t.semester <= endSemester ? 'bg-[#F26F21] text-white border-[#F26F21]' : 'bg-white text-slate-400 border-slate-200')}>
+              <span key={t.semester} className={clsx('px-3 py-1.5 rounded-full text-xs font-semibold border', t.semester <= endSemester ? 'bg-brand-ink text-white border-brand' : 'bg-white text-ink-subtle border-line')}>
                 {t.label}
               </span>
             ))}
           </div>
-          <p className="text-xs text-slate-500 mt-3">Đăng ký {stayTerms.length} kỳ. Phí phòng được thu theo từng kỳ; kỳ đầu thanh toán khi check-in.</p>
+          <p className="text-xs text-ink-muted mt-3">Đăng ký {stayTerms.length} kỳ. Phí phòng được thu theo từng kỳ; kỳ đầu thanh toán khi check-in.</p>
         </SectionCard>
       )}
 
@@ -269,27 +269,27 @@ export function StudentRegistrationPage() {
                 aria-pressed={selected}
                 className={clsx(
                   'text-left rounded-2xl border bg-white overflow-hidden transition disabled:opacity-50',
-                  selected ? 'border-[#F26F21] ring-2 ring-orange-100' : 'border-slate-200 hover:border-slate-300'
+                  selected ? 'border-brand ring-2 ring-orange-100' : 'border-line hover:border-line-strong'
                 )}
               >
-                <RoomTypeIllustration type={r.id} className="w-full h-36 bg-slate-50" />
+                <RoomTypeIllustration type={r.id} className="w-full h-36 bg-surface-muted" />
                 <div className="p-4">
                   <div className="flex items-start justify-between gap-2">
-                    <div className="text-base font-bold text-slate-900">{r.name}</div>
-                    {selected && <span className="w-6 h-6 rounded-full bg-[#F26F21] text-white flex items-center justify-center"><Check className="w-3.5 h-3.5" /></span>}
+                    <div className="text-base font-bold text-ink">{r.name}</div>
+                    {selected && <span className="w-6 h-6 rounded-full bg-brand-ink text-white flex items-center justify-center"><Check className="w-3.5 h-3.5" /></span>}
                   </div>
-                  <div className="text-lg font-bold text-slate-900 mt-1">{formatVnd(r.pricePerTerm)}<span className="text-xs font-medium text-slate-500"> / kỳ / sinh viên</span></div>
-                  <p className="text-xs text-slate-500 mt-1">{r.description}</p>
+                  <div className="text-lg font-bold text-ink mt-1">{formatVnd(r.pricePerTerm)}<span className="text-xs font-medium text-ink-muted"> / kỳ / sinh viên</span></div>
+                  <p className="text-xs text-ink-muted mt-1">{r.description}</p>
                   <ul className="mt-3 space-y-1">
                     {r.amenities.map((a) => (
                       <li key={a.code} className="flex items-center justify-between text-xs">
-                        <span className="text-slate-700">{a.name}{a.qty > 1 ? ` × ${a.qty}` : ''}</span>
-                        <code className="text-[10px] text-slate-400">{a.code}</code>
+                        <span className="text-ink">{a.name}{a.qty > 1 ? ` × ${a.qty}` : ''}</span>
+                        <code className="text-label text-ink-subtle">{a.code}</code>
                       </li>
                     ))}
                   </ul>
-                  <div className="mt-3 pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
-                    <span className="text-slate-500">{r.canChooseRoommate ? 'Được chọn bạn cùng phòng' : 'Hệ thống tự xếp bạn cùng phòng'}</span>
+                  <div className="mt-3 pt-3 border-t border-line flex items-center justify-between text-xs">
+                    <span className="text-ink-muted">{r.canChooseRoommate ? 'Được chọn bạn cùng phòng' : 'Hệ thống tự xếp bạn cùng phòng'}</span>
                     <span className={clsx('font-semibold', full ? 'text-rose-600' : r.availability === 'LIMITED' ? 'text-amber-600' : 'text-emerald-600')}>
                       {full ? 'Hết chỗ' : r.availability === 'LIMITED' ? 'Sắp hết' : 'Còn chỗ'}
                     </span>
@@ -314,7 +314,7 @@ export function StudentRegistrationPage() {
                 key={m}
                 type="button"
                 onClick={() => setMode(m)}
-                className={clsx('p-3 rounded-xl border text-sm font-semibold', mode === m ? 'border-[#F26F21] bg-orange-50 text-[#C2410C]' : 'border-slate-200 text-slate-600 hover:border-slate-300')}
+                className={clsx('p-3 rounded-xl border text-sm font-semibold', mode === m ? 'border-brand bg-orange-50 text-brand-ink' : 'border-line text-ink-muted hover:border-line-strong')}
               >
                 {label}
               </button>
@@ -327,7 +327,7 @@ export function StudentRegistrationPage() {
                   value={mateId}
                   onChange={(e) => { setMateId(e.target.value.toUpperCase()); setMateInvited(false); }}
                   placeholder="MSSV, ví dụ SE172211"
-                  className="flex-1 px-3 py-2.5 border border-slate-200 rounded-lg text-sm"
+                  className="flex-1 px-3 py-2.5 border border-line rounded-lg text-sm"
                 />
                 <AppButton variant="outline" disabled={!/^[A-Z]{2}\d{6}$/.test(mateId)} leftIcon={<Mail className="w-4 h-4" />} onClick={() => { setMateInvited(true); show(`Đã gửi email xác nhận tới ${mateId}`); }}>
                   Gửi lời mời
@@ -346,8 +346,8 @@ export function StudentRegistrationPage() {
                 ] as const
               ).map(([key, label]) => (
                 <label key={key} className="block">
-                  <span className="block text-xs font-semibold text-slate-500 mb-1.5">{label}</span>
-                  <select value={match[key]} onChange={(e) => setMatch({ ...match, [key]: e.target.value })} className="w-full px-3 py-2.5 rounded-lg border border-slate-200 bg-white text-sm">
+                  <span className="block text-xs font-semibold text-ink-muted mb-1.5">{label}</span>
+                  <select value={match[key]} onChange={(e) => setMatch({ ...match, [key]: e.target.value })} className="w-full px-3 py-2.5 rounded-lg border border-line bg-white text-sm">
                     {MATCH_OPTIONS[key].map((o) => <option key={o}>{o}</option>)}
                   </select>
                 </label>
@@ -360,31 +360,31 @@ export function StudentRegistrationPage() {
       {step === 'confirm' && room && (
         <SectionCard title="Xác nhận thông tin & chi phí">
           <dl className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-sm mb-5">
-            <div className="p-3 rounded-xl bg-slate-50"><dt className="text-xs text-slate-500">Loại phòng</dt><dd className="font-semibold">{room.name}</dd></div>
-            <div className="p-3 rounded-xl bg-slate-50"><dt className="text-xs text-slate-500">Thời gian lưu trú</dt><dd className="font-semibold">{stayTerms[0]?.label} → {stayTerms[stayTerms.length - 1]?.label}</dd></div>
-            <div className="p-3 rounded-xl bg-slate-50">
-              <dt className="text-xs text-slate-500">Bạn cùng phòng</dt>
+            <div className="p-3 rounded-xl bg-surface-muted"><dt className="text-xs text-ink-muted">Loại phòng</dt><dd className="font-semibold">{room.name}</dd></div>
+            <div className="p-3 rounded-xl bg-surface-muted"><dt className="text-xs text-ink-muted">Thời gian lưu trú</dt><dd className="font-semibold">{stayTerms[0]?.label} → {stayTerms[stayTerms.length - 1]?.label}</dd></div>
+            <div className="p-3 rounded-xl bg-surface-muted">
+              <dt className="text-xs text-ink-muted">Bạn cùng phòng</dt>
               <dd className="font-semibold">{!room.canChooseRoommate ? 'Hệ thống xếp' : mode === 'BY_ID' ? mateId : 'Ghép theo tiêu chí'}</dd>
             </div>
           </dl>
           <table className="w-full text-sm">
-            <tbody className="divide-y divide-slate-100">
-              <tr><td className="py-2.5 text-slate-600">Phí phòng {stayTerms[0]?.label} (tham khảo)</td><td className="py-2.5 text-right text-slate-500">{formatVnd(room.pricePerTerm)}</td></tr>
-              <tr><td className="py-2.5 text-slate-900">Tiền cọc giữ chỗ ({DEPOSIT_CONFIG.percent}% phí kỳ đầu)</td><td className="py-2.5 text-right font-semibold">{formatVnd(deposit)}</td></tr>
-              <tr><td className="py-2.5 text-slate-900">Cọc điện nước</td><td className="py-2.5 text-right font-semibold">{formatVnd(DEPOSIT_CONFIG.utilityDeposit)}</td></tr>
+            <tbody className="divide-y divide-line">
+              <tr><td className="py-2.5 text-ink-muted">Phí phòng {stayTerms[0]?.label} (tham khảo)</td><td className="py-2.5 text-right text-ink-muted">{formatVnd(room.pricePerTerm)}</td></tr>
+              <tr><td className="py-2.5 text-ink">Tiền cọc giữ chỗ ({DEPOSIT_CONFIG.percent}% phí kỳ đầu)</td><td className="py-2.5 text-right font-semibold">{formatVnd(deposit)}</td></tr>
+              <tr><td className="py-2.5 text-ink">Cọc điện nước</td><td className="py-2.5 text-right font-semibold">{formatVnd(DEPOSIT_CONFIG.utilityDeposit)}</td></tr>
             </tbody>
             <tfoot>
               <tr className="border-t-2 border-slate-900">
-                <td className="py-3 font-bold text-slate-900">Tổng thanh toán ngay</td>
-                <td className="py-3 text-right text-lg font-bold text-[#F26F21]">{formatVnd(totalNow)}</td>
+                <td className="py-3 font-bold text-ink">Tổng thanh toán ngay</td>
+                <td className="py-3 text-right text-lg font-bold text-brand-ink">{formatVnd(totalNow)}</td>
               </tr>
             </tfoot>
           </table>
-          <p className="text-xs text-slate-500 mt-2">
+          <p className="text-xs text-ink-muted mt-2">
             Phần còn lại của phí kỳ đầu ({formatVnd(room.pricePerTerm - deposit)}) thanh toán khi check-in. Không nhận phòng trong khung check-in sẽ mất tiền cọc.
           </p>
-          <label className="flex items-start gap-2.5 mt-5 text-sm text-slate-700">
-            <input type="checkbox" checked={confirmed} onChange={(e) => setConfirmed(e.target.checked)} className="mt-0.5 w-4 h-4 accent-[#F26F21]" />
+          <label className="flex items-start gap-2.5 mt-5 text-sm text-ink">
+            <input type="checkbox" checked={confirmed} onChange={(e) => setConfirmed(e.target.checked)} className="mt-0.5 w-4 h-4 accent-brand-ink" />
             <span>Tôi đã kiểm tra các khoản phí, đồng ý với Nội quy KTX và cho phép xử lý dữ liệu cá nhân theo Nghị định 13/2023/NĐ-CP.</span>
           </label>
         </SectionCard>
@@ -393,16 +393,16 @@ export function StudentRegistrationPage() {
       {step === 'payment' && room && (
         <SectionCard title="Thanh toán qua VietQR" subtitle="Hệ thống tự xác nhận khi ngân hàng báo giao dịch thành công">
           <div className="flex flex-col md:flex-row items-center gap-8">
-            <div className="p-4 rounded-2xl border border-slate-200 bg-white">
+            <div className="p-4 rounded-2xl border border-line bg-white">
               <VietQrCode value={`DEP-${user?.studentId}-${room.id}-${totalNow}`} size={208} />
             </div>
             <div className="flex-1 w-full space-y-3">
               <div>
-                <div className="text-xs text-slate-500">Số tiền</div>
-                <div className="text-3xl font-bold text-slate-900">{formatVnd(totalNow)}</div>
+                <div className="text-xs text-ink-muted">Số tiền</div>
+                <div className="text-3xl font-bold text-ink">{formatVnd(totalNow)}</div>
               </div>
-              <div className="text-sm text-slate-600">Nội dung: <code className="px-2 py-0.5 rounded bg-slate-100 text-slate-900">KTX {user?.studentId} DEP SP27</code></div>
-              <p className="text-xs text-slate-500">Mở ứng dụng ngân hàng, quét mã và xác nhận. Không cần nhập số tài khoản.</p>
+              <div className="text-sm text-ink-muted">Nội dung: <code className="px-2 py-0.5 rounded bg-surface-sunken text-ink">KTX {user?.studentId} DEP SP27</code></div>
+              <p className="text-xs text-ink-muted">Mở ứng dụng ngân hàng, quét mã và xác nhận. Không cần nhập số tài khoản.</p>
               <AppButton onClick={() => { setPhase('DONE'); show('Thanh toán thành công'); }}>Tôi đã thanh toán</AppButton>
             </div>
           </div>

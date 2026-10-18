@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Download, FileSpreadsheet, FileText, Building2, Users, Wallet, Wrench, CalendarRange, TrendingUp, Printer, Mail } from 'lucide-react';
-import { PageHeader, StatCard, SectionCard, Tabs, BarChart, DonutChart, ProgressBar, AppButton, useToast } from '@shared-ui';
+import { PageHeader, StatCard, SectionCard, Tabs, BarChart, DonutChart, ProgressBar, AppButton, useToast, CHART_COLORS } from '@shared-ui';
 
 type TabKey = 'capacity' | 'finance' | 'service';
 
@@ -32,7 +32,7 @@ export function ManagerReportsPage() {
         description="Công suất lưu trú, tài chính và chất lượng dịch vụ KTX"
         actions={
           <>
-            <select value={term} onChange={(e) => setTerm(e.target.value)} className="px-3 py-2 text-xs rounded-lg border border-slate-200 bg-white">
+            <select value={term} onChange={(e) => setTerm(e.target.value)} className="px-3 py-2 text-xs rounded-lg border border-line bg-white">
               <option value="FA26">Học kỳ Fall 2026</option>
               <option value="SU26">Học kỳ Summer 2026</option>
               <option value="SP26">Học kỳ Spring 2026</option>
@@ -90,10 +90,10 @@ export function ManagerReportsPage() {
                 centerValue="1.200"
                 centerLabel="giường"
                 segments={[
-                  { label: '4 giường máy lạnh', value: 720, color: '#F26F21' },
-                  { label: '6 giường tiêu chuẩn', value: 264, color: '#1A365D' },
-                  { label: '4 giường quạt', value: 144, color: '#3B82F6' },
-                  { label: '2 giường VIP', value: 72, color: '#10B981' },
+                  { label: '4 giường máy lạnh', value: 720, color: CHART_COLORS.brand },
+                  { label: '6 giường tiêu chuẩn', value: 264, color: CHART_COLORS.neutral },
+                  { label: '4 giường quạt', value: 144, color: CHART_COLORS.blue },
+                  { label: '2 giường VIP', value: 72, color: CHART_COLORS.green },
                 ]}
               />
             </SectionCard>
@@ -101,7 +101,7 @@ export function ManagerReportsPage() {
           <SectionCard title="Chi tiết theo tòa nhà" noPadding>
             <div className="overflow-x-auto">
               <table className="w-full text-xs">
-                <thead className="bg-slate-50 text-slate-500">
+                <thead className="bg-surface-muted text-ink-muted">
                   <tr>
                     <th className="text-left font-semibold px-5 py-3">Tòa</th>
                     <th className="text-right font-semibold px-5 py-3">Số phòng</th>
@@ -111,12 +111,12 @@ export function ManagerReportsPage() {
                     <th className="text-right font-semibold px-5 py-3">Doanh thu (tr ₫)</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100">
+                <tbody className="divide-y divide-line">
                   {BUILDINGS.map((b) => {
                     const pct = (b.used / b.beds) * 100;
                     return (
                       <tr key={b.b}>
-                        <td className="px-5 py-3 font-bold text-slate-800">{b.b} <span className="font-normal text-slate-500">({b.gender})</span></td>
+                        <td className="px-5 py-3 font-bold text-ink">{b.b} <span className="font-normal text-ink-muted">({b.gender})</span></td>
                         <td className="px-5 py-3 text-right">{b.rooms}</td>
                         <td className="px-5 py-3 text-right">{b.beds}</td>
                         <td className="px-5 py-3 text-right font-semibold">{b.used}</td>
@@ -125,7 +125,7 @@ export function ManagerReportsPage() {
                       </tr>
                     );
                   })}
-                  <tr className="bg-slate-50 font-bold">
+                  <tr className="bg-surface-muted font-bold">
                     <td className="px-5 py-3">Tổng cộng</td>
                     <td className="px-5 py-3 text-right">{BUILDINGS.reduce((s, b) => s + b.rooms, 0)}</td>
                     <td className="px-5 py-3 text-right">{totalBeds}</td>
@@ -161,10 +161,10 @@ export function ManagerReportsPage() {
               centerValue="96.8%"
               centerLabel="đã thu"
               segments={[
-                { label: 'Đã thu', value: 16680, color: '#10B981' },
-                { label: 'Chưa đến hạn', value: 362, color: '#3B82F6' },
-                { label: 'Quá hạn < 30 ngày', value: 156, color: '#F59E0B' },
-                { label: 'Quá hạn > 30 ngày', value: 28, color: '#F43F5E' },
+                { label: 'Đã thu', value: 16680, color: CHART_COLORS.green },
+                { label: 'Chưa đến hạn', value: 362, color: CHART_COLORS.blue },
+                { label: 'Quá hạn < 30 ngày', value: 156, color: CHART_COLORS.amber },
+                { label: 'Quá hạn > 30 ngày', value: 28, color: CHART_COLORS.red },
               ]}
             />
           </SectionCard>
@@ -176,9 +176,9 @@ export function ManagerReportsPage() {
                 ['Ví điện tử', 7, 'orange'],
                 ['Tiền mặt tại quầy', 3, 'navy'],
               ].map(([l, v, t]) => (
-                <div key={String(l)} className="p-4 rounded-xl bg-slate-50">
-                  <div className="text-xs text-slate-500">{l}</div>
-                  <div className="text-xl font-bold text-slate-800 my-1">{v}%</div>
+                <div key={String(l)} className="p-4 rounded-xl bg-surface-muted">
+                  <div className="text-xs text-ink-muted">{l}</div>
+                  <div className="text-xl font-bold text-ink my-1">{v}%</div>
                   <ProgressBar value={Number(v)} tone={t as 'emerald'} />
                 </div>
               ))}
@@ -207,8 +207,8 @@ export function ManagerReportsPage() {
           </SectionCard>
           <SectionCard title="Mức độ hài lòng">
             <div className="text-center mb-4">
-              <div className="text-4xl font-bold text-[#1A365D]">4.6</div>
-              <div className="text-xs text-slate-500">/ 5 — 1.204 đánh giá</div>
+              <div className="text-4xl font-bold text-ink">4.6</div>
+              <div className="text-xs text-ink-muted">/ 5 — 1.204 đánh giá</div>
             </div>
             <ul className="space-y-2 text-xs">
               {[
@@ -219,9 +219,9 @@ export function ManagerReportsPage() {
                 [1, 1],
               ].map(([s, p]) => (
                 <li key={s} className="flex items-center gap-2">
-                  <span className="w-6 text-slate-600">{s}★</span>
+                  <span className="w-6 text-ink-muted">{s}★</span>
                   <ProgressBar value={p!} tone="amber" />
-                  <span className="w-8 text-right text-slate-500">{p}%</span>
+                  <span className="w-8 text-right text-ink-muted">{p}%</span>
                 </li>
               ))}
             </ul>
@@ -240,27 +240,27 @@ export function ManagerReportsPage() {
               { n: 'Tổng hợp bảo trì', icon: Wrench, f: 'PDF' },
               { n: 'Biến động lưu trú', icon: CalendarRange, f: 'PDF' },
             ].map((r) => (
-              <button key={r.n} type="button" onClick={() => show(`Đang tạo "${r.n}" (${r.f})`)} className="p-3 rounded-xl border border-slate-200 hover:border-[#F26F21] text-left flex items-center gap-3">
-                <div className="w-9 h-9 rounded-lg bg-[#EBF2FB] text-[#1A365D] flex items-center justify-center"><r.icon className="w-4 h-4" /></div>
+              <button key={r.n} type="button" onClick={() => show(`Đang tạo "${r.n}" (${r.f})`)} className="p-3 rounded-xl border border-line hover:border-brand text-left flex items-center gap-3">
+                <div className="w-9 h-9 rounded-lg bg-surface-sunken text-ink flex items-center justify-center"><r.icon className="w-4 h-4" /></div>
                 <div className="flex-1">
-                  <div className="text-xs font-semibold text-slate-800">{r.n}</div>
-                  <div className="text-[11px] text-slate-500 flex items-center gap-1">{r.f === 'Excel' ? <FileSpreadsheet className="w-3 h-3" /> : <FileText className="w-3 h-3" />}{r.f}</div>
+                  <div className="text-xs font-semibold text-ink">{r.n}</div>
+                  <div className="text-label text-ink-muted flex items-center gap-1">{r.f === 'Excel' ? <FileSpreadsheet className="w-3 h-3" /> : <FileText className="w-3 h-3" />}{r.f}</div>
                 </div>
-                <Download className="w-4 h-4 text-slate-400" />
+                <Download className="w-4 h-4 text-ink-subtle" />
               </button>
             ))}
           </div>
         </SectionCard>
         <SectionCard title="Báo cáo định kỳ tự động" noPadding>
-          <ul className="divide-y divide-slate-100">
+          <ul className="divide-y divide-line">
             {SCHEDULED_REPORTS.map((r) => (
               <li key={r.name} className="px-5 py-3 flex items-center gap-3">
-                <Mail className="w-4 h-4 text-[#F26F21]" />
+                <Mail className="w-4 h-4 text-brand-ink" />
                 <div className="flex-1 text-xs">
-                  <div className="font-semibold text-slate-800">{r.name}</div>
-                  <div className="text-slate-500">{r.freq} • gửi {r.to} • {r.format}</div>
+                  <div className="font-semibold text-ink">{r.name}</div>
+                  <div className="text-ink-muted">{r.freq} • gửi {r.to} • {r.format}</div>
                 </div>
-                <span className="text-[11px] font-semibold text-emerald-600">Đang bật</span>
+                <span className="text-label font-semibold text-emerald-600">Đang bật</span>
               </li>
             ))}
           </ul>

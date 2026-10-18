@@ -122,28 +122,42 @@ Bốn nhóm yêu cầu phi chức năng trong Phiếu đăng ký (mục 3.2.d) �
 
 ## 8. HỆ THỐNG THIẾT KẾ GIAO DIỆN (UI)
 
-### 8.1. Design tokens FPT
-- **FPT Orange** `#F26F21` (hành động chính) · hover `#D95A12` · nền nhạt `#FFF2EA`.
-- **FPT Navy** `#1A365D` (tiêu đề, điều hướng, hành động phụ) · đậm `#0F2341` · nền nhạt `#EBF2FB`.
-- Trạng thái: thành công `#10B981` · cảnh báo `#F59E0B` · nguy hiểm `#EF4444` · thông tin `#3B82F6`.
+### 8.1. Design token — một nguồn duy nhất
+- Token khai báo **chỉ trong `apps/web/src/index.css`** (khối `@theme` của Tailwind 4); Tailwind sinh utility tương ứng. Component **không viết mã màu, số pixel, bo góc, bóng trực tiếp**. Code JS (fill/stroke biểu đồ) dùng `CHART_COLORS` / `TOKEN_COLORS` trong `shared-ui/tokens/colors.ts` (tham chiếu `var(--color-…)`).
 
-### 8.2. Bộ component dùng chung (`shared-ui`) — bắt buộc dùng, không tự dựng lại
-`AppButton`, `StatusBadge`, `PageHeader`, `StatCard`, `SectionCard`, `Tabs`, `Modal`, `ProgressBar`, `Avatar`, `EmptyState`, `Skeleton`, `BarChart`/`DonutChart`/`Sparkline`, `useToast`.
+| Nhóm | Token → utility | Giá trị |
+|---|---|---|
+| Nền | `page` · `surface` · `surface-muted` · `surface-sunken` | #F7F7F8 · #FFFFFF · #FAFAF9 · #F5F5F4 |
+| Viền | `line` (thẻ) · `line-strong` · `line-control` (ô nhập, ≥ 3:1) | #E7E5E4 · #D6D3D1 · #8C857F |
+| Chữ | `ink` · `ink-muted` (chữ phụ) · `ink-subtle` (không nhạt hơn) | #1C1917 · #57534E · #78716C |
+| Thương hiệu | `brand` (chỉ nền / icon) · `brand-ink` (chữ, link, nút chữ trắng) · `brand-soft` (mục menu đang chọn) | #F26B1D · #C2410C · #FFF4ED |
+| Trạng thái | `pending` vàng = chờ · `info` xanh dương = đang xử lý · `success` xanh lá = xong · `danger` đỏ = quá hạn / bị chặn (mỗi màu có `-soft` làm nền) | xem index.css |
+| Bo góc | `rounded-card` (thẻ) · `rounded-control` (nút, ô nhập) · `rounded-full` (badge) | 12px · 8px |
+| Bóng | `shadow-card` (gần như không) · `shadow-overlay` (popover, hộp thoại) | — |
+| Cỡ chữ | `text-page-title` · `text-section` · `text-body` · `text-label` (tối thiểu) | 24 · 16 · 14 · 12px |
+| Khung | `w-sidebar` · `h-header` · `h-tabbar` · `min-h-touch` (vùng bấm 44px) · `max-w-content` | — |
 
-### 8.3. Màu sắc: cam – trắng FPTU, điểm nhấn nhẹ (bắt buộc)
-- **Chủ đạo cam – trắng:** nền trang `slate-100`, thẻ trắng bo `rounded-2xl`, chữ `slate-900` / `slate-500`. Cam FPT `#F26F21` cho hành động chính, mục đang chọn, tiêu đề nhóm Sidebar, vạch nhấn tiêu đề (PageHeader, SectionCard). Khối nổi bật (thẻ chào mừng, banner việc cần làm, popup thông báo quan trọng) dùng gradient cam `#F26F21 → #FF9A4D`.
-- **Không đơn sắc:** mỗi loại thông tin có **một sắc nhẹ riêng** (nền `*-50/100`, chữ `*-600/700`) để dễ phân biệt — loại đơn (báo hỏng cam, đổi phòng xanh trời, hoàn tiền xanh lá, gia hạn vàng, xác nhận cư trú tím), danh mục thông báo, ô thông tin sinh viên, menu nhanh. `StatCard` có ô icon gradient theo `tone` và vạch màu trên đầu thẻ.
-- **Giới hạn:** tối đa ~5 sắc nhấn trên một màn hình, luôn ở mức nhạt; không dùng nền đậm ngoài cam. Màu trạng thái vẫn theo `StatusBadge`.
-- **Icon có chủ đích:** icon đặt trong ô màu bo góc (Sidebar, ô thông tin, loại đơn, menu nhanh); không rải icon trang trí trong đoạn văn.
-- Chỉ hiển thị số liệu tổng quan khi người dùng cần ra quyết định từ nó; trang thao tác (hóa đơn, yêu cầu) không cần hàng thẻ thống kê.
+Khoảng cách chỉ dùng thang 4/8/12/16/24/32px (`1, 2, 3, 4, 6, 8`).
 
-### 8.4. Quy tắc bố cục để giao diện không rối
-- Mỗi trang theo khung: **PageHeader** (tiêu đề + 1–2 hành động chính) → **tối đa 4 StatCard** (nếu thật sự cần) → nội dung chính → cột phụ (nếu có).
-- Header: logo + breadcrumb bên trái; **chuông thông báo cá nhân** và **menu tài khoản** (hồ sơ, đổi mật khẩu, cài đặt, đăng xuất) bên phải.
-- Sidebar thu gọn / mở rộng được (nút trên Header), ghi nhớ lựa chọn; chức năng chia nhóm với tiêu đề in hoa màu cam; nhóm “Thông tin” (Tổng quan, Thông báo chung) luôn đứng đầu cho mọi vai trò.
-- Mỗi trang **tối đa 1 nút primary** (màu cam). Các hành động khác dùng `outline`/`ghost`.
-- Gom chức năng liên quan vào **Tabs** trong cùng một trang thay vì tạo trang mới (ví dụ: “Bảo trì” và “Kiểm tra phòng”).
-- Chi tiết bản ghi mở bằng **Modal**; chỉ tạo route riêng khi cần chia sẻ link.
-- Màu trạng thái chỉ dùng qua `StatusBadge`; nhãn trạng thái là tiếng Việt và khớp State Diagram.
-- Responsive: hoạt động tốt từ 360 px (mobile web) đến 1440 px; bảng rộng cuộn ngang trong khung, không cuộn cả trang.
-- Khả năng truy cập: mọi nút chỉ có icon phải có `aria-label`; tương phản chữ ≥ 4.5:1; modal đóng được bằng `Esc`.
+### 8.2. Bộ component dùng chung — bắt buộc dùng, không tự dựng lại
+- `shared-ui`: `AppButton`, `StatusBadge` (+ `STATUS_TONE_CLASS`), `PageHeader`, `SectionCard`, `StatCard`, `Tabs`, `Modal`, `ProgressBar`, `Avatar`, `EmptyState`, `ErrorState`, `DataState`, `Skeleton` / `ListSkeleton` / `TableSkeleton`, `BarChart` / `DonutChart` / `Sparkline`, `useToast`, utility `field` cho ô nhập.
+- `features/dashboard`: `Greeting`, `ActionList`, `JourneySteps`, `NoticeList`, `KpiCard`, `CapacityList`.
+- Khung: `app/layouts/navigation.ts` là nơi duy nhất khai báo menu theo vai trò, thanh tab sinh viên và nhãn breadcrumb.
+
+### 8.3. Màu sắc: trung tính, cam có chủ đích (bắt buộc)
+- Nền trang `page`, thẻ trắng viền 1px, bóng gần như bỏ. Không gradient, không blur / backdrop-filter, không bóng nặng.
+- **Cam chỉ xuất hiện ở nút chính và mục menu đang chọn.** Chỗ khác dùng trung tính (icon trần `ink-muted`, không ô màu nền icon).
+- Màu trạng thái dùng đúng bộ 4 màu ở 8.1, luôn kèm chữ (hoặc icon kèm chữ) — không chỉ dùng màu.
+- Thanh tiến độ / công suất tô màu theo ngưỡng (`CapacityList`: ≥ 95% đỏ “Gần đầy”, ≥ 85% vàng “Cao”, còn lại xanh “Còn chỗ”).
+
+### 8.4. Bố cục & khả năng truy cập (WCAG 2.1 AA)
+- Mobile-first: viết style từ 390px, mốc mở rộng 640px (`sm`) và 1024px (`lg`). Không cuộn ngang ở mọi độ rộng; bảng rộng cuộn trong khung của bảng.
+- Sidebar cố định từ 1024px (thu gọn được bằng nút cuối Sidebar); dưới 1024px là ngăn kéo mở bằng nút menu trên Header. Sinh viên ≤ 640px dùng **thanh tab dưới đáy** (Tổng quan, Phòng, Hóa đơn, Đơn, Thêm) có chừa safe-area.
+- Nhóm menu: nhãn nhóm chữ thường, xám, 12px; icon trần 20px; mục đang chọn nền `brand-soft` + chữ `brand-ink` (`aria-current="page"` do NavLink gắn).
+- Mỗi trang **đúng một h1** (PageHeader hoặc Greeting); Header chỉ hiện breadcrumb, không lặp tiêu đề. Landmark `header` / `nav` / `main`.
+- Mỗi trang **tối đa 1 nút primary**. Nút bắt đầu bằng động từ. Nút bị khóa phải hiện lý do bên cạnh (`aria-describedby`).
+- Vùng bấm ≥ 44×44px trên mobile (`min-h-touch`); focus-visible toàn cục (outline `brand-ink`); nút chỉ có icon phải có `aria-label`; toast nằm trong vùng `aria-live`; ô nhập có label gắn đúng.
+- Mỗi khối dữ liệu có đủ 4 trạng thái qua `DataState`: đang tải (skeleton cùng kích thước khối thật) → lỗi → trống (có gợi ý hành động) → có dữ liệu.
+- Chuyển động chỉ dùng `transform` / `opacity`, 150–200ms; tôn trọng `prefers-reduced-motion` (đã đặt trong index.css). Không animate width / height / top / left.
+- Thuật ngữ: “yêu cầu bảo trì” (không dùng ticket), “Nhật ký thay đổi” (không dùng Audit logs), “Yêu cầu” (không dùng Request).
+- Nghiệm thu bằng Lighthouse mobile trên bản production (`npm run build` rồi `npm run preview`): Accessibility ≥ 90, CLS < 0.1.

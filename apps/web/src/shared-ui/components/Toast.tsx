@@ -10,7 +10,17 @@ interface ToastState {
   tone: ToastTone;
 }
 
-/** Lightweight page-local toast. Render `toastNode` once in the page. */
+const TONE = {
+  success: { icon: CheckCircle2, className: 'text-success' },
+  info: { icon: Info, className: 'text-info' },
+  warning: { icon: AlertTriangle, className: 'text-pending' },
+};
+
+/**
+ * Toast cục bộ của trang. Render `toastNode` một lần trong trang.
+ * Vùng aria-live luôn có mặt để trình đọc màn hình đọc được nội dung mới.
+ * Trên mobile toast nằm trên thanh tab dưới đáy.
+ */
 export function useToast() {
   const [toast, setToast] = useState<ToastState | null>(null);
 
@@ -20,23 +30,22 @@ export function useToast() {
     window.setTimeout(() => setToast((t) => (t?.id === id ? null : t)), 3000);
   }, []);
 
-  const Icon = toast?.tone === 'warning' ? AlertTriangle : toast?.tone === 'info' ? Info : CheckCircle2;
+  const tone = toast ? TONE[toast.tone] : null;
 
-  const toastNode = toast ? (
-    <div className="fixed bottom-6 right-6 z-[60]">
-      <div
-        className={clsx(
-          'flex items-center gap-2.5 px-4 py-3 rounded-xl shadow-lg text-xs font-semibold border bg-white',
-          toast.tone === 'success' && 'border-emerald-200 text-emerald-800',
-          toast.tone === 'info' && 'border-blue-200 text-blue-800',
-          toast.tone === 'warning' && 'border-amber-200 text-amber-800'
-        )}
-      >
-        <Icon className="w-4 h-4 shrink-0" />
-        {toast.message}
-      </div>
+  const toastNode = (
+    <div
+      role="status"
+      aria-live="polite"
+      className="fixed z-[60] left-4 right-4 sm:left-auto sm:right-6 bottom-[calc(var(--spacing-tabbar)+env(safe-area-inset-bottom)+1rem)] lg:bottom-6"
+    >
+      {toast && tone && (
+        <div className="flex items-center gap-3 px-4 py-3 rounded-card shadow-overlay border border-line bg-surface text-body font-medium text-ink">
+          <tone.icon className={clsx('w-5 h-5 shrink-0', tone.className)} aria-hidden="true" />
+          {toast.message}
+        </div>
+      )}
     </div>
-  ) : null;
+  );
 
   return { show, toastNode };
 }

@@ -80,8 +80,8 @@ function ConditionReport({
     <div className="space-y-4">
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
         {ASSETS.map((a) => (
-          <div key={a} className="flex items-center justify-between p-2.5 rounded-lg border border-slate-200 text-xs">
-            <span className="text-slate-700">{a}</span>
+          <div key={a} className="flex items-center justify-between p-2.5 rounded-lg border border-line text-xs">
+            <span className="text-ink">{a}</span>
             <div className="flex gap-1">
               {(['OK', 'ISSUE'] as const).map((c) => (
                 <button
@@ -90,7 +90,7 @@ function ConditionReport({
                   onClick={() => onChange(a, c)}
                   className={clsx(
                     'px-2 py-1 rounded-md font-semibold',
-                    values[a] === c ? (c === 'OK' ? 'bg-emerald-500 text-white' : 'bg-rose-500 text-white') : 'bg-slate-100 text-slate-500'
+                    values[a] === c ? (c === 'OK' ? 'bg-emerald-500 text-white' : 'bg-rose-500 text-white') : 'bg-surface-sunken text-ink-muted'
                   )}
                 >
                   {c === 'OK' ? 'Tốt' : 'Có vấn đề'}
@@ -105,9 +105,9 @@ function ConditionReport({
         onChange={(e) => onNote(e.target.value)}
         rows={2}
         placeholder="Mô tả sự cố (nếu có) — sẽ tự tạo yêu cầu bảo trì"
-        className="w-full px-3 py-2 text-xs border border-slate-200 rounded-lg"
+        className="w-full px-3 py-2 text-xs border border-line rounded-lg"
       />
-      <button type="button" className="w-full p-3 rounded-xl border-2 border-dashed border-slate-300 text-xs text-slate-500 flex items-center justify-center gap-2 hover:border-[#F26F21]">
+      <button type="button" className="w-full p-3 rounded-xl border-2 border-dashed border-line-strong text-xs text-ink-muted flex items-center justify-center gap-2 hover:border-brand">
         <Camera className="w-4 h-4" /> Chụp ảnh hiện trạng phòng
       </button>
     </div>
@@ -149,7 +149,7 @@ export function StudentCheckinPage() {
       <PageHeader title="Check-in / Check-out" description="Tự nhận và trả phòng bằng mã QR, kèm biên bản hiện trạng số" />
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="md:col-span-2 p-5 rounded-2xl bg-gradient-to-r from-[#F26F21] to-[#FF9A4D] text-white shadow-lg shadow-orange-500/20 flex flex-col sm:flex-row sm:items-center gap-4">
+        <div className="md:col-span-2 p-5 rounded-2xl bg-gradient-to-r from-brand to-brand text-white shadow-lg shadow-orange-500/20 flex flex-col sm:flex-row sm:items-center gap-4">
           <div className="w-14 h-14 rounded-2xl bg-white/20 flex items-center justify-center"><KeyRound className="w-7 h-7 text-white" /></div>
           <div className="flex-1">
             <div className="text-xs text-white/85">Phân bổ học kỳ {ASSIGNMENT.term}</div>
@@ -181,7 +181,7 @@ export function StudentCheckinPage() {
           <div className="xl:col-span-2 space-y-4">
             <ol className="grid grid-cols-4 gap-2">
               {FLOW.map((f, i) => (
-                <li key={f.key} className={clsx('p-3 rounded-xl border text-center text-[11px] font-semibold', i < idx ? 'bg-emerald-50 border-emerald-200 text-emerald-700' : i === idx ? 'bg-[#FFF2EA] border-orange-200 text-[#F26F21]' : 'bg-white border-slate-200 text-slate-400')}>
+                <li key={f.key} className={clsx('p-3 rounded-xl border text-center text-label font-semibold', i < idx ? 'bg-emerald-50 border-emerald-200 text-emerald-700' : i === idx ? 'bg-brand-soft border-orange-200 text-brand-ink' : 'bg-white border-line text-ink-subtle')}>
                   <f.icon className="w-4 h-4 mx-auto mb-1" />
                   {f.label}
                 </li>
@@ -191,13 +191,13 @@ export function StudentCheckinPage() {
             {step === 'SCAN' && (
               <SectionCard title="Bước 1 — Quét mã QR tại sảnh tòa nhà" subtitle="Mã QR dán tại quầy sảnh Tòa A; quét bằng ứng dụng CampusStay hoặc camera điện thoại">
                 <div className="flex flex-col sm:flex-row items-center gap-6">
-                  <div className="w-40 h-40 rounded-2xl border-2 border-dashed border-slate-300 flex flex-col items-center justify-center text-slate-400 text-xs gap-2">
+                  <div className="w-40 h-40 rounded-2xl border-2 border-dashed border-line-strong flex flex-col items-center justify-center text-ink-subtle text-xs gap-2">
                     <ScanLine className="w-10 h-10" /> Khung quét
                   </div>
                   <div className="flex-1 space-y-3 text-xs">
-                    <p className="text-slate-600">Hệ thống sẽ kiểm tra khung thời gian check-in và điều kiện nhận phòng của bạn.</p>
+                    <p className="text-ink-muted">Hệ thống sẽ kiểm tra khung thời gian check-in và điều kiện nhận phòng của bạn.</p>
                     <AppButton leftIcon={<QrCode className="w-4 h-4" />} onClick={scan}>Quét mã QR</AppButton>
-                    <button type="button" onClick={() => setStep('OUT_OF_WINDOW')} className="block text-xs font-semibold text-slate-500 hover:text-slate-900">
+                    <button type="button" onClick={() => setStep('OUT_OF_WINDOW')} className="block text-xs font-semibold text-ink-muted hover:text-ink">
                       Không quét được mã hoặc đến ngoài khung giờ?
                     </button>
                   </div>
@@ -219,14 +219,14 @@ export function StudentCheckinPage() {
             {step === 'PAY' && (
               <SectionCard title="Bước 2 — Thanh toán phí còn lại" subtitle="Phí phòng học kỳ sau khi trừ tiền cọc đã đóng khi đăng ký">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 items-center">
-                  <div className="flex flex-col items-center p-4 rounded-2xl border border-slate-200">
+                  <div className="flex flex-col items-center p-4 rounded-2xl border border-line">
                     <VietQrCode value={`ROOM-${user?.studentId}-SP27`} />
-                    <div className="text-xs font-bold text-[#F26F21] mt-2">{formatVnd(ASSIGNMENT.remaining)}</div>
+                    <div className="text-xs font-bold text-brand-ink mt-2">{formatVnd(ASSIGNMENT.remaining)}</div>
                   </div>
                   <div className="space-y-2 text-xs">
-                    <div className="flex justify-between p-2.5 rounded-lg bg-slate-50"><span className="text-slate-500">Phí phòng Spring 2027 (phòng 4 người)</span><span>{formatVnd(5200000)}</span></div>
-                    <div className="flex justify-between p-2.5 rounded-lg bg-slate-50"><span className="text-slate-500">Trừ tiền cọc giữ chỗ (20%)</span><span>-{formatVnd(1040000)}</span></div>
-                    <div className="flex justify-between p-2.5 rounded-lg bg-orange-50 font-bold"><span>Cần thanh toán</span><span className="text-[#F26F21]">{formatVnd(ASSIGNMENT.remaining)}</span></div>
+                    <div className="flex justify-between p-2.5 rounded-lg bg-surface-muted"><span className="text-ink-muted">Phí phòng Spring 2027 (phòng 4 người)</span><span>{formatVnd(5200000)}</span></div>
+                    <div className="flex justify-between p-2.5 rounded-lg bg-surface-muted"><span className="text-ink-muted">Trừ tiền cọc giữ chỗ (20%)</span><span>-{formatVnd(1040000)}</span></div>
+                    <div className="flex justify-between p-2.5 rounded-lg bg-orange-50 font-bold"><span>Cần thanh toán</span><span className="text-brand-ink">{formatVnd(ASSIGNMENT.remaining)}</span></div>
                     <AppButton className="w-full" onClick={() => { setStep('ACCESS'); show('Thanh toán thành công — biên nhận đã gửi qua email'); }}>
                       Tôi đã thanh toán
                     </AppButton>
@@ -238,11 +238,11 @@ export function StudentCheckinPage() {
             {step === 'ACCESS' && (
               <SectionCard title="Bước 3 — Thông tin truy cập phòng">
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
-                  <div className="p-4 rounded-xl bg-orange-50"><KeyRound className="w-5 h-5 text-orange-600" /><div className="text-slate-500 mt-2">Thẻ từ ra vào</div><div className="font-bold text-[#1A365D]">Đã kích hoạt trên thẻ SV</div></div>
-                  <div className="p-4 rounded-xl bg-sky-50"><MapPin className="w-5 h-5 text-sky-600" /><div className="text-slate-500 mt-2">Phòng</div><div className="font-bold text-[#1A365D]">A204 · Tầng 2 · Giường G1</div></div>
-                  <div className="p-4 rounded-xl bg-emerald-50"><Wifi className="w-5 h-5 text-emerald-600" /><div className="text-slate-500 mt-2">Wi-Fi</div><div className="font-bold text-[#1A365D]">FPTU-DORM-A · đăng nhập SV</div></div>
+                  <div className="p-4 rounded-xl bg-orange-50"><KeyRound className="w-5 h-5 text-orange-600" /><div className="text-ink-muted mt-2">Thẻ từ ra vào</div><div className="font-bold text-ink">Đã kích hoạt trên thẻ SV</div></div>
+                  <div className="p-4 rounded-xl bg-sky-50"><MapPin className="w-5 h-5 text-sky-600" /><div className="text-ink-muted mt-2">Phòng</div><div className="font-bold text-ink">A204 · Tầng 2 · Giường G1</div></div>
+                  <div className="p-4 rounded-xl bg-emerald-50"><Wifi className="w-5 h-5 text-emerald-600" /><div className="text-ink-muted mt-2">Wi-Fi</div><div className="font-bold text-ink">FPTU-DORM-A · đăng nhập SV</div></div>
                 </div>
-                <p className="text-xs text-slate-600 mt-4">Nhận chìa khóa tủ cá nhân tại quầy sảnh, sau đó lên phòng và lập biên bản hiện trạng trong vòng 24 giờ.</p>
+                <p className="text-xs text-ink-muted mt-4">Nhận chìa khóa tủ cá nhân tại quầy sảnh, sau đó lên phòng và lập biên bản hiện trạng trong vòng 24 giờ.</p>
                 <AppButton className="mt-4" onClick={() => setStep('REPORT')}>Lập biên bản hiện trạng</AppButton>
               </SectionCard>
             )}
@@ -260,20 +260,20 @@ export function StudentCheckinPage() {
               <SectionCard>
                 <div className="text-center py-6">
                   <CheckCircle2 className="w-12 h-12 text-emerald-500 mx-auto mb-3" />
-                  <div className="text-lg font-bold text-slate-900">Bạn đã nhận phòng A204</div>
-                  <p className="text-xs text-slate-500 mt-1">{issues ? `${issues} hạng mục có vấn đề đã được gửi tới bộ phận bảo trì.` : 'Biên bản hiện trạng đã được lưu.'}</p>
+                  <div className="text-lg font-bold text-ink">Bạn đã nhận phòng A204</div>
+                  <p className="text-xs text-ink-muted mt-1">{issues ? `${issues} hạng mục có vấn đề đã được gửi tới bộ phận bảo trì.` : 'Biên bản hiện trạng đã được lưu.'}</p>
                 </div>
               </SectionCard>
             )}
           </div>
 
           <SectionCard title="Cần chuẩn bị">
-            <ul className="space-y-2.5 text-xs text-slate-700">
+            <ul className="space-y-2.5 text-xs text-ink">
               {['CCCD và thẻ sinh viên', 'Ứng dụng ngân hàng để quét VietQR', 'Điện thoại để chụp ảnh hiện trạng', 'Hợp đồng đã ký trong “Phòng của tôi”'].map((d) => (
                 <li key={d} className="flex gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />{d}</li>
               ))}
             </ul>
-            <div className="mt-4 p-3 rounded-lg bg-blue-50 text-[11px] text-blue-800 flex gap-2">
+            <div className="mt-4 p-3 rounded-lg bg-blue-50 text-label text-blue-800 flex gap-2">
               <Info className="w-4 h-4 shrink-0" /> Gặp sự cố khi quét mã? Cán bộ KTX tại quầy sẽ check-in thủ công cho bạn.
             </div>
           </SectionCard>
@@ -287,16 +287,16 @@ export function StudentCheckinPage() {
               {checkoutSent ? (
                 <div className="text-center py-6 text-xs">
                   <Clock className="w-10 h-10 text-amber-500 mx-auto mb-2" />
-                  <div className="text-sm font-bold text-slate-800">Đã gửi biên bản trả phòng</div>
-                  <p className="text-slate-500 mt-1">Cán bộ KTX sẽ đối chiếu hiện trạng với biên bản nhận phòng. Tiền cọc hoàn lại trong 15 ngày làm việc.</p>
+                  <div className="text-sm font-bold text-ink">Đã gửi biên bản trả phòng</div>
+                  <p className="text-ink-muted mt-1">Cán bộ KTX sẽ đối chiếu hiện trạng với biên bản nhận phòng. Tiền cọc hoàn lại trong 15 ngày làm việc.</p>
                   <StatusBadge status="PENDING" customLabel="Chờ cán bộ xác minh" />
                 </div>
               ) : (
                 <div className="space-y-4">
                   <ConditionReport values={outReport} onChange={(a, c) => setOutReport({ ...outReport, [a]: c })} note={outNote} onNote={setOutNote} />
                   <div>
-                    <label className="block text-xs font-semibold text-slate-700 mb-1">Tài khoản nhận hoàn cọc</label>
-                    <input value={refundAccount} onChange={(e) => setRefundAccount(e.target.value)} placeholder="Ngân hàng — số tài khoản — chủ tài khoản" className="w-full px-3 py-2 text-xs border border-slate-200 rounded-lg" />
+                    <label className="block text-xs font-semibold text-ink mb-1">Tài khoản nhận hoàn cọc</label>
+                    <input value={refundAccount} onChange={(e) => setRefundAccount(e.target.value)} placeholder="Ngân hàng — số tài khoản — chủ tài khoản" className="w-full px-3 py-2 text-xs border border-line rounded-lg" />
                   </div>
                   <div className="flex justify-end">
                     <AppButton disabled={refundAccount.length < 8} leftIcon={<LogOut className="w-4 h-4" />} onClick={() => { setCheckoutSent(true); show('Đã gửi yêu cầu trả phòng'); }}>
@@ -308,7 +308,7 @@ export function StudentCheckinPage() {
             </SectionCard>
           </div>
           <SectionCard title="Trước khi trả phòng">
-            <ul className="space-y-2 text-xs text-slate-700 list-disc pl-4">
+            <ul className="space-y-2 text-xs text-ink list-disc pl-4">
               <li>Thanh toán hết hóa đơn còn nợ.</li>
               <li>Dọn sạch giường, tủ, bàn học; mang hết đồ cá nhân.</li>
               <li>Trả chìa khóa tủ tại quầy; thẻ từ tự vô hiệu sau khi xác minh.</li>
@@ -322,7 +322,7 @@ export function StudentCheckinPage() {
         <SectionCard noPadding>
           <div className="overflow-x-auto">
             <table className="w-full text-xs">
-              <thead className="bg-slate-50 text-slate-500">
+              <thead className="bg-surface-muted text-ink-muted">
                 <tr>
                   <th className="text-left font-semibold px-5 py-3">Loại</th>
                   <th className="text-left font-semibold px-5 py-3">Học kỳ</th>
@@ -333,7 +333,7 @@ export function StudentCheckinPage() {
                   <th className="px-5 py-3" />
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100">
+              <tbody className="divide-y divide-line">
                 {HISTORY.map((h) => (
                   <tr key={h.date}>
                     <td className="px-5 py-3">
@@ -344,11 +344,11 @@ export function StudentCheckinPage() {
                     </td>
                     <td className="px-5 py-3">{h.term}</td>
                     <td className="px-5 py-3 font-semibold">{h.room}</td>
-                    <td className="px-5 py-3 text-slate-500">{h.date}</td>
+                    <td className="px-5 py-3 text-ink-muted">{h.date}</td>
                     <td className="px-5 py-3">{h.by}</td>
                     <td className="px-5 py-3"><StatusBadge status={h.status} /></td>
                     <td className="px-5 py-3 text-right">
-                      <button type="button" onClick={() => show('Đang tải biên bản hiện trạng (PDF)')} className="text-[#F26F21] font-semibold inline-flex items-center gap-1"><Download className="w-3 h-3" />Biên bản</button>
+                      <button type="button" onClick={() => show('Đang tải biên bản hiện trạng (PDF)')} className="text-brand-ink font-semibold inline-flex items-center gap-1"><Download className="w-3 h-3" />Biên bản</button>
                     </td>
                   </tr>
                 ))}

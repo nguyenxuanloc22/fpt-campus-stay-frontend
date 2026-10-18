@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { RefreshCw, Link, GraduationCap, QrCode, Mail, MessageSquare, Bell, KeyRound, CheckCircle2, AlertTriangle, XCircle, Eye, EyeOff, Copy, Webhook, Settings2 } from 'lucide-react';
 import clsx from 'clsx';
-import { PageHeader, StatCard, SectionCard, AppButton, Modal, StatusBadge, Sparkline, useToast } from '@shared-ui';
+import { PageHeader, StatCard, SectionCard, AppButton, Modal, StatusBadge, Sparkline, useToast, CHART_COLORS } from '@shared-ui';
 
 type IntStatus = 'connected' | 'degraded' | 'down' | 'disabled';
 
@@ -39,7 +39,7 @@ const STATUS_META: Record<IntStatus, { label: string; cls: string; icon: typeof 
   connected: { label: 'Đã kết nối', cls: 'bg-emerald-50 text-emerald-700', icon: CheckCircle2 },
   degraded: { label: 'Chậm / lỗi một phần', cls: 'bg-amber-50 text-amber-700', icon: AlertTriangle },
   down: { label: 'Mất kết nối', cls: 'bg-rose-50 text-rose-700', icon: XCircle },
-  disabled: { label: 'Đã tắt', cls: 'bg-slate-100 text-slate-600', icon: XCircle },
+  disabled: { label: 'Đã tắt', cls: 'bg-surface-sunken text-ink-muted', icon: XCircle },
 };
 
 export function AdminIntegrationsPage() {
@@ -74,23 +74,23 @@ export function AdminIntegrationsPage() {
         {items.map((i) => {
           const m = STATUS_META[i.status];
           return (
-            <div key={i.id} className={clsx('bg-white p-5 rounded-2xl border shadow-xs', i.status === 'down' ? 'border-rose-200' : i.status === 'degraded' ? 'border-amber-200' : 'border-slate-200')}>
+            <div key={i.id} className={clsx('bg-white p-5 rounded-2xl border shadow-xs', i.status === 'down' ? 'border-rose-200' : i.status === 'degraded' ? 'border-amber-200' : 'border-line')}>
               <div className="flex items-start gap-3">
-                <div className="w-11 h-11 rounded-xl bg-[#EBF2FB] text-[#1A365D] flex items-center justify-center"><i.icon className="w-5 h-5" /></div>
+                <div className="w-11 h-11 rounded-xl bg-surface-sunken text-ink flex items-center justify-center"><i.icon className="w-5 h-5" /></div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap">
-                    <span className="text-sm font-bold text-slate-800">{i.name}</span>
-                    <span className={clsx('text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1', m.cls)}><m.icon className="w-3 h-3" />{m.label}</span>
+                    <span className="text-sm font-bold text-ink">{i.name}</span>
+                    <span className={clsx('text-label font-bold px-2 py-0.5 rounded-full flex items-center gap-1', m.cls)}><m.icon className="w-3 h-3" />{m.label}</span>
                   </div>
-                  <div className="text-[11px] text-slate-500">{i.vendor} • {i.desc}</div>
+                  <div className="text-label text-ink-muted">{i.vendor} • {i.desc}</div>
                 </div>
               </div>
               <div className="grid grid-cols-3 gap-2 my-4 text-xs">
-                <div className="p-2 rounded-lg bg-slate-50"><div className="text-slate-400 text-[10px]">Đồng bộ cuối</div><div className="font-semibold">{i.lastSync}</div></div>
-                <div className="p-2 rounded-lg bg-slate-50"><div className="text-slate-400 text-[10px]">Calls 24h</div><div className="font-semibold">{i.calls24h.toLocaleString('vi-VN')}</div></div>
-                <div className="p-2 rounded-lg bg-slate-50"><div className="text-slate-400 text-[10px]">Tỷ lệ lỗi</div><div className={clsx('font-semibold', i.errorRate > 1 ? 'text-rose-600' : 'text-emerald-600')}>{i.errorRate}%</div></div>
+                <div className="p-2 rounded-lg bg-surface-muted"><div className="text-ink-subtle text-label">Đồng bộ cuối</div><div className="font-semibold">{i.lastSync}</div></div>
+                <div className="p-2 rounded-lg bg-surface-muted"><div className="text-ink-subtle text-label">Calls 24h</div><div className="font-semibold">{i.calls24h.toLocaleString('vi-VN')}</div></div>
+                <div className="p-2 rounded-lg bg-surface-muted"><div className="text-ink-subtle text-label">Tỷ lệ lỗi</div><div className={clsx('font-semibold', i.errorRate > 1 ? 'text-rose-600' : 'text-emerald-600')}>{i.errorRate}%</div></div>
               </div>
-              <Sparkline points={i.trend} color={i.status === 'down' ? '#F43F5E' : i.status === 'degraded' ? '#F59E0B' : '#10B981'} />
+              <Sparkline points={i.trend} color={i.status === 'down' ? CHART_COLORS.red : i.status === 'degraded' ? CHART_COLORS.amber : CHART_COLORS.green} />
               <div className="flex gap-2 mt-3">
                 <AppButton size="sm" variant="outline" isLoading={syncing === i.id} leftIcon={<RefreshCw className="w-3.5 h-3.5" />} onClick={() => sync(i.id)}>Đồng bộ / kiểm tra</AppButton>
                 <AppButton size="sm" variant="ghost" leftIcon={<Settings2 className="w-3.5 h-3.5" />} onClick={() => setConfig(i)}>Cấu hình</AppButton>
@@ -102,13 +102,13 @@ export function AdminIntegrationsPage() {
 
       <SectionCard title={<span className="flex items-center gap-2"><Webhook className="w-4 h-4" /> Webhook nhận vào</span>} noPadding>
         <table className="w-full text-xs">
-          <thead className="bg-slate-50 text-slate-500"><tr><th className="text-left px-5 py-3 font-semibold">Sự kiện</th><th className="text-left px-5 py-3 font-semibold">Endpoint</th><th className="text-left px-5 py-3 font-semibold">Lần cuối</th><th className="text-left px-5 py-3 font-semibold">HTTP</th></tr></thead>
-          <tbody className="divide-y divide-slate-100">
+          <thead className="bg-surface-muted text-ink-muted"><tr><th className="text-left px-5 py-3 font-semibold">Sự kiện</th><th className="text-left px-5 py-3 font-semibold">Endpoint</th><th className="text-left px-5 py-3 font-semibold">Lần cuối</th><th className="text-left px-5 py-3 font-semibold">HTTP</th></tr></thead>
+          <tbody className="divide-y divide-line">
             {WEBHOOKS.map((w) => (
               <tr key={w.event}>
-                <td className="px-5 py-3"><code className="text-[11px] px-1.5 py-0.5 rounded bg-slate-100">{w.event}</code></td>
-                <td className="px-5 py-3 text-slate-600">{w.url}</td>
-                <td className="px-5 py-3 text-slate-500">{w.last}</td>
+                <td className="px-5 py-3"><code className="text-label px-1.5 py-0.5 rounded bg-surface-sunken">{w.event}</code></td>
+                <td className="px-5 py-3 text-ink-muted">{w.url}</td>
+                <td className="px-5 py-3 text-ink-muted">{w.last}</td>
                 <td className="px-5 py-3"><StatusBadge status={w.status === 200 ? 'SUCCESS' : 'FAILED'} customLabel={String(w.status)} /></td>
               </tr>
             ))}
@@ -121,21 +121,21 @@ export function AdminIntegrationsPage() {
       >
         {config && (
           <div className="space-y-4 text-xs">
-            <div><label className="block font-semibold text-slate-700 mb-1">Endpoint</label><input defaultValue={config.endpoint} className="w-full px-3 py-2 border border-slate-200 rounded-lg font-mono" /></div>
+            <div><label className="block font-semibold text-ink mb-1">Endpoint</label><input defaultValue={config.endpoint} className="w-full px-3 py-2 border border-line rounded-lg font-mono" /></div>
             <div>
-              <label className="block font-semibold text-slate-700 mb-1">API key / Client secret</label>
+              <label className="block font-semibold text-ink mb-1">API key / Client secret</label>
               <div className="flex gap-2">
-                <input type={showKey ? 'text' : 'password'} defaultValue="sk_live_••••••••••••••••4f2a" readOnly className="flex-1 px-3 py-2 border border-slate-200 rounded-lg font-mono bg-slate-50" />
+                <input type={showKey ? 'text' : 'password'} defaultValue="sk_live_••••••••••••••••4f2a" readOnly className="flex-1 px-3 py-2 border border-line rounded-lg font-mono bg-surface-muted" />
                 <AppButton size="sm" variant="outline" onClick={() => setShowKey(!showKey)} aria-label="Hiện/ẩn">{showKey ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}</AppButton>
                 <AppButton size="sm" variant="outline" onClick={() => show('Đã sao chép', 'info')} aria-label="Sao chép"><Copy className="w-4 h-4" /></AppButton>
               </div>
-              <p className="text-[11px] text-slate-400 mt-1">Khóa được lưu mã hóa trong Vault. Xoay vòng khóa lần cuối: 01/09/2026.</p>
+              <p className="text-label text-ink-subtle mt-1">Khóa được lưu mã hóa trong Vault. Xoay vòng khóa lần cuối: 01/09/2026.</p>
             </div>
             <div className="grid grid-cols-2 gap-3">
-              <div><label className="block font-semibold text-slate-700 mb-1">Timeout (giây)</label><input type="number" defaultValue={30} className="w-full px-3 py-2 border border-slate-200 rounded-lg" /></div>
-              <div><label className="block font-semibold text-slate-700 mb-1">Số lần thử lại</label><input type="number" defaultValue={3} className="w-full px-3 py-2 border border-slate-200 rounded-lg" /></div>
+              <div><label className="block font-semibold text-ink mb-1">Timeout (giây)</label><input type="number" defaultValue={30} className="w-full px-3 py-2 border border-line rounded-lg" /></div>
+              <div><label className="block font-semibold text-ink mb-1">Số lần thử lại</label><input type="number" defaultValue={3} className="w-full px-3 py-2 border border-line rounded-lg" /></div>
             </div>
-            <label className="flex items-center gap-2"><input type="checkbox" defaultChecked className="accent-[#F26F21]" /> Gửi cảnh báo email cho quản trị viên khi mất kết nối &gt; 5 phút</label>
+            <label className="flex items-center gap-2"><input type="checkbox" defaultChecked className="accent-brand-ink" /> Gửi cảnh báo email cho quản trị viên khi mất kết nối &gt; 5 phút</label>
           </div>
         )}
       </Modal>

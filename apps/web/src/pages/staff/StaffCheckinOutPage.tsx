@@ -129,7 +129,7 @@ export function StaffCheckinOutPage() {
             <ul className="space-y-4 text-xs">
               {BUILDINGS.map((b) => (
                 <li key={b.b}>
-                  <div className="flex justify-between mb-1"><span className="font-semibold text-slate-700">{b.b}</span><span>{b.done}/{b.total}</span></div>
+                  <div className="flex justify-between mb-1"><span className="font-semibold text-ink">{b.b}</span><span>{b.done}/{b.total}</span></div>
                   <ProgressBar value={b.done} max={b.total} tone="emerald" size="md" />
                 </li>
               ))}
@@ -141,16 +141,16 @@ export function StaffCheckinOutPage() {
             subtitle="Hết khung giờ, hệ thống tự hủy phân bổ và giữ tiền cọc. Liên hệ trước để tránh mất chỗ."
             noPadding
           >
-            <ul className="divide-y divide-slate-100">
+            <ul className="divide-y divide-line">
               {pending.map((p) => (
                 <li key={p.id} className="px-5 py-3 flex items-center gap-3 text-xs">
                   <Avatar name={p.name} />
                   <div className="flex-1">
-                    <div className="font-semibold text-slate-800">{p.name} <span className="text-slate-400 font-normal">{p.id}</span></div>
-                    <div className="text-slate-500">{p.bed} · còn {p.hoursLeft} giờ</div>
+                    <div className="font-semibold text-ink">{p.name} <span className="text-ink-subtle font-normal">{p.id}</span></div>
+                    <div className="text-ink-muted">{p.bed} · còn {p.hoursLeft} giờ</div>
                   </div>
                   {p.contacted ? (
-                    <span className="text-[11px] font-semibold text-emerald-600">Đã liên hệ</span>
+                    <span className="text-label font-semibold text-emerald-600">Đã liên hệ</span>
                   ) : (
                     <AppButton size="sm" variant="outline" onClick={() => { setPending((all) => all.map((x) => (x.id === p.id ? { ...x, contacted: true } : x))); show(`Đã gửi nhắc nhở tới ${p.name}`); }}>
                       Gửi nhắc nhở
@@ -166,14 +166,14 @@ export function StaffCheckinOutPage() {
       {tab === 'manual' && (
         <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
           <SectionCard className="xl:col-span-2" title="Sinh viên cần check-in thủ công / trễ" noPadding>
-            <ul className="divide-y divide-slate-100">
+            <ul className="divide-y divide-line">
               {manual.map((m) => (
                 <li key={m.id} className="px-5 py-3.5 flex flex-col md:flex-row md:items-center gap-3 text-xs">
                   <Avatar name={m.name} />
                   <div className="flex-1">
-                    <div className="font-semibold text-slate-800">{m.name} <span className="text-slate-400 font-normal">{m.id} · {m.bed}</span></div>
-                    <div className="text-slate-600">{m.reason}</div>
-                    <div className="text-[11px] text-slate-400">Đến quầy: {m.arrived} · {m.paid ? 'Đã thanh toán' : 'Chưa thanh toán phần còn lại'}</div>
+                    <div className="font-semibold text-ink">{m.name} <span className="text-ink-subtle font-normal">{m.id} · {m.bed}</span></div>
+                    <div className="text-ink-muted">{m.reason}</div>
+                    <div className="text-label text-ink-subtle">Đến quầy: {m.arrived} · {m.paid ? 'Đã thanh toán' : 'Chưa thanh toán phần còn lại'}</div>
                   </div>
                   {m.done ? <StatusBadge status="CHECKED_IN" /> : <AppButton size="sm" onClick={() => { setActive(m); setSteps([]); }}>Xử lý</AppButton>}
                 </li>
@@ -183,8 +183,8 @@ export function StaffCheckinOutPage() {
           <SectionCard title="Tra cứu sinh viên tại quầy">
             <div className="flex gap-2">
               <div className="relative flex-1">
-                <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
-                <input value={lookup} onChange={(e) => setLookup(e.target.value.toUpperCase())} placeholder="MSSV" className="w-full pl-9 pr-3 py-2 text-xs rounded-lg border border-slate-200" />
+                <Search className="w-4 h-4 text-ink-subtle absolute left-3 top-1/2 -translate-y-1/2" />
+                <input value={lookup} onChange={(e) => setLookup(e.target.value.toUpperCase())} placeholder="MSSV" className="w-full pl-9 pr-3 py-2 text-xs rounded-lg border border-line" />
               </div>
               <AppButton
                 size="sm"
@@ -197,21 +197,21 @@ export function StaffCheckinOutPage() {
                 Thêm
               </AppButton>
             </div>
-            <p className="text-[11px] text-slate-500 mt-3">Chỉ check-in thủ công cho sinh viên đã có phân bổ phòng. Sinh viên đã bị hủy do no-show cần nộp đơn vòng 2.</p>
+            <p className="text-label text-ink-muted mt-3">Chỉ check-in thủ công cho sinh viên đã có phân bổ phòng. Sinh viên đã bị hủy do no-show cần nộp đơn vòng 2.</p>
           </SectionCard>
         </div>
       )}
 
       {tab === 'checkout' && (
         <SectionCard title="Biên bản trả phòng chờ xác minh" subtitle="So sánh với biên bản hiện trạng khi nhận phòng" noPadding>
-          <ul className="divide-y divide-slate-100">
+          <ul className="divide-y divide-line">
             {checkouts.map((c) => (
               <li key={c.id} className="px-5 py-3.5 flex flex-col md:flex-row md:items-center gap-3 text-xs">
                 <Avatar name={c.name} />
                 <div className="flex-1">
-                  <div className="font-semibold text-slate-800">{c.name} <span className="text-slate-400 font-normal">{c.id} · {c.bed}</span></div>
-                  <div className="text-[11px] text-slate-500">Gửi lúc {c.submitted}</div>
-                  <div className={clsx('text-[11px] font-semibold', c.differences.length ? 'text-amber-600' : 'text-emerald-600')}>
+                  <div className="font-semibold text-ink">{c.name} <span className="text-ink-subtle font-normal">{c.id} · {c.bed}</span></div>
+                  <div className="text-label text-ink-muted">Gửi lúc {c.submitted}</div>
+                  <div className={clsx('text-label font-semibold', c.differences.length ? 'text-amber-600' : 'text-emerald-600')}>
                     {c.differences.length ? `${c.differences.length} hạng mục khác biệt` : 'Không có khác biệt'}
                   </div>
                 </div>
@@ -240,13 +240,13 @@ export function StaffCheckinOutPage() {
             {MANUAL_STEPS.map((s) => {
               const on = steps.includes(s.key);
               return (
-                <button key={s.key} type="button" onClick={() => setSteps((all) => (on ? all.filter((x) => x !== s.key) : [...all, s.key]))} className={clsx('w-full flex items-center gap-3 p-3 rounded-xl border text-left', on ? 'border-emerald-200 bg-emerald-50 text-emerald-800' : 'border-slate-200 text-slate-700')}>
-                  {on ? <CheckCircle2 className="w-4 h-4 text-emerald-500" /> : <s.icon className="w-4 h-4 text-slate-400" />}
+                <button key={s.key} type="button" onClick={() => setSteps((all) => (on ? all.filter((x) => x !== s.key) : [...all, s.key]))} className={clsx('w-full flex items-center gap-3 p-3 rounded-xl border text-left', on ? 'border-emerald-200 bg-emerald-50 text-emerald-800' : 'border-line text-ink')}>
+                  {on ? <CheckCircle2 className="w-4 h-4 text-emerald-500" /> : <s.icon className="w-4 h-4 text-ink-subtle" />}
                   <span className="font-semibold">{s.label}</span>
                 </button>
               );
             })}
-            {!active.paid && <p className="text-[11px] text-rose-600">Sinh viên chưa thanh toán — hướng dẫn quét VietQR tại quầy trước khi tick bước 2.</p>}
+            {!active.paid && <p className="text-label text-rose-600">Sinh viên chưa thanh toán — hướng dẫn quét VietQR tại quầy trước khi tick bước 2.</p>}
           </div>
         )}
       </Modal>
@@ -270,8 +270,8 @@ export function StaffCheckinOutPage() {
               <div className="p-3 rounded-lg bg-emerald-50 text-emerald-800 flex gap-2"><CheckCircle2 className="w-4 h-4" />Hiện trạng khớp biên bản nhận phòng.</div>
             ) : (
               <table className="w-full">
-                <thead className="text-slate-500 border-b"><tr><th className="text-left py-2">Hạng mục</th><th className="text-left py-2">Khi nhận</th><th className="text-left py-2">Khi trả</th></tr></thead>
-                <tbody className="divide-y divide-slate-100">
+                <thead className="text-ink-muted border-b"><tr><th className="text-left py-2">Hạng mục</th><th className="text-left py-2">Khi nhận</th><th className="text-left py-2">Khi trả</th></tr></thead>
+                <tbody className="divide-y divide-line">
                   {verifying.differences.map((d) => (
                     <tr key={d.item}><td className="py-2 font-semibold">{d.item}</td><td className="py-2 text-emerald-700">{d.atCheckin}</td><td className="py-2 text-rose-600 flex items-center gap-1"><XCircle className="w-3 h-3" />{d.now}</td></tr>
                   ))}
@@ -279,12 +279,12 @@ export function StaffCheckinOutPage() {
               </table>
             )}
             <div className="grid grid-cols-3 gap-2">
-              <div className="p-3 rounded-lg bg-slate-50"><div className="text-slate-400">Tiền cọc</div><div className="font-bold">{formatVnd(verifying.deposit)}</div></div>
-              <div className="p-3 rounded-lg bg-slate-50">
-                <div className="text-slate-400">Khấu trừ</div>
-                <input type="number" step={50000} value={deduction} onChange={(e) => setDeduction(Math.min(verifying.deposit, Math.max(0, Number(e.target.value))))} className="w-full mt-1 px-2 py-1 border border-slate-200 rounded" />
+              <div className="p-3 rounded-lg bg-surface-muted"><div className="text-ink-subtle">Tiền cọc</div><div className="font-bold">{formatVnd(verifying.deposit)}</div></div>
+              <div className="p-3 rounded-lg bg-surface-muted">
+                <div className="text-ink-subtle">Khấu trừ</div>
+                <input type="number" step={50000} value={deduction} onChange={(e) => setDeduction(Math.min(verifying.deposit, Math.max(0, Number(e.target.value))))} className="w-full mt-1 px-2 py-1 border border-line rounded" />
               </div>
-              <div className="p-3 rounded-lg bg-emerald-50"><div className="text-slate-400">Hoàn lại</div><div className="font-bold text-emerald-700">{formatVnd(verifying.deposit - deduction)}</div></div>
+              <div className="p-3 rounded-lg bg-emerald-50"><div className="text-ink-subtle">Hoàn lại</div><div className="font-bold text-emerald-700">{formatVnd(verifying.deposit - deduction)}</div></div>
             </div>
           </div>
         )}

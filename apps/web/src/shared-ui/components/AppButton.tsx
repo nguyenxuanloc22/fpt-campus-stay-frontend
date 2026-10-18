@@ -10,6 +10,22 @@ export interface AppButtonProps extends React.ButtonHTMLAttributes<HTMLButtonEle
   rightIcon?: React.ReactNode;
 }
 
+/** Màu theo token; trạng thái hover / pressed / disabled bằng CSS, focus dùng outline toàn cục (index.css). */
+const VARIANTS = {
+  primary: 'bg-brand-ink text-white hover:bg-brand-ink-hover active:bg-brand-ink-hover',
+  secondary: 'bg-ink text-surface hover:bg-ink-hover active:bg-ink-hover',
+  outline: 'border border-line-control bg-surface text-ink hover:bg-surface-muted active:bg-surface-sunken',
+  danger: 'bg-danger text-white hover:opacity-90 active:opacity-80',
+  ghost: 'bg-transparent text-ink-muted hover:bg-surface-sunken hover:text-ink active:bg-line',
+};
+
+/** Vùng bấm >= 44px trên mobile, gọn lại từ 640px */
+const SIZES = {
+  sm: 'text-label px-3 gap-1.5 min-h-touch sm:min-h-8',
+  md: 'text-body px-4 gap-2 min-h-touch sm:min-h-10',
+  lg: 'text-section px-5 gap-2 min-h-12',
+};
+
 export function AppButton({
   children,
   variant = 'primary',
@@ -21,41 +37,22 @@ export function AppButton({
   disabled,
   ...props
 }: AppButtonProps) {
-  const baseStyles =
-    'inline-flex items-center justify-center font-medium rounded-lg transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed';
-
-  const variants = {
-    primary:
-      'bg-[#F26F21] text-white hover:bg-[#D95A12] focus:ring-[#F26F21] shadow-sm',
-    secondary:
-      'bg-[#1A365D] text-white hover:bg-[#0F2341] focus:ring-[#1A365D] shadow-sm',
-    outline:
-      'border border-slate-300 bg-white text-slate-700 hover:bg-slate-50 focus:ring-slate-400',
-    danger:
-      'bg-rose-600 text-white hover:bg-rose-700 focus:ring-rose-500 shadow-sm',
-    ghost:
-      'bg-transparent text-slate-600 hover:bg-slate-100 hover:text-slate-900',
-  };
-
-  const sizes = {
-    sm: 'text-xs px-2.5 py-1.5 gap-1.5',
-    md: 'text-sm px-4 py-2 gap-2',
-    lg: 'text-base px-5 py-2.5 gap-2.5',
-  };
-
   return (
     <button
-      className={clsx(baseStyles, variants[variant], sizes[size], className)}
+      className={clsx(
+        'inline-flex items-center justify-center font-semibold rounded-control transition-colors select-none',
+        'disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none',
+        VARIANTS[variant],
+        SIZES[size],
+        className
+      )}
       disabled={disabled || isLoading}
+      aria-busy={isLoading || undefined}
       {...props}
     >
-      {isLoading ? (
-        <Loader2 className="w-4 h-4 animate-spin" />
-      ) : (
-        leftIcon && <span className="inline-flex">{leftIcon}</span>
-      )}
+      {isLoading ? <Loader2 className="w-4 h-4 animate-spin" aria-hidden="true" /> : leftIcon && <span className="inline-flex" aria-hidden="true">{leftIcon}</span>}
       {children}
-      {!isLoading && rightIcon && <span className="inline-flex">{rightIcon}</span>}
+      {!isLoading && rightIcon && <span className="inline-flex" aria-hidden="true">{rightIcon}</span>}
     </button>
   );
 }

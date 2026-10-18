@@ -1,112 +1,174 @@
-import { useNavigate } from 'react-router-dom';
-import {
-  Check,
-  BadgeCheck,
-  IdCard,
-  Mail,
-  BedDouble,
-  Wallet,
-  GraduationCap,
-  FilePlus2,
-  Wrench,
-  CreditCard,
-  ClipboardList,
-  CalendarCheck,
-  CalendarClock,
-  Wallet2,
-  FileText,
-} from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { ArrowLeftRight, BedDouble, CalendarCheck, CreditCard, FileSignature, Lock, Users, Wrench, type LucideIcon } from 'lucide-react';
 import clsx from 'clsx';
-import { useAuthStore } from '@features/auth';
 import { APP_ROUTES } from '@campusstay/constants';
-import { SectionCard, formatVnd } from '@shared-ui';
-import { LatestNewsCard, QuickMenuCard, TaskListCard, WelcomeSection, type InfoTile, type QuickItem, type TaskItem } from '@features/dashboard';
+import { useAuthStore } from '@features/auth';
+import { ActionList, Greeting, JourneySteps, NoticeList, type ActionItem, type JourneyStep } from '@features/dashboard';
+import { AppButton, SectionCard, STATUS_TONE_CLASS, daysUntil, formatDaysLeft } from '@shared-ui';
 
-/** Tổng quan sinh viên — thẻ thông tin, tin mới nhất, menu nhanh và việc cần làm (bố cục tham khảo FAP). */
+/**
+ * Tổng quan sinh viên (ưu tiên từ trên xuống): lời chào + trạng thái chỗ ở → việc cần làm → hành trình
+ * → phòng của tôi → lối tắt → thông báo. Dữ liệu mẫu lấy theo các trang Phòng của tôi / Check-in / Hóa đơn.
+ */
 
 const R = APP_ROUTES.STUDENT;
-const NEW_APP = (type: string) => `${R.APPLICATION_NEW}?type=${type}`;
 
-const QUICK: QuickItem[] = [
-  { label: 'Gửi đơn', to: R.APPLICATION_NEW, icon: FilePlus2, tone: 'bg-orange-100 text-orange-600' },
-  { label: 'Báo hỏng', to: NEW_APP('MAINTENANCE'), icon: Wrench, tone: 'bg-rose-100 text-rose-600' },
-  { label: 'Hóa đơn', to: R.INVOICES, icon: CreditCard, tone: 'bg-emerald-100 text-emerald-600' },
-  { label: 'Phòng của tôi', to: R.MY_ROOM, icon: BedDouble, tone: 'bg-sky-100 text-sky-600' },
-  { label: 'Đăng ký lưu trú', to: R.REGISTRATION, icon: ClipboardList, tone: 'bg-violet-100 text-violet-600' },
-  { label: 'Check-in/out', to: R.CHECKIN, icon: CalendarCheck, tone: 'bg-teal-100 text-teal-600' },
-  { label: 'Gia hạn đóng tiền', to: NEW_APP('PAYMENT_EXTENSION'), icon: CalendarClock, tone: 'bg-amber-100 text-amber-600' },
-  { label: 'Hoàn tiền', to: NEW_APP('REFUND'), icon: Wallet2, tone: 'bg-lime-100 text-lime-700' },
+const ROOM = { code: 'A204', bed: 'G1', building: 'Tòa A', type: 'Phòng 4 người' };
+const ROOMMATES = ['Võ Thị Bảo Ngọc', 'Phạm Ngọc Hân', 'Trần Khánh Linh'];
+const CHECKIN_OPENS = '08:00 02/01/2027';
+
+const JOURNEY: JourneyStep[] = [
+  { label: 'Đăng ký', date: '16/10/2026', state: 'done' },
+  { label: 'Đặt cọc', date: '16/10/2026', state: 'done' },
+  { label: 'Xếp phòng', date: '25/11/2026', state: 'done' },
+  { label: 'Ký hợp đồng', state: 'current' },
+  { label: 'Check-in', date: '02/01 – 05/01/2027', state: 'todo' },
 ];
 
-const TODO: TaskItem[] = [
-  { title: 'Ký hợp đồng Spring 2027', desc: 'HD-KTX-1102 · cần ký trước khi check-in', to: R.MY_ROOM, cta: 'Ký ngay', dot: 'bg-[#F26F21]' },
-  { title: 'Phản hồi lời mời hoán đổi phòng', desc: 'Đặng Minh Thư (A115) · hạn 19/10 23:59', to: R.APPLICATIONS, cta: 'Xem', dot: 'bg-violet-500' },
-  { title: 'Thanh toán phí phòng Fall 2026 — đợt 2', desc: '2.600.000 ₫ · hạn 24/10/2026', to: R.INVOICES, cta: 'Thanh toán', dot: 'bg-emerald-500' },
+const SHORTCUTS: { label: string; to: string; icon: LucideIcon }[] = [
+  { label: 'Báo hỏng', to: `${R.APPLICATION_NEW}?type=MAINTENANCE`, icon: Wrench },
+  { label: 'Hóa đơn', to: R.INVOICES, icon: CreditCard },
+  { label: 'Đổi phòng', to: `${R.APPLICATION_NEW}?type=ROOM_CHANGE`, icon: ArrowLeftRight },
+  { label: 'Check-in', to: R.CHECKIN, icon: CalendarCheck },
 ];
 
-const TRACK = [
-  { label: 'Nộp đơn & đóng cọc', date: '16/10/2026', done: true },
-  { label: 'Xếp phòng', date: '25/11/2026', done: true },
-  { label: 'Ký hợp đồng', date: 'Đang chờ bạn', current: true },
-  { label: 'Check-in', date: '02/01 – 05/01/2027' },
-];
+const LINK = 'min-h-touch inline-flex items-center text-body font-semibold text-brand-ink hover:underline';
+
+/** Hạn → chip: quá hạn đỏ, còn hạn vàng (chờ) */
+const deadlineBadge = (due: string) => {
+  const days = daysUntil(due);
+  return { label: formatDaysLeft(days), tone: days < 0 ? ('danger' as const) : ('pending' as const) };
+};
+
+function MyRoomCard() {
+  return (
+    <SectionCard title="Phòng của tôi" actions={<Link to={R.MY_ROOM} className={LINK}>Xem chi tiết</Link>}>
+      <dl className="grid grid-cols-2 gap-4">
+        <div>
+          <dt className="text-label text-ink-muted">Phòng</dt>
+          <dd className="text-section font-semibold text-ink">{ROOM.code}</dd>
+          <dd className="text-label text-ink-muted">
+            {ROOM.building} · {ROOM.type}
+          </dd>
+        </div>
+        <div>
+          <dt className="text-label text-ink-muted">Giường</dt>
+          <dd className="text-section font-semibold text-ink">{ROOM.bed}</dd>
+        </div>
+        <div className="col-span-2">
+          <dt className="text-label text-ink-muted flex items-center gap-1">
+            <Users className="w-4 h-4" aria-hidden="true" /> Bạn cùng phòng
+          </dt>
+          <dd className="text-body text-ink mt-1">{ROOMMATES.join(', ')}</dd>
+        </div>
+      </dl>
+      <div className="mt-4 pt-4 border-t border-line">
+        <AppButton variant="outline" className="w-full" disabled aria-describedby="checkin-reason" leftIcon={<Lock className="w-4 h-4" />}>
+          Check-in
+        </AppButton>
+        <p id="checkin-reason" className="text-label text-ink-muted mt-2 text-center">
+          Mở từ {CHECKIN_OPENS}
+        </p>
+      </div>
+    </SectionCard>
+  );
+}
+
+function Shortcuts() {
+  return (
+    <SectionCard title="Lối tắt">
+      <ul className="grid grid-cols-4 lg:grid-cols-2 gap-2">
+        {SHORTCUTS.map((s) => (
+          <li key={s.label}>
+            <Link
+              to={s.to}
+              className="flex flex-col items-center justify-center gap-2 min-h-20 px-1 py-3 rounded-control border border-line text-center text-label font-medium text-ink hover:bg-surface-muted active:bg-surface-sunken"
+            >
+              <s.icon className="w-5 h-5 text-ink-muted" aria-hidden="true" />
+              {s.label}
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </SectionCard>
+  );
+}
 
 export function StudentDashboardPage() {
   const navigate = useNavigate();
   const user = useAuthStore((state) => state.user);
 
-  const tiles: InfoTile[] = [
-    { label: 'Trạng thái lưu trú', value: 'Đang ở KTX', icon: BadgeCheck, tone: 'bg-emerald-50 text-emerald-600' },
-    { label: 'Mã sinh viên', value: user?.studentId ?? '—', icon: IdCard, tone: 'bg-orange-50 text-orange-600' },
-    { label: 'Email', value: user?.email ?? '—', icon: Mail, tone: 'bg-sky-50 text-sky-600' },
-    { label: 'Phòng · Giường', value: 'A204 · G1 (Tòa A)', icon: BedDouble, tone: 'bg-violet-50 text-violet-600' },
-    { label: 'Cần thanh toán', value: formatVnd(2600000), icon: Wallet, tone: 'bg-rose-50 text-rose-600' },
-    { label: 'Chuyên ngành', value: user?.major ?? '—', icon: GraduationCap, tone: 'bg-amber-50 text-amber-600' },
+  // Tối đa 3 việc, xếp theo hạn gần nhất; chỉ “Thanh toán” là nút chính
+  const todos: ActionItem[] = [
+    {
+      id: 'swap',
+      icon: ArrowLeftRight,
+      title: 'Phản hồi lời mời đổi phòng',
+      meta: 'Đặng Minh Thư (A115) muốn đổi phòng với bạn',
+      badge: deadlineBadge('19/10/2026'),
+      action: { label: 'Phản hồi', onClick: () => navigate(R.APPLICATIONS) },
+    },
+    {
+      id: 'invoice',
+      icon: CreditCard,
+      title: 'Phí phòng Fall 2026 — đợt 2',
+      meta: '2.600.000 ₫ · hạn 24/10/2026',
+      badge: deadlineBadge('24/10/2026'),
+      action: { label: 'Thanh toán', onClick: () => navigate(R.INVOICES), primary: true },
+    },
+    {
+      id: 'contract',
+      icon: FileSignature,
+      title: 'Ký hợp đồng Spring 2027',
+      meta: 'HD-KTX-1102 · cần ký trước khi check-in',
+      badge: deadlineBadge('02/01/2027'),
+      action: { label: 'Ký hợp đồng', onClick: () => navigate(R.MY_ROOM) },
+    },
   ];
 
   return (
     <div className="space-y-6">
-      <WelcomeSection
+      <Greeting
         name={user?.name}
-        subtitle="Học kỳ Fall 2026 · KTX FPT Tân Uyên"
-        actions={[
-          { label: 'Phòng của tôi', onClick: () => navigate(R.MY_ROOM) },
-          { label: 'Gửi đơn', onClick: () => navigate(R.APPLICATION_NEW) },
-        ]}
-        tiles={tiles}
+        chip={
+          <span className={clsx('inline-flex items-center gap-1 px-3 py-1 rounded-full text-label font-semibold', STATUS_TONE_CLASS.success)}>
+            <BedDouble className="w-4 h-4" aria-hidden="true" />
+            Đang ở KTX · {ROOM.code}-{ROOM.bed}
+          </span>
+        }
       />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
         <div className="lg:col-span-2 space-y-6">
-          <LatestNewsCard />
+          <SectionCard title="Việc cần làm" subtitle="Xếp theo hạn gần nhất" noPadding>
+            <ActionList
+              items={todos.slice(0, 3)}
+              empty={{ title: 'Bạn đã xong hết việc', description: 'Khi có hóa đơn hay hợp đồng cần xử lý, chúng sẽ hiện ở đây.' }}
+            />
+          </SectionCard>
 
-          <SectionCard title="Tiến trình đơn Spring 2027">
-            <ol className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {TRACK.map((s, i) => (
-                <li key={s.label} className="relative flex gap-2.5">
-                  <span
-                    className={clsx(
-                      'w-7 h-7 rounded-full flex items-center justify-center shrink-0 text-xs font-bold',
-                      s.done ? 'bg-emerald-500 text-white' : s.current ? 'bg-[#F26F21] text-white ring-4 ring-orange-100' : 'bg-slate-100 text-slate-400'
-                    )}
-                  >
-                    {s.done ? <Check className="w-3.5 h-3.5" /> : i + 1}
-                  </span>
-                  <div>
-                    <div className={clsx('text-sm font-bold', s.current ? 'text-[#F26F21]' : 'text-slate-800')}>{s.label}</div>
-                    <div className="text-xs text-slate-500">{s.date}</div>
-                  </div>
-                </li>
-              ))}
-            </ol>
+          <SectionCard title="Hành trình lưu trú Spring 2027">
+            <JourneySteps steps={JOURNEY} />
           </SectionCard>
         </div>
 
         <div className="space-y-6">
-          <QuickMenuCard items={QUICK} />
-          <TaskListCard title="Việc cần làm" items={TODO} footer={{ label: 'Xem đơn của tôi', to: R.APPLICATIONS, icon: FileText }} />
+          <MyRoomCard />
+          <Shortcuts />
         </div>
       </div>
+
+      <SectionCard
+        title="Thông báo"
+        actions={
+          <Link to={APP_ROUTES.COMMON.NOTIFICATIONS} className={LINK}>
+            Xem tất cả
+          </Link>
+        }
+        noPadding
+      >
+        <NoticeList limit={3} onViewAll={() => navigate(APP_ROUTES.COMMON.NOTIFICATIONS)} />
+      </SectionCard>
     </div>
   );
 }

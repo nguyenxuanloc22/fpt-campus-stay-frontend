@@ -4,20 +4,14 @@ interface SkeletonProps {
   className?: string;
 }
 
+/** Khối giữ chỗ khi đang tải — đặt cùng kích thước khối thật để không nhảy bố cục. */
 export function Skeleton({ className }: SkeletonProps) {
-  return (
-    <div
-      className={clsx(
-        'animate-pulse rounded-md bg-slate-200/80',
-        className
-      )}
-    />
-  );
+  return <div aria-hidden="true" className={clsx('animate-pulse rounded-control bg-line', className)} />;
 }
 
 export function TableSkeleton({ rows = 5 }: { rows?: number }) {
   return (
-    <div className="w-full space-y-3 bg-white p-6 rounded-xl border border-slate-200">
+    <div role="status" aria-label="Đang tải dữ liệu" className="w-full space-y-3 bg-surface p-6 rounded-card border border-line">
       <Skeleton className="h-8 w-1/4 mb-4" />
       {Array.from({ length: rows }).map((_, i) => (
         <div key={i} className="flex gap-4">
@@ -28,5 +22,23 @@ export function TableSkeleton({ rows = 5 }: { rows?: number }) {
         </div>
       ))}
     </div>
+  );
+}
+
+/** Danh sách dạng dòng (icon + 2 dòng chữ + nút) — khớp kích thước các danh sách trên dashboard. */
+export function ListSkeleton({ rows = 3 }: { rows?: number }) {
+  return (
+    <ul role="status" aria-label="Đang tải dữ liệu" className="divide-y divide-line">
+      {Array.from({ length: rows }).map((_, i) => (
+        <li key={i} className="flex items-center gap-3 px-4 sm:px-6 py-4">
+          <Skeleton className="w-5 h-5 shrink-0" />
+          <div className="flex-1 space-y-2">
+            <Skeleton className="h-4 w-2/3" />
+            <Skeleton className="h-3 w-1/3" />
+          </div>
+          <Skeleton className="h-touch sm:h-8 w-24 shrink-0" />
+        </li>
+      ))}
+    </ul>
   );
 }

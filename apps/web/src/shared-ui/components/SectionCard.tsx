@@ -11,24 +11,20 @@ interface SectionCardProps {
   noPadding?: boolean;
 }
 
+/** Thẻ khối nội dung: nền trắng, viền 1px, bo 12px, tiêu đề khối 16px (h2). */
 export function SectionCard({ title, subtitle, actions, children, className, bodyClassName, noPadding }: SectionCardProps) {
   return (
-    <section className={clsx('bg-white rounded-2xl border border-slate-200/80 shadow-sm', className)}>
+    <section className={clsx('bg-surface rounded-card border border-line shadow-card', className)}>
       {(title || actions) && (
-        <div className="flex flex-wrap items-center justify-between gap-3 px-5 py-4 border-b border-slate-100">
+        <div className="flex flex-wrap items-center justify-between gap-3 px-4 sm:px-6 py-4 border-b border-line">
           <div className="min-w-0">
-            {title && (
-              <h2 className="flex items-center gap-2 text-sm font-extrabold text-slate-900">
-                <span className="w-1 h-4 rounded-full bg-gradient-to-b from-[#F26F21] to-amber-400" />
-                {title}
-              </h2>
-            )}
-            {subtitle && <p className="text-[11px] text-slate-500 mt-0.5 pl-3">{subtitle}</p>}
+            {title && <h2 className="text-section font-semibold text-ink">{title}</h2>}
+            {subtitle && <p className="text-label text-ink-muted mt-1">{subtitle}</p>}
           </div>
           {actions && <div className="flex flex-wrap items-center gap-2">{actions}</div>}
         </div>
       )}
-      <div className={clsx(!noPadding && 'p-5', bodyClassName)}>{children}</div>
+      <div className={clsx(!noPadding && 'p-4 sm:p-6', bodyClassName)}>{children}</div>
     </section>
   );
 }

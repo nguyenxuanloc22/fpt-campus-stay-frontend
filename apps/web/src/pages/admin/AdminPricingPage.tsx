@@ -28,9 +28,9 @@ export function AdminPricingPage() {
         description="Giá phòng theo kỳ và cấu hình tiền cọc — áp dụng cho đơn đăng ký mới, không cần triển khai lại"
         actions={
           <>
-            <label className="flex items-center gap-2 text-xs text-slate-500">
+            <label className="flex items-center gap-2 text-xs text-ink-muted">
               Hiệu lực từ
-              <input type="date" value={effective} onChange={(e) => setEffective(e.target.value)} className="px-2.5 py-1.5 border border-slate-200 rounded-lg" />
+              <input type="date" value={effective} onChange={(e) => setEffective(e.target.value)} className="px-2.5 py-1.5 border border-line rounded-lg" />
             </label>
             <AppButton size="sm" leftIcon={<Save className="w-4 h-4" />} onClick={() => show(`Đã lưu, hiệu lực từ ${effective.split('-').reverse().join('/')}`)}>Lưu</AppButton>
           </>
@@ -40,7 +40,7 @@ export function AdminPricingPage() {
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
         <SectionCard className="xl:col-span-2" title="Giá phòng theo kỳ" subtitle="Giá / sinh viên / kỳ, đã gồm phí quản lý và Wi-Fi" noPadding>
           <table className="w-full text-sm">
-            <thead className="text-xs text-slate-500 bg-slate-50">
+            <thead className="text-xs text-ink-muted bg-surface-muted">
               <tr>
                 <th className="text-left font-medium px-5 py-3">Loại phòng</th>
                 <th className="text-left font-medium px-5 py-3">Bạn cùng phòng</th>
@@ -48,14 +48,14 @@ export function AdminPricingPage() {
                 <th className="text-right font-medium px-5 py-3">Cọc giữ chỗ</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">
+            <tbody className="divide-y divide-line">
               {ROOM_TYPES.map((r) => (
                 <tr key={r.id}>
                   <td className="px-5 py-3">
-                    <div className="font-semibold text-slate-900">{r.name}</div>
-                    <div className="text-xs text-slate-400">{r.id} · {r.amenities.map((a) => a.code).join(', ')}</div>
+                    <div className="font-semibold text-ink">{r.name}</div>
+                    <div className="text-xs text-ink-subtle">{r.id} · {r.amenities.map((a) => a.code).join(', ')}</div>
                   </td>
-                  <td className="px-5 py-3 text-slate-600">{r.canChooseRoommate ? 'Sinh viên được chọn' : 'Hệ thống xếp'}</td>
+                  <td className="px-5 py-3 text-ink-muted">{r.canChooseRoommate ? 'Sinh viên được chọn' : 'Hệ thống xếp'}</td>
                   <td className="px-5 py-3 text-right">
                     <input
                       type="number"
@@ -63,10 +63,10 @@ export function AdminPricingPage() {
                       value={prices[r.id]}
                       onChange={(e) => setPrices({ ...prices, [r.id]: Number(e.target.value) })}
                       aria-label={`Giá ${r.name}`}
-                      className="w-32 px-2 py-1.5 text-right border border-slate-200 rounded-lg"
+                      className="w-32 px-2 py-1.5 text-right border border-line rounded-lg"
                     />
                   </td>
-                  <td className="px-5 py-3 text-right font-semibold text-slate-900 tabular-nums">{formatVnd(Math.round(((prices[r.id] ?? 0) * percent) / 100))}</td>
+                  <td className="px-5 py-3 text-right font-semibold text-ink tabular-nums">{formatVnd(Math.round(((prices[r.id] ?? 0) * percent) / 100))}</td>
                 </tr>
               ))}
             </tbody>
@@ -77,23 +77,23 @@ export function AdminPricingPage() {
           <SectionCard title="Tiền cọc khi đăng ký">
             <div className="space-y-4 text-sm">
               <label className="block">
-                <span className="block text-xs font-semibold text-slate-500 mb-1">Cọc giữ chỗ (% phí kỳ đầu)</span>
-                <input type="number" min={0} max={100} value={percent} onChange={(e) => setPercent(Number(e.target.value))} className="w-full px-3 py-2 border border-slate-200 rounded-lg" />
+                <span className="block text-xs font-semibold text-ink-muted mb-1">Cọc giữ chỗ (% phí kỳ đầu)</span>
+                <input type="number" min={0} max={100} value={percent} onChange={(e) => setPercent(Number(e.target.value))} className="w-full px-3 py-2 border border-line rounded-lg" />
               </label>
               <label className="block">
-                <span className="block text-xs font-semibold text-slate-500 mb-1">Cọc điện nước (₫)</span>
-                <input type="number" step={50000} value={utilityDeposit} onChange={(e) => setUtilityDeposit(Number(e.target.value))} className="w-full px-3 py-2 border border-slate-200 rounded-lg" />
+                <span className="block text-xs font-semibold text-ink-muted mb-1">Cọc điện nước (₫)</span>
+                <input type="number" step={50000} value={utilityDeposit} onChange={(e) => setUtilityDeposit(Number(e.target.value))} className="w-full px-3 py-2 border border-line rounded-lg" />
               </label>
-              <p className="text-xs text-slate-500">
+              <p className="text-xs text-ink-muted">
                 Ví dụ phòng 4 người: {formatVnd(Math.round(((prices.ROOM_4 ?? 0) * percent) / 100))} + {formatVnd(utilityDeposit)} ={' '}
-                <strong className="text-slate-900">{formatVnd(Math.round(((prices.ROOM_4 ?? 0) * percent) / 100) + utilityDeposit)}</strong>
+                <strong className="text-ink">{formatVnd(Math.round(((prices.ROOM_4 ?? 0) * percent) / 100) + utilityDeposit)}</strong>
               </p>
             </div>
           </SectionCard>
           <SectionCard title={<span className="flex items-center gap-2"><History className="w-4 h-4" /> Lịch sử thay đổi</span>} noPadding>
-            <ul className="divide-y divide-slate-100">
+            <ul className="divide-y divide-line">
               {HISTORY.map((h) => (
-                <li key={h.change} className="px-5 py-3 text-xs"><div className="text-slate-800">{h.change}</div><div className="text-slate-400">{h.when} · {h.by}</div></li>
+                <li key={h.change} className="px-5 py-3 text-xs"><div className="text-ink">{h.change}</div><div className="text-ink-subtle">{h.when} · {h.by}</div></li>
               ))}
             </ul>
           </SectionCard>

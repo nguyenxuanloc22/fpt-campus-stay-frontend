@@ -1,5 +1,6 @@
 import React from 'react';
 import { Inbox } from 'lucide-react';
+import { AppButton } from './AppButton';
 
 interface EmptyStateProps {
   title?: string;
@@ -9,28 +10,23 @@ interface EmptyStateProps {
   icon?: React.ReactNode;
 }
 
+/** Trạng thái trống: nói rõ chưa có gì và gợi ý bước tiếp theo. */
 export function EmptyState({
-  title = 'Không có dữ liệu',
-  description = 'Hiện tại chưa có bản ghi nào để hiển thị trong mục này.',
+  title = 'Chưa có dữ liệu',
+  description = 'Mục này chưa có bản ghi nào.',
   actionText,
   onAction,
   icon,
 }: EmptyStateProps) {
   return (
-    <div className="flex flex-col items-center justify-center p-8 md:p-12 text-center bg-white rounded-xl border border-dashed border-slate-300">
-      <div className="w-14 h-14 mb-4 rounded-full bg-slate-100 flex items-center justify-center text-slate-400">
-        {icon || <Inbox className="w-7 h-7" />}
-      </div>
-      <h3 className="text-base font-semibold text-slate-800 mb-1">{title}</h3>
-      <p className="text-sm text-slate-500 max-w-sm mb-5">{description}</p>
+    <div className="flex flex-col items-center justify-center p-6 sm:p-8 text-center bg-surface rounded-card border border-dashed border-line-strong">
+      <div className="mb-3 text-ink-subtle" aria-hidden="true">{icon || <Inbox className="w-8 h-8" />}</div>
+      <h3 className="text-section font-semibold text-ink mb-1">{title}</h3>
+      <p className="text-body text-ink-muted max-w-sm">{description}</p>
       {actionText && onAction && (
-        <button
-          type="button"
-          onClick={onAction}
-          className="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-[#F26F21] hover:bg-[#D95A12] rounded-lg transition-colors shadow-sm"
-        >
+        <AppButton className="mt-4" onClick={onAction}>
           {actionText}
-        </button>
+        </AppButton>
       )}
     </div>
   );

@@ -86,7 +86,7 @@ export function StaffAssignmentPage() {
         }
       />
 
-      <div className="flex flex-col md:flex-row md:items-center gap-3 p-4 rounded-xl bg-[#EBF2FB] border border-blue-100 text-xs text-[#1A365D]">
+      <div className="flex flex-col md:flex-row md:items-center gap-3 p-4 rounded-xl bg-surface-sunken border border-blue-100 text-xs text-ink">
         <Cpu className="w-5 h-5 shrink-0" />
         <span className="flex-1">
           Đề xuất <strong>BR-SP27-02</strong> · Engine chạy 25/11/2026 03:00 · 342 phân bổ · 41/44 cặp bạn cùng phòng được giữ nguyên.
@@ -112,19 +112,19 @@ export function StaffAssignmentPage() {
 
       {tab === 'proposal' && (
         <SectionCard noPadding>
-          <div className="p-4 border-b border-slate-100 flex flex-col md:flex-row md:items-center gap-3 justify-between">
-            <label className="flex items-center gap-2 text-xs text-slate-600">
-              <input type="checkbox" checked={onlyConflicts} onChange={(e) => setOnlyConflicts(e.target.checked)} className="accent-[#F26F21]" />
+          <div className="p-4 border-b border-line flex flex-col md:flex-row md:items-center gap-3 justify-between">
+            <label className="flex items-center gap-2 text-xs text-ink-muted">
+              <input type="checkbox" checked={onlyConflicts} onChange={(e) => setOnlyConflicts(e.target.checked)} className="accent-brand-ink" />
               Chỉ hiện dòng có cảnh báo
             </label>
             <div className="relative">
-              <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
-              <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Tên, MSSV, giường…" className="pl-9 pr-3 py-2 text-xs rounded-lg border border-slate-200 w-full md:w-56" />
+              <Search className="w-4 h-4 text-ink-subtle absolute left-3 top-1/2 -translate-y-1/2" />
+              <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Tên, MSSV, giường…" className="pl-9 pr-3 py-2 text-xs rounded-lg border border-line w-full md:w-56" />
             </div>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full text-xs">
-              <thead className="bg-slate-50 text-slate-500">
+              <thead className="bg-surface-muted text-ink-muted">
                 <tr>
                   <th className="text-left font-semibold px-4 py-3">Sinh viên</th>
                   <th className="text-left font-semibold px-4 py-3">Loại phòng</th>
@@ -134,13 +134,13 @@ export function StaffAssignmentPage() {
                   <th className="text-left font-semibold px-4 py-3">Điều chỉnh</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100">
+              <tbody className="divide-y divide-line">
                 {visible.map((r) => (
                   <tr key={r.id} className={clsx(r.conflict && !r.adjusted && 'bg-rose-50/40')}>
-                    <td className="px-4 py-3"><div className="font-semibold text-slate-800">{r.name}</div><div className="text-[11px] text-slate-400">{r.id} · {r.gender}</div></td>
+                    <td className="px-4 py-3"><div className="font-semibold text-ink">{r.name}</div><div className="text-label text-ink-subtle">{r.id} · {r.gender}</div></td>
                     <td className="px-4 py-3">{r.roomType}</td>
                     <td className="px-4 py-3">{r.group ?? '—'}</td>
-                    <td className="px-4 py-3 font-bold">{r.adjusted ? <><span className="line-through text-slate-400 mr-1">{r.bed}</span><span className="text-emerald-700">{r.adjusted}</span></> : r.bed}</td>
+                    <td className="px-4 py-3 font-bold">{r.adjusted ? <><span className="line-through text-ink-subtle mr-1">{r.bed}</span><span className="text-emerald-700">{r.adjusted}</span></> : r.bed}</td>
                     <td className="px-4 py-3">
                       {r.conflict ? (
                         <span className={clsx('inline-flex items-center gap-1 font-semibold', r.adjusted ? 'text-emerald-600' : 'text-rose-600')}>
@@ -148,18 +148,18 @@ export function StaffAssignmentPage() {
                           {r.adjusted ? 'Đã xử lý' : CONFLICT_LABEL[r.conflict]}
                         </span>
                       ) : (
-                        <span className="text-slate-400">—</span>
+                        <span className="text-ink-subtle">—</span>
                       )}
                     </td>
                     <td className="px-4 py-3">
                       {r.adjusted ? (
-                        <button type="button" onClick={() => undo(r.id)} className="text-slate-500 hover:text-rose-600 inline-flex items-center gap-1"><Undo2 className="w-3.5 h-3.5" />Hoàn tác</button>
+                        <button type="button" onClick={() => undo(r.id)} className="text-ink-muted hover:text-rose-600 inline-flex items-center gap-1"><Undo2 className="w-3.5 h-3.5" />Hoàn tác</button>
                       ) : (
                         <select
                           disabled={status !== 'DRAFT'}
                           defaultValue=""
                           onChange={(e) => e.target.value && adjust(r.id, e.target.value)}
-                          className="px-2 py-1 text-xs border border-slate-200 rounded-md bg-white"
+                          className="px-2 py-1 text-xs border border-line rounded-md bg-white"
                         >
                           <option value="">Chuyển sang giường…</option>
                           {FREE_BEDS[r.gender].map((b) => <option key={b} value={b}>{b}</option>)}
@@ -171,7 +171,7 @@ export function StaffAssignmentPage() {
               </tbody>
             </table>
           </div>
-          <div className="px-4 py-3 border-t text-[11px] text-slate-500">
+          <div className="px-4 py-3 border-t text-label text-ink-muted">
             Hiển thị {visible.length} dòng mẫu. Dòng không có cảnh báo được giữ nguyên theo kết quả thuật toán.
           </div>
         </SectionCard>
@@ -179,18 +179,18 @@ export function StaffAssignmentPage() {
 
       {tab === 'round2' && (
         <SectionCard title="Sinh viên chờ vòng 2" subtitle="Hệ thống mở vòng 2 ngày 02/12 và lấp các giường trống từ no-show / hủy đơn" noPadding>
-          <ul className="divide-y divide-slate-100">
+          <ul className="divide-y divide-line">
             {ROUND2.map((s) => (
               <li key={s.id} className="px-5 py-3 flex items-center gap-3 text-xs">
                 <div className="flex-1">
-                  <div className="font-semibold text-slate-800">{s.name} <span className="text-slate-400 font-normal">{s.id}</span></div>
-                  <div className="text-slate-500">{s.roomType} · {s.reason}</div>
+                  <div className="font-semibold text-ink">{s.name} <span className="text-ink-subtle font-normal">{s.id}</span></div>
+                  <div className="text-ink-muted">{s.roomType} · {s.reason}</div>
                 </div>
                 {s.accepted ? <StatusBadge status="WAITING_NEXT_ROUND" customLabel="Đồng ý vòng 2" /> : <StatusBadge status="PENDING" customLabel="Chưa phản hồi" />}
               </li>
             ))}
           </ul>
-          <div className="px-5 py-3 border-t text-[11px] text-slate-500 flex items-center gap-1.5"><Clock className="w-3.5 h-3.5" />Sinh viên không đồng ý vòng 2 sẽ được hủy đơn và hoàn cọc.</div>
+          <div className="px-5 py-3 border-t text-label text-ink-muted flex items-center gap-1.5"><Clock className="w-3.5 h-3.5" />Sinh viên không đồng ý vòng 2 sẽ được hủy đơn và hoàn cọc.</div>
         </SectionCard>
       )}
 
@@ -206,9 +206,9 @@ export function StaffAssignmentPage() {
         }
       >
         <div className="space-y-3 text-xs">
-          <p className="text-slate-600">{rows.filter((r) => r.adjusted).length} phân bổ đã được điều chỉnh thủ công; 0 xung đột còn lại.</p>
-          <label className="font-semibold text-slate-700 flex items-center gap-1.5"><MessageSquare className="w-3.5 h-3.5" />Ghi chú cho Manager</label>
-          <textarea value={note} onChange={(e) => setNote(e.target.value)} rows={3} className="w-full px-3 py-2 border border-slate-200 rounded-lg" placeholder="VD: Đã chuyển 2 sinh viên sang khu đúng giới tính…" />
+          <p className="text-ink-muted">{rows.filter((r) => r.adjusted).length} phân bổ đã được điều chỉnh thủ công; 0 xung đột còn lại.</p>
+          <label className="font-semibold text-ink flex items-center gap-1.5"><MessageSquare className="w-3.5 h-3.5" />Ghi chú cho Manager</label>
+          <textarea value={note} onChange={(e) => setNote(e.target.value)} rows={3} className="w-full px-3 py-2 border border-line rounded-lg" placeholder="VD: Đã chuyển 2 sinh viên sang khu đúng giới tính…" />
         </div>
       </Modal>
 

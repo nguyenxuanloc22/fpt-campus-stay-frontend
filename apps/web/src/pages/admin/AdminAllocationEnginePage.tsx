@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Cpu, Play, Save, Settings2, Users, Building2, Sparkles, Terminal, GripVertical, Clock, History, AlertTriangle } from 'lucide-react';
 import clsx from 'clsx';
-import { PageHeader, StatCard, SectionCard, AppButton, ProgressBar, DonutChart, StatusBadge, useToast } from '@shared-ui';
+import { PageHeader, StatCard, SectionCard, AppButton, ProgressBar, DonutChart, StatusBadge, useToast, CHART_COLORS } from '@shared-ui';
 
 /**
  * Configure Assignment Rules & Priorities + Monitor Assignment Engine (Admin) — docs/BUSINESS_FLOWS.md F2.
@@ -43,7 +43,7 @@ const LOG_LINES = [
   '[03:02:14] Hoàn tất: đề xuất BR-SP27-02 (342 phân bổ) → chờ Staff rà soát',
 ];
 
-const RUNS = [
+export const RUNS = [
   { id: 'BR-SP27-02', when: '25/11/2026 03:00', type: 'Vòng 1', total: 342, conflicts: 6, status: 'PENDING_APPROVAL' },
   { id: 'BR-SP27-01', when: '24/11/2026 15:12', type: 'Chạy thử', total: 298, conflicts: 14, status: 'COMPLETED' },
   { id: 'BR-FA26-04', when: '20/08/2026 03:00', type: 'Vòng 2', total: 186, conflicts: 2, status: 'APPROVED' },
@@ -87,7 +87,7 @@ export function AdminAllocationEnginePage() {
       <PageHeader
         title="Engine xếp phòng"
         description="Cấu hình luật & trọng số ưu tiên, chạy thử và giám sát các lần hệ thống tự chạy"
-        badge={<span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-[#EBF2FB] text-[#1A365D]">v2.3</span>}
+        badge={<span className="text-label font-bold px-2 py-0.5 rounded-full bg-surface-sunken text-ink">v2.3</span>}
         actions={
           <>
             <AppButton size="sm" variant="outline" isLoading={running} leftIcon={<Play className="w-4 h-4" />} onClick={start}>Chạy thử</AppButton>
@@ -108,12 +108,12 @@ export function AdminAllocationEnginePage() {
           <SectionCard title={<span className="flex items-center gap-2"><Cpu className="w-4 h-4" /> Chiến lược phân bổ</span>}>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
               {STRATEGIES.map((s) => (
-                <label key={s.id} className={clsx('p-4 rounded-xl border cursor-pointer', strategy === s.id ? 'border-[#F26F21] bg-orange-50/50 ring-2 ring-orange-100' : 'border-slate-200')}>
+                <label key={s.id} className={clsx('p-4 rounded-xl border cursor-pointer', strategy === s.id ? 'border-brand bg-orange-50/50 ring-2 ring-orange-100' : 'border-line')}>
                   <div className="flex items-center gap-2 mb-1">
-                    <input type="radio" checked={strategy === s.id} onChange={() => setStrategy(s.id)} className="accent-[#F26F21]" />
-                    <span className="text-xs font-bold text-slate-800">{s.name}</span>
+                    <input type="radio" checked={strategy === s.id} onChange={() => setStrategy(s.id)} className="accent-brand-ink" />
+                    <span className="text-xs font-bold text-ink">{s.name}</span>
                   </div>
-                  <p className="text-[11px] text-slate-500 leading-relaxed">{s.desc}</p>
+                  <p className="text-label text-ink-muted leading-relaxed">{s.desc}</p>
                 </label>
               ))}
             </div>
@@ -121,13 +121,13 @@ export function AdminAllocationEnginePage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <SectionCard title={<span className="flex items-center gap-2"><Settings2 className="w-4 h-4" /> Ràng buộc</span>} noPadding>
-              <ul className="divide-y divide-slate-100">
+              <ul className="divide-y divide-line">
                 {constraints.map((c) => (
                   <li key={c.id} className="px-4 py-2.5 flex items-center gap-2 text-xs">
-                    <GripVertical className="w-3.5 h-3.5 text-slate-300" />
-                    <span className="flex-1 text-slate-700">{c.label}</span>
-                    <span className={clsx('text-[10px] font-bold px-1.5 py-0.5 rounded', c.hard ? 'bg-rose-50 text-rose-600' : 'bg-slate-100 text-slate-500')}>{c.hard ? 'Cứng' : 'Mềm'}</span>
-                    <input type="checkbox" disabled={c.hard} checked={c.enabled} onChange={(e) => setConstraints(constraints.map((x) => (x.id === c.id ? { ...x, enabled: e.target.checked } : x)))} className="accent-[#F26F21]" />
+                    <GripVertical className="w-3.5 h-3.5 text-ink-subtle" />
+                    <span className="flex-1 text-ink">{c.label}</span>
+                    <span className={clsx('text-label font-bold px-1.5 py-0.5 rounded', c.hard ? 'bg-rose-50 text-rose-600' : 'bg-surface-sunken text-ink-muted')}>{c.hard ? 'Cứng' : 'Mềm'}</span>
+                    <input type="checkbox" disabled={c.hard} checked={c.enabled} onChange={(e) => setConstraints(constraints.map((x) => (x.id === c.id ? { ...x, enabled: e.target.checked } : x)))} className="accent-brand-ink" />
                   </li>
                 ))}
               </ul>
@@ -137,8 +137,8 @@ export function AdminAllocationEnginePage() {
               <div className="space-y-4 text-xs">
                 {WEIGHTS.map(([k, l]) => (
                   <div key={k}>
-                    <div className="flex justify-between mb-1"><span className="text-slate-600">{l}</span><span className="font-bold">{weights[k]}</span></div>
-                    <input type="range" min={0} max={100} step={5} value={weights[k]} onChange={(e) => setWeights({ ...weights, [k]: Number(e.target.value) })} className="w-full accent-[#F26F21]" />
+                    <div className="flex justify-between mb-1"><span className="text-ink-muted">{l}</span><span className="font-bold">{weights[k]}</span></div>
+                    <input type="range" min={0} max={100} step={5} value={weights[k]} onChange={(e) => setWeights({ ...weights, [k]: Number(e.target.value) })} className="w-full accent-brand-ink" />
                   </div>
                 ))}
                 <div className={clsx('pt-2 border-t font-semibold', totalWeight === 100 ? 'text-emerald-600' : 'text-rose-600')}>
@@ -150,17 +150,17 @@ export function AdminAllocationEnginePage() {
 
           <SectionCard title={<span className="flex items-center gap-2"><History className="w-4 h-4" /> Lịch sử chạy</span>} noPadding>
             <table className="w-full text-xs">
-              <thead className="bg-slate-50 text-slate-500">
+              <thead className="bg-surface-muted text-ink-muted">
                 <tr><th className="text-left px-5 py-2.5 font-semibold">Đề xuất</th><th className="text-left px-5 py-2.5 font-semibold">Thời gian</th><th className="text-left px-5 py-2.5 font-semibold">Loại</th><th className="text-right px-5 py-2.5 font-semibold">Phân bổ</th><th className="text-right px-5 py-2.5 font-semibold">Xung đột</th><th className="text-left px-5 py-2.5 font-semibold">Trạng thái</th></tr>
               </thead>
-              <tbody className="divide-y divide-slate-100">
+              <tbody className="divide-y divide-line">
                 {RUNS.map((r) => (
                   <tr key={r.id}>
-                    <td className="px-5 py-2.5 font-bold text-[#1A365D]">{r.id}</td>
-                    <td className="px-5 py-2.5 text-slate-500">{r.when}</td>
+                    <td className="px-5 py-2.5 font-bold text-ink">{r.id}</td>
+                    <td className="px-5 py-2.5 text-ink-muted">{r.when}</td>
                     <td className="px-5 py-2.5">{r.type}</td>
                     <td className="px-5 py-2.5 text-right">{r.total.toLocaleString('vi-VN')}</td>
-                    <td className={clsx('px-5 py-2.5 text-right font-semibold', r.conflicts ? 'text-amber-600' : 'text-slate-500')}>{r.conflicts}</td>
+                    <td className={clsx('px-5 py-2.5 text-right font-semibold', r.conflicts ? 'text-amber-600' : 'text-ink-muted')}>{r.conflicts}</td>
                     <td className="px-5 py-2.5"><StatusBadge status={r.status} customLabel={r.type === 'Chạy thử' ? 'Chạy thử' : undefined} /></td>
                   </tr>
                 ))}
@@ -175,11 +175,11 @@ export function AdminAllocationEnginePage() {
           >
             {(running || progress > 0) && (
               <div className="mb-3">
-                <div className="flex justify-between text-[11px] text-slate-500 mb-1"><span>Tiến độ</span><span>{progress}%</span></div>
+                <div className="flex justify-between text-label text-ink-muted mb-1"><span>Tiến độ</span><span>{progress}%</span></div>
                 <ProgressBar value={progress} tone="orange" size="md" />
               </div>
             )}
-            <div className="bg-slate-900 text-emerald-300 rounded-xl p-4 font-mono text-[11px] leading-relaxed h-56 overflow-y-auto">
+            <div className="bg-ink text-emerald-300 rounded-xl p-4 font-mono text-label leading-relaxed h-56 overflow-y-auto">
               {logs.map((l) => <div key={l}>{l}</div>)}
               {running && <div className="animate-pulse">▋</div>}
             </div>
@@ -193,20 +193,20 @@ export function AdminAllocationEnginePage() {
               centerValue="342"
               centerLabel="phân bổ"
               segments={[
-                { label: 'Khớp NV 1', value: 243, color: '#10B981' },
-                { label: 'Khớp NV 2–3', value: 68, color: '#3B82F6' },
-                { label: 'Ngoài NV', value: 25, color: '#F59E0B' },
-                { label: 'Cảnh báo', value: 6, color: '#F43F5E' },
+                { label: 'Khớp NV 1', value: 243, color: CHART_COLORS.green },
+                { label: 'Khớp NV 2–3', value: 68, color: CHART_COLORS.blue },
+                { label: 'Ngoài NV', value: 25, color: CHART_COLORS.amber },
+                { label: 'Cảnh báo', value: 6, color: CHART_COLORS.red },
               ]}
             />
           </SectionCard>
           <SectionCard title="So sánh chiến lược (chạy thử)">
             <table className="w-full text-xs">
-              <thead className="text-slate-500 border-b"><tr><th className="text-left py-2 font-semibold">Chiến lược</th><th className="text-right py-2 font-semibold">Khớp NV</th><th className="text-right py-2 font-semibold">Giữ nhóm</th></tr></thead>
-              <tbody className="divide-y divide-slate-100">
+              <thead className="text-ink-muted border-b"><tr><th className="text-left py-2 font-semibold">Chiến lược</th><th className="text-right py-2 font-semibold">Khớp NV</th><th className="text-right py-2 font-semibold">Giữ nhóm</th></tr></thead>
+              <tbody className="divide-y divide-line">
                 <tr><td className="py-2">Ưu tiên ngày nộp</td><td className="py-2 text-right">88.2%</td><td className="py-2 text-right">72%</td></tr>
                 <tr><td className="py-2">Ưu tiên bạn cùng phòng</td><td className="py-2 text-right">84.6%</td><td className="py-2 text-right">98%</td></tr>
-                <tr className="font-bold text-[#1A365D]"><td className="py-2">Cân bằng</td><td className="py-2 text-right">90.9%</td><td className="py-2 text-right">93%</td></tr>
+                <tr className="font-bold text-ink"><td className="py-2">Cân bằng</td><td className="py-2 text-right">90.9%</td><td className="py-2 text-right">93%</td></tr>
               </tbody>
             </table>
           </SectionCard>

@@ -118,39 +118,39 @@ export function StaffPortal() {
   return (
     <div className="space-y-6">
       {/* ── Operational Header & Profile ── */}
-      <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-xs">
+      <div className="bg-white rounded-2xl border border-line/80 p-5 shadow-xs">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex items-center gap-3.5">
-            <div className="w-12 h-12 rounded-xl bg-orange-100 text-[#F26522] font-bold text-base flex items-center justify-center shrink-0">
+            <div className="w-12 h-12 rounded-xl bg-orange-100 text-brand-ink font-bold text-base flex items-center justify-center shrink-0">
               VC
             </div>
             <div>
               <div className="flex items-center gap-2 flex-wrap">
-                <h1 className="text-xl font-bold text-[#1A365D]">Trần Văn Cường</h1>
+                <h1 className="text-xl font-bold text-ink">Trần Văn Cường</h1>
                 <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 text-xs font-semibold border border-emerald-200">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
                   Cán bộ Vận hành KTX
                 </span>
               </div>
-              <div className="flex items-center gap-4 text-xs text-slate-500 mt-1 flex-wrap">
+              <div className="flex items-center gap-4 text-xs text-ink-muted mt-1 flex-wrap">
                 <span className="flex items-center gap-1">
-                  <MapPin className="w-3.5 h-3.5 text-slate-400" />
+                  <MapPin className="w-3.5 h-3.5 text-ink-subtle" />
                   FPT University HCMC / Tân Uyên
                 </span>
-                <span className="text-slate-300">|</span>
+                <span className="text-ink-subtle">|</span>
                 <span className="flex items-center gap-1">
-                  <Clock className="w-3.5 h-3.5 text-slate-400" />
+                  <Clock className="w-3.5 h-3.5 text-ink-subtle" />
                   Ca trực: 07:30 – 17:00
                 </span>
-                <span className="text-slate-300">|</span>
+                <span className="text-ink-subtle">|</span>
                 <span className="capitalize">{new Date().toLocaleDateString('vi-VN', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}</span>
               </div>
             </div>
           </div>
 
           <div className="flex items-center gap-2">
-            <div className="px-3 py-1.5 rounded-lg bg-slate-50 border border-slate-200 text-xs text-slate-600 font-medium">
-              Chế độ tác nghiệp: <strong className="text-slate-800">Operational Staff</strong>
+            <div className="px-3 py-1.5 rounded-lg bg-surface-muted border border-line text-xs text-ink-muted font-medium">
+              Chế độ tác nghiệp: <strong className="text-ink">Operational Staff</strong>
             </div>
           </div>
         </div>
@@ -175,17 +175,17 @@ export function StaffPortal() {
               className={clsx(
                 'flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all whitespace-nowrap shrink-0 border',
                 isActive
-                  ? 'bg-[#1A365D] text-white border-[#1A365D] shadow-xs'
-                  : 'bg-white text-slate-600 border-slate-200/80 hover:bg-slate-50 hover:text-slate-900'
+                  ? 'bg-ink text-white border-ink shadow-xs'
+                  : 'bg-white text-ink-muted border-line/80 hover:bg-surface-muted hover:text-ink'
               )}
             >
-              <Icon className={clsx('w-4 h-4', isActive ? 'text-orange-400' : 'text-slate-400')} />
+              <Icon className={clsx('w-4 h-4', isActive ? 'text-orange-400' : 'text-ink-subtle')} />
               <span>{tab.label}</span>
               {tab.count > 0 && (
                 <span
                   className={clsx(
-                    'px-2 py-0.5 rounded-full text-[11px] font-bold',
-                    isActive ? 'bg-[#F26522] text-white' : 'bg-slate-100 text-slate-700'
+                    'px-2 py-0.5 rounded-full text-label font-bold',
+                    isActive ? 'bg-brand-ink text-white' : 'bg-surface-sunken text-ink'
                   )}
                 >
                   {tab.count}
@@ -203,8 +203,8 @@ export function StaffPortal() {
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-base font-bold text-[#1A365D]">Hồ Sơ Đăng Ký Chờ Thẩm Định</h2>
-              <p className="text-xs text-slate-500 mt-0.5">
+              <h2 className="text-base font-bold text-ink">Hồ Sơ Đăng Ký Chờ Thẩm Định</h2>
+              <p className="text-xs text-ink-muted mt-0.5">
                 Rà soát các hồ sơ có ghi chú hoặc đề nghị ưu tiên đặc thù trước khi chuyển vào xếp phòng
               </p>
             </div>
@@ -214,21 +214,21 @@ export function StaffPortal() {
             {applications.map((app) => (
               <div
                 key={app.code}
-                className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-xs hover:border-slate-300 transition-all space-y-4"
+                className="bg-white rounded-2xl border border-line/80 p-5 shadow-xs hover:border-line-strong transition-all space-y-4"
               >
                 <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
                   <div>
                     <div className="flex items-center gap-2 flex-wrap">
-                      <span className="font-mono text-xs font-bold text-[#1A365D] bg-slate-100 px-2 py-0.5 rounded">
+                      <span className="font-mono text-xs font-bold text-ink bg-surface-sunken px-2 py-0.5 rounded">
                         {app.code}
                       </span>
-                      <h3 className="text-sm font-bold text-slate-900">{app.studentName}</h3>
-                      <span className="text-xs text-slate-500">MSSV: {app.studentId}</span>
-                      <span className="text-xs text-slate-400">•</span>
-                      <span className="text-xs text-slate-600">{app.major}</span>
+                      <h3 className="text-sm font-bold text-ink">{app.studentName}</h3>
+                      <span className="text-xs text-ink-muted">MSSV: {app.studentId}</span>
+                      <span className="text-xs text-ink-subtle">•</span>
+                      <span className="text-xs text-ink-muted">{app.major}</span>
                     </div>
-                    <div className="text-xs text-slate-500 mt-1">
-                      Loại phòng đăng ký: <strong className="text-slate-700">{app.roomTypeRequested}</strong> • Nộp lúc: {app.submittedAt}
+                    <div className="text-xs text-ink-muted mt-1">
+                      Loại phòng đăng ký: <strong className="text-ink">{app.roomTypeRequested}</strong> • Nộp lúc: {app.submittedAt}
                     </div>
                   </div>
 
@@ -261,7 +261,7 @@ export function StaffPortal() {
                   {app.verificationChecks.map((chk, i) => (
                     <div
                       key={i}
-                      className="flex items-center gap-2 p-2 rounded-lg bg-slate-50 border border-slate-100 text-slate-700"
+                      className="flex items-center gap-2 p-2 rounded-lg bg-surface-muted border border-line text-ink"
                     >
                       <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
                       <span className="truncate">{chk.label}</span>
@@ -270,15 +270,15 @@ export function StaffPortal() {
                 </div>
 
                 {/* Documents & Action Buttons */}
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-3 border-t border-slate-100">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-3 border-t border-line">
                   <div className="flex items-center gap-2 flex-wrap">
-                    <span className="text-xs text-slate-400 font-medium">Tài liệu minh chứng:</span>
+                    <span className="text-xs text-ink-subtle font-medium">Tài liệu minh chứng:</span>
                     {app.documents.map((doc, idx) => (
                       <span
                         key={idx}
-                        className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-mono cursor-pointer transition-colors"
+                        className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-surface-sunken hover:bg-line text-ink text-xs font-mono cursor-pointer transition-colors"
                       >
-                        <FileText className="w-3.5 h-3.5 text-slate-500" />
+                        <FileText className="w-3.5 h-3.5 text-ink-muted" />
                         {doc}
                       </span>
                     ))}
@@ -290,7 +290,7 @@ export function StaffPortal() {
                         <button
                           type="button"
                           onClick={() => handleEscalateApplication(app.code)}
-                          className="border border-slate-200 bg-white hover:bg-slate-50 hover:border-slate-300 text-slate-700 px-4 py-2 rounded-lg font-medium text-xs sm:text-sm transition-colors inline-flex items-center justify-center gap-1.5"
+                          className="border border-line bg-white hover:bg-surface-muted hover:border-line-strong text-ink px-4 py-2 rounded-lg font-medium text-xs sm:text-sm transition-colors inline-flex items-center justify-center gap-1.5"
                         >
                           <Send className="w-3.5 h-3.5 text-purple-600" />
                           Chuyển Manager
@@ -298,7 +298,7 @@ export function StaffPortal() {
                         <button
                           type="button"
                           onClick={() => handleVerifyApplication(app.code)}
-                          className="bg-[#F26522] hover:bg-[#d95314] text-white px-4 py-2 rounded-lg font-medium text-xs sm:text-sm transition-colors inline-flex items-center justify-center gap-1.5 shadow-sm"
+                          className="bg-brand-ink hover:bg-brand-ink-hover text-white px-4 py-2 rounded-lg font-medium text-xs sm:text-sm transition-colors inline-flex items-center justify-center gap-1.5 shadow-sm"
                         >
                           <CheckCircle2 className="w-4 h-4" />
                           Xác nhận hợp lệ
@@ -328,8 +328,8 @@ export function StaffPortal() {
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-base font-bold text-[#1A365D]">Quản Lý Trạng Thái Phòng & Giường</h2>
-              <p className="text-xs text-slate-500 mt-0.5">
+              <h2 className="text-base font-bold text-ink">Quản Lý Trạng Thái Phòng & Giường</h2>
+              <p className="text-xs text-ink-muted mt-0.5">
                 Cập nhật nhanh tình trạng sử dụng, khóa giường bảo trì hoặc giải phóng giường sẵn sàng đón sinh viên
               </p>
             </div>
@@ -339,19 +339,19 @@ export function StaffPortal() {
             {rooms.map((room) => (
               <div
                 key={room.roomNumber}
-                className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-xs space-y-4"
+                className="bg-white rounded-2xl border border-line/80 p-5 shadow-xs space-y-4"
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2.5">
-                    <div className="w-9 h-9 rounded-lg bg-[#1A365D] text-white font-bold text-sm flex items-center justify-center">
+                    <div className="w-9 h-9 rounded-lg bg-ink text-white font-bold text-sm flex items-center justify-center">
                       {room.roomNumber}
                     </div>
                     <div>
-                      <h3 className="text-sm font-bold text-slate-900">{room.building} • Tầng {room.floor}</h3>
-                      <p className="text-xs text-slate-500">{room.roomType} • Khu {room.gender}</p>
+                      <h3 className="text-sm font-bold text-ink">{room.building} • Tầng {room.floor}</h3>
+                      <p className="text-xs text-ink-muted">{room.roomType} • Khu {room.gender}</p>
                     </div>
                   </div>
-                  <span className="text-xs font-semibold px-2 py-0.5 rounded bg-slate-100 text-slate-700">
+                  <span className="text-xs font-semibold px-2 py-0.5 rounded bg-surface-sunken text-ink">
                     {room.beds.filter((b) => b.status === 'AVAILABLE').length}/{room.beds.length} trống
                   </span>
                 </div>
@@ -365,7 +365,7 @@ export function StaffPortal() {
                         bed.status === 'AVAILABLE'
                           ? 'bg-emerald-50/40 border-emerald-200/80'
                           : bed.status === 'OCCUPIED'
-                          ? 'bg-slate-50 border-slate-200/80'
+                          ? 'bg-surface-muted border-line/80'
                           : bed.status === 'MAINTENANCE'
                           ? 'bg-rose-50/50 border-rose-200'
                           : 'bg-amber-50/50 border-amber-200'
@@ -373,14 +373,14 @@ export function StaffPortal() {
                     >
                       <div className="min-w-0">
                         <div className="flex items-center gap-2">
-                          <span className="font-bold text-slate-800">{bed.bedCode}</span>
+                          <span className="font-bold text-ink">{bed.bedCode}</span>
                           <span
                             className={clsx(
-                              'text-[10px] font-bold px-1.5 py-0.2 rounded',
+                              'text-label font-bold px-1.5 py-0.2 rounded',
                               bed.status === 'AVAILABLE'
                                 ? 'bg-emerald-100 text-emerald-800'
                                 : bed.status === 'OCCUPIED'
-                                ? 'bg-slate-200 text-slate-700'
+                                ? 'bg-line text-ink'
                                 : bed.status === 'MAINTENANCE'
                                 ? 'bg-rose-100 text-rose-800'
                                 : 'bg-amber-100 text-amber-800'
@@ -396,7 +396,7 @@ export function StaffPortal() {
                           </span>
                         </div>
                         {bed.occupant && (
-                          <p className="text-slate-500 truncate mt-0.5">
+                          <p className="text-ink-muted truncate mt-0.5">
                             {bed.occupant.name} ({bed.occupant.studentId})
                           </p>
                         )}
@@ -433,16 +433,16 @@ export function StaffPortal() {
       {/* 3. Review/Adjust Room Assignment Proposal */}
       {activeTab === 'assignment' && (
         <div className="space-y-4">
-          <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-xs">
+          <div className="bg-white rounded-2xl border border-line/80 p-5 shadow-xs">
             <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
               <div>
                 <div className="flex items-center gap-2">
-                  <span className="font-mono text-xs font-bold text-[#F26522] bg-orange-50 px-2 py-0.5 rounded">
+                  <span className="font-mono text-xs font-bold text-brand-ink bg-orange-50 px-2 py-0.5 rounded">
                     {assignment.batchCode}
                   </span>
-                  <h2 className="text-base font-bold text-[#1A365D]">{assignment.title}</h2>
+                  <h2 className="text-base font-bold text-ink">{assignment.title}</h2>
                 </div>
-                <p className="text-xs text-slate-500 mt-1">
+                <p className="text-xs text-ink-muted mt-1">
                   Đã phân bổ <strong>{assignment.totalAllocations}</strong> chỗ ở • Tỷ lệ đáp ứng nguyện vọng: <strong>{assignment.matchRate}%</strong>
                 </p>
               </div>
@@ -456,7 +456,7 @@ export function StaffPortal() {
                   <button
                     type="button"
                     onClick={handleForwardProposalToManager}
-                    className="bg-[#F26522] hover:bg-[#d95314] text-white px-4 py-2 rounded-lg font-medium text-xs sm:text-sm transition-colors inline-flex items-center justify-center gap-1.5 shadow-sm"
+                    className="bg-brand-ink hover:bg-brand-ink-hover text-white px-4 py-2 rounded-lg font-medium text-xs sm:text-sm transition-colors inline-flex items-center justify-center gap-1.5 shadow-sm"
                   >
                     <Send className="w-4 h-4" />
                     Chuyển Manager phê duyệt
@@ -467,7 +467,7 @@ export function StaffPortal() {
           </div>
 
           <div className="space-y-3">
-            <h3 className="text-sm font-bold text-[#1A365D]">Danh sách xung đột cần cán bộ điều chỉnh</h3>
+            <h3 className="text-sm font-bold text-ink">Danh sách xung đột cần cán bộ điều chỉnh</h3>
             {assignment.conflicts.map((conf) => (
               <div
                 key={conf.id}
@@ -478,7 +478,7 @@ export function StaffPortal() {
               >
                 <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2">
                   <div>
-                    <h4 className="text-sm font-bold text-slate-800">{conf.studentName}</h4>
+                    <h4 className="text-sm font-bold text-ink">{conf.studentName}</h4>
                     <p className="text-xs text-amber-800 mt-1 font-medium">
                       <strong>Vấn đề:</strong> {conf.issue}
                     </p>
@@ -493,18 +493,18 @@ export function StaffPortal() {
                   </span>
                 </div>
 
-                <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-700 flex items-center justify-between gap-3">
+                <div className="p-3 rounded-xl bg-surface-muted border border-line text-xs text-ink flex items-center justify-between gap-3">
                   <div>
-                    <span className="font-semibold text-slate-800">Phương án điều chỉnh đề xuất: </span>
+                    <span className="font-semibold text-ink">Phương án điều chỉnh đề xuất: </span>
                     {conf.proposedResolution}
                   </div>
                   {!conf.isResolved && (
                     <button
                       type="button"
                       onClick={() => handleResolveConflict(conf.id)}
-                      className="border border-slate-200 bg-white hover:bg-slate-50 hover:border-slate-300 text-slate-700 px-4 py-2 rounded-lg font-medium text-xs sm:text-sm transition-colors inline-flex items-center justify-center gap-1.5 shrink-0"
+                      className="border border-line bg-white hover:bg-surface-muted hover:border-line-strong text-ink px-4 py-2 rounded-lg font-medium text-xs sm:text-sm transition-colors inline-flex items-center justify-center gap-1.5 shrink-0"
                     >
-                      <CheckSquare className="w-4 h-4 text-[#F26522]" />
+                      <CheckSquare className="w-4 h-4 text-brand-ink" />
                       Áp dụng điều chỉnh
                     </button>
                   )}
@@ -520,8 +520,8 @@ export function StaffPortal() {
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-base font-bold text-[#1A365D]">Hàng Đợi Xử Lý Bảo Trì & Kiểm Tra Kỹ Thuật</h2>
-              <p className="text-xs text-slate-500 mt-0.5">
+              <h2 className="text-base font-bold text-ink">Hàng Đợi Xử Lý Bảo Trì & Kiểm Tra Kỹ Thuật</h2>
+              <p className="text-xs text-ink-muted mt-0.5">
                 Điều phối kỹ thuật viên, theo dõi thời hạn cam kết SLA và nghiệm thu phòng
               </p>
             </div>
@@ -533,24 +533,24 @@ export function StaffPortal() {
                 key={task.id}
                 className={clsx(
                   'bg-white rounded-2xl border p-5 shadow-xs space-y-3 transition-all',
-                  task.urgency === 'URGENT' ? 'border-rose-200 border-l-4 border-l-rose-500' : 'border-slate-200/80'
+                  task.urgency === 'URGENT' ? 'border-rose-200 border-l-4 border-l-rose-500' : 'border-line/80'
                 )}
               >
                 <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
                   <div>
                     <div className="flex items-center gap-2 flex-wrap">
-                      <span className="font-mono text-xs font-bold text-[#1A365D] bg-slate-100 px-2 py-0.5 rounded">
+                      <span className="font-mono text-xs font-bold text-ink bg-surface-sunken px-2 py-0.5 rounded">
                         {task.ticketCode}
                       </span>
-                      <span className="font-bold text-sm text-slate-900">
+                      <span className="font-bold text-sm text-ink">
                         {task.building} • Phòng {task.room}
                       </span>
                       <span className="text-xs px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 font-semibold">
                         {task.category}
                       </span>
                     </div>
-                    <p className="text-xs text-slate-700 font-medium mt-1.5">{task.description}</p>
-                    <div className="text-[11px] text-slate-400 mt-1">
+                    <p className="text-xs text-ink font-medium mt-1.5">{task.description}</p>
+                    <div className="text-label text-ink-subtle mt-1">
                       Báo bởi: {task.reportedBy} • Thời điểm: {task.reportedAt}
                     </div>
                   </div>
@@ -558,24 +558,24 @@ export function StaffPortal() {
                   <div className="flex sm:flex-col items-end gap-1.5 shrink-0">
                     <span
                       className={clsx(
-                        'px-2.5 py-0.5 rounded-full text-[11px] font-bold',
+                        'px-2.5 py-0.5 rounded-full text-label font-bold',
                         task.urgency === 'URGENT'
                           ? 'bg-rose-100 text-rose-800'
                           : task.urgency === 'HIGH'
                           ? 'bg-amber-100 text-amber-800'
-                          : 'bg-slate-100 text-slate-700'
+                          : 'bg-surface-sunken text-ink'
                       )}
                     >
                       {task.urgency === 'URGENT' ? 'Khẩn cấp' : task.urgency === 'HIGH' ? 'Ưu tiên cao' : 'Tiêu chuẩn'}
                     </span>
-                    <span className="text-[11px] text-slate-500 font-medium">SLA: {task.slaRemaining}</span>
+                    <span className="text-label text-ink-muted font-medium">SLA: {task.slaRemaining}</span>
                   </div>
                 </div>
 
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-3 border-t border-slate-100 text-xs">
-                  <div className="flex items-center gap-2 text-slate-600">
-                    <Wrench className="w-3.5 h-3.5 text-slate-400" />
-                    Kỹ thuật viên phụ trách: <strong className="text-slate-800">{task.assignedTech}</strong>
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-3 border-t border-line text-xs">
+                  <div className="flex items-center gap-2 text-ink-muted">
+                    <Wrench className="w-3.5 h-3.5 text-ink-subtle" />
+                    Kỹ thuật viên phụ trách: <strong className="text-ink">{task.assignedTech}</strong>
                   </div>
 
                   <div className="flex items-center gap-2">
@@ -583,7 +583,7 @@ export function StaffPortal() {
                       <button
                         type="button"
                         onClick={() => handleProgressMaintenance(task.id)}
-                        className="bg-[#F26522] hover:bg-[#d95314] text-white px-4 py-2 rounded-lg font-medium text-xs sm:text-sm transition-colors inline-flex items-center justify-center gap-1.5 shadow-sm"
+                        className="bg-brand-ink hover:bg-brand-ink-hover text-white px-4 py-2 rounded-lg font-medium text-xs sm:text-sm transition-colors inline-flex items-center justify-center gap-1.5 shadow-sm"
                       >
                         Tiếp nhận & Lên lịch
                       </button>
@@ -592,7 +592,7 @@ export function StaffPortal() {
                       <button
                         type="button"
                         onClick={() => handleProgressMaintenance(task.id)}
-                        className="bg-[#1A365D] hover:bg-[#0f2341] text-white px-4 py-2 rounded-lg font-medium text-xs sm:text-sm transition-colors inline-flex items-center justify-center gap-1.5 shadow-sm"
+                        className="bg-ink hover:bg-ink-hover text-white px-4 py-2 rounded-lg font-medium text-xs sm:text-sm transition-colors inline-flex items-center justify-center gap-1.5 shadow-sm"
                       >
                         <ShieldCheck className="w-4 h-4" />
                         Nghiệm thu hoàn thành
@@ -616,7 +616,7 @@ export function StaffPortal() {
 
       {/* ── Toast Notification ── */}
       {toastMessage && (
-        <div className="fixed bottom-6 right-6 z-50 bg-[#1A365D] text-white px-5 py-3 rounded-xl shadow-lg text-xs sm:text-sm flex items-center gap-2.5 border border-white/10 animate-fade-in">
+        <div className="fixed bottom-6 right-6 z-50 bg-ink text-white px-5 py-3 rounded-xl shadow-lg text-xs sm:text-sm flex items-center gap-2.5 border border-white/10 animate-fade-in">
           <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
           <span>{toastMessage}</span>
         </div>

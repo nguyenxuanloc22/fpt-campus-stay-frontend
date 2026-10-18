@@ -99,10 +99,10 @@ export function StudentInvoicesPage() {
       <PageHeader title="Hóa đơn & thanh toán" description="Thanh toán qua VietQR — hệ thống tự xác nhận sau 1–3 phút" />
 
       {unpaid.length > 0 && (
-        <div className="flex flex-col sm:flex-row sm:items-center gap-3 px-4 py-3 rounded-xl border border-slate-200 bg-white">
-          <AlertTriangle className="w-5 h-5 text-[#F26F21] shrink-0" />
-          <div className="flex-1 text-sm text-slate-700">
-            Cần thanh toán <strong className="text-slate-900">{formatVnd(unpaid.reduce((s, i) => s + i.amount, 0))}</strong> · hạn gần nhất {unpaid[0]?.due}
+        <div className="flex flex-col sm:flex-row sm:items-center gap-3 px-4 py-3 rounded-xl border border-line bg-white">
+          <AlertTriangle className="w-5 h-5 text-brand-ink shrink-0" />
+          <div className="flex-1 text-sm text-ink">
+            Cần thanh toán <strong className="text-ink">{formatVnd(unpaid.reduce((s, i) => s + i.amount, 0))}</strong> · hạn gần nhất {unpaid[0]?.due}
           </div>
           <AppButton size="sm" onClick={() => unpaid[0] && setPaying(unpaid[0])}>Thanh toán</AppButton>
         </div>
@@ -120,17 +120,17 @@ export function StudentInvoicesPage() {
             onChange={setTab}
           />
         </div>
-        <ul className="divide-y divide-slate-100 mt-3">
+        <ul className="divide-y divide-line mt-3">
           {list.map((inv) => (
             <li key={inv.code} className="px-5 py-4 flex flex-col sm:flex-row sm:items-center gap-3">
               <button type="button" onClick={() => setDetail(inv)} className="flex-1 min-w-0 text-left">
-                <div className="text-sm font-semibold text-slate-900 hover:text-[#F26F21]">{inv.title}</div>
-                <div className="text-xs text-slate-500 mt-0.5">
+                <div className="text-sm font-semibold text-ink hover:text-brand-ink">{inv.title}</div>
+                <div className="text-xs text-ink-muted mt-0.5">
                   {TYPE_LABEL[inv.type]} · {inv.code} · {inv.status === 'PAID' ? `Phát hành ${inv.issued}` : `Hạn ${inv.due}`}
                 </div>
               </button>
               <div className="flex items-center gap-4">
-                <span className="text-sm font-bold text-slate-900 tabular-nums">{formatVnd(inv.amount)}</span>
+                <span className="text-sm font-bold text-ink tabular-nums">{formatVnd(inv.amount)}</span>
                 <StatusBadge status={inv.status} />
                 {inv.status === 'PAID' ? (
                   <AppButton size="sm" variant="ghost" leftIcon={<Download className="w-3.5 h-3.5" />} onClick={() => show(`Đang tải biên nhận ${inv.code}`)}>Biên nhận</AppButton>
@@ -141,7 +141,7 @@ export function StudentInvoicesPage() {
             </li>
           ))}
           {list.length === 0 && (
-            <li className="px-5 py-12 text-center text-sm text-slate-400 flex flex-col items-center gap-2">
+            <li className="px-5 py-12 text-center text-sm text-ink-subtle flex flex-col items-center gap-2">
               <CheckCircle2 className="w-6 h-6 text-emerald-500" /> Bạn không còn khoản nào cần thanh toán
             </li>
           )}
@@ -163,10 +163,10 @@ export function StudentInvoicesPage() {
       >
         {detail && (
           <table className="w-full text-sm">
-            <tbody className="divide-y divide-slate-100">
+            <tbody className="divide-y divide-line">
               {detail.items.map((it) => (
                 <tr key={it.name}>
-                  <td className="py-2.5 text-slate-700">{it.name}</td>
+                  <td className="py-2.5 text-ink">{it.name}</td>
                   <td className={clsx('py-2.5 text-right font-semibold tabular-nums', it.amount < 0 && 'text-emerald-600')}>{formatVnd(it.amount)}</td>
                 </tr>
               ))}
@@ -174,7 +174,7 @@ export function StudentInvoicesPage() {
             <tfoot>
               <tr className="border-t-2 border-slate-900">
                 <td className="py-3 font-bold">Tổng cộng</td>
-                <td className="py-3 text-right font-bold text-[#F26F21] tabular-nums">{formatVnd(detail.amount)}</td>
+                <td className="py-3 text-right font-bold text-brand-ink tabular-nums">{formatVnd(detail.amount)}</td>
               </tr>
             </tfoot>
           </table>
@@ -195,12 +195,12 @@ export function StudentInvoicesPage() {
       >
         {paying && (
           <div className="flex flex-col items-center text-center">
-            <div className="p-4 rounded-2xl border border-slate-200">
+            <div className="p-4 rounded-2xl border border-line">
               <VietQrCode value={paying.code} size={220} />
             </div>
-            <div className="text-2xl font-bold text-slate-900 mt-4 tabular-nums">{formatVnd(paying.amount)}</div>
-            <div className="text-xs text-slate-500 mt-1 flex items-center gap-1"><Clock className="w-3.5 h-3.5" /> Mã QR có hiệu lực 15 phút</div>
-            <p className="text-xs text-slate-500 mt-3 max-w-xs">Mở ứng dụng ngân hàng bất kỳ và quét mã. Số tiền và nội dung đã được điền sẵn.</p>
+            <div className="text-2xl font-bold text-ink mt-4 tabular-nums">{formatVnd(paying.amount)}</div>
+            <div className="text-xs text-ink-muted mt-1 flex items-center gap-1"><Clock className="w-3.5 h-3.5" /> Mã QR có hiệu lực 15 phút</div>
+            <p className="text-xs text-ink-muted mt-3 max-w-xs">Mở ứng dụng ngân hàng bất kỳ và quét mã. Số tiền và nội dung đã được điền sẵn.</p>
           </div>
         )}
       </Modal>

@@ -1,220 +1,198 @@
-import { useNavigate } from 'react-router-dom';
-import {
-  Server,
-  Users,
-  Database,
-  Activity,
-  Cpu,
-  Link,
-  ShieldCheck,
-  AlertTriangle,
-  CheckCircle2,
-  Clock,
-  Calendar,
-  CalendarRange,
-  HardDrive,
-  ArrowRight,
-  XCircle,
-  Scale,
-  Tags,
-  BarChart3,
-} from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { AlertTriangle, CheckCircle2, Cpu, ShieldAlert, Users } from 'lucide-react';
 import clsx from 'clsx';
-import { APP_ROUTES } from '@campusstay/constants';
+import { APP_ROUTES, ROLE_LABELS, type Role } from '@campusstay/constants';
 import { useAuthStore } from '@features/auth';
-import { SectionCard, StatusBadge, ProgressBar, Sparkline, AppButton, Avatar } from '@shared-ui';
-import { LatestNewsCard, QuickMenuCard, WelcomeSection, type InfoTile, type QuickItem } from '@features/dashboard';
+import { EmptyState, SectionCard, StatusBadge, STATUS_TONE_CLASS } from '@shared-ui';
+import { Greeting } from '@features/dashboard';
+import { SEMESTERS, MILESTONES } from './AdminSemestersPage';
+import { RUNS } from './AdminAllocationEnginePage';
+import { ACCOUNTS } from './AdminUsersPage';
 
-/** Tổng quan Quản trị viên — cùng khung với Tổng quan sinh viên: thẻ chào, tin mới nhất, menu nhanh, giám sát hệ thống. */
+/**
+ * Tổng quan Quản trị viên (từ trên xuống): lời chào + chip tình trạng hệ thống → học kỳ & mốc sắp tới
+ * → engine xếp phòng → kiểm tra cấu hình → tài khoản theo vai trò.
+ * Dữ liệu lấy từ các trang Học kỳ, Engine xếp phòng, Tài khoản & vai trò.
+ */
 
 const R = APP_ROUTES.ADMIN;
+const LINK = 'min-h-touch inline-flex items-center text-body font-semibold text-brand-ink hover:underline';
 
+/** Health-check dịch vụ — chỉ tóm tắt thành một chip nhỏ (Admin không cần chỉ số hạ tầng chi tiết). */
 const SERVICES = [
-  { name: 'API Gateway', status: 'ok', latency: '42ms', uptime: '99.99%' },
-  { name: 'Google OAuth (đăng nhập)', status: 'ok', latency: '118ms', uptime: '99.97%' },
-  { name: 'Allocation Engine', status: 'ok', latency: '—', uptime: '100%' },
-  { name: 'Payment Webhook (VietQR)', status: 'warn', latency: '860ms', uptime: '99.62%' },
-  { name: 'SIS Sync Worker', status: 'ok', latency: '—', uptime: '99.91%' },
-  { name: 'Notification Service', status: 'ok', latency: '75ms', uptime: '99.95%' },
-  { name: 'PostgreSQL Primary', status: 'ok', latency: '4ms', uptime: '100%' },
-  { name: 'Gmail API (email)', status: 'ok', latency: '210ms', uptime: '99.90%' },
+  { name: 'API Gateway', status: 'ok' },
+  { name: 'Google OAuth (đăng nhập)', status: 'ok' },
+  { name: 'Allocation Engine', status: 'ok' },
+  { name: 'Payment Webhook (VietQR)', status: 'warn' },
+  { name: 'SIS Sync Worker', status: 'ok' },
+  { name: 'Notification Service', status: 'ok' },
+  { name: 'PostgreSQL Primary', status: 'ok' },
+  { name: 'Gmail API (email)', status: 'ok' },
 ];
 
-const JOBS = [
-  { name: 'SIS sync — danh sách sinh viên', time: '17/10 07:00', status: 'SUCCESS', dur: '3m 12s' },
-  { name: 'Đối soát VietQR', time: '17/10 06:00', status: 'SUCCESS', dur: '48s' },
-  { name: 'Allocation engine BR-SP27-02', time: '17/10 03:00', status: 'SUCCESS', dur: '2m 14s' },
-  { name: 'Nhả giữ chỗ hết hạn & hủy đơn chưa cọc', time: '17/10 02:00', status: 'SUCCESS', dur: '6s' },
-  { name: 'Đánh dấu hóa đơn quá hạn & gửi nhắc nhở', time: '17/10 01:00', status: 'SUCCESS', dur: '14s' },
-];
+const ROLE_ORDER: Role[] = ['STUDENT', 'STAFF', 'MANAGER', 'ADMIN'];
 
-const AUDIT = [
-  { who: 'ThS. Hoàng Nam', action: 'Phê duyệt batch BR-FA26-04', when: '08:12' },
-  { who: 'Quản trị viên', action: 'Cập nhật đơn giá điện 3.000 ₫/kWh', when: 'Hôm qua' },
-  { who: 'Trần Văn Cường', action: 'Khóa phòng B105 (bảo trì)', when: 'Hôm qua' },
-  { who: 'Quản trị viên', action: 'Thêm tài khoản staff lmkhoa@fpt.edu.vn', when: '15/10' },
-];
+function SystemChip() {
+  const slow = SERVICES.filter((s) => s.status !== 'ok');
+  const ok = slow.length === 0;
+  return (
+    <Link
+      to={R.INTEGRATIONS}
+      title={ok ? undefined : slow.map((s) => s.name).join(', ')}
+      className={clsx(
+        'inline-flex items-center gap-1 min-h-8 px-3 rounded-full text-label font-semibold hover:underline',
+        STATUS_TONE_CLASS[ok ? 'success' : 'pending']
+      )}
+    >
+      {ok ? <CheckCircle2 className="w-4 h-4" aria-hidden="true" /> : <AlertTriangle className="w-4 h-4" aria-hidden="true" />}
+      Tình trạng hệ thống: {ok ? 'ổn định' : `${slow.length} dịch vụ phản hồi chậm`}
+    </Link>
+  );
+}
 
-const RESOURCES = [
-  { l: 'CPU (8 vCPU)', v: 34, icon: Cpu, p: [22, 28, 31, 40, 36, 34] },
-  { l: 'RAM (32 GB)', v: 61, icon: Server, p: [55, 58, 60, 62, 61, 61] },
-  { l: 'Database connections', v: 42, icon: Database, p: [30, 35, 44, 50, 46, 42] },
-];
+function SemesterCard() {
+  const active = SEMESTERS.find((s) => s.status === 'ACTIVE');
+  const upcoming = SEMESTERS.find((s) => s.status === 'UPCOMING');
+  const nextMilestones = MILESTONES.filter((m) => !m.done).slice(0, 5);
 
-const QUICK: QuickItem[] = [
-  { label: 'Học kỳ', to: R.SEMESTERS, icon: CalendarRange, tone: 'bg-orange-100 text-orange-600' },
-  { label: 'Quy tắc', to: R.RULES, icon: Scale, tone: 'bg-violet-100 text-violet-600' },
-  { label: 'Bảng giá', to: R.PRICING, icon: Tags, tone: 'bg-emerald-100 text-emerald-600' },
-  { label: 'Engine xếp phòng', to: R.ALLOCATION_ENGINE, icon: Cpu, tone: 'bg-sky-100 text-sky-600' },
-  { label: 'Tích hợp', to: R.INTEGRATIONS, icon: Link, tone: 'bg-sky-100 text-sky-600' },
-  { label: 'Người dùng', to: R.USERS, icon: Users, tone: 'bg-orange-100 text-orange-600' },
-  { label: 'Báo cáo', to: R.REPORTS, icon: BarChart3, tone: 'bg-emerald-100 text-emerald-600' },
-  { label: 'Audit logs', to: R.AUDIT_LOGS, icon: ShieldCheck, tone: 'bg-violet-100 text-violet-600' },
-];
+  return (
+    <SectionCard title="Học kỳ đang vận hành" actions={<Link to={R.SEMESTERS} className={LINK}>Cấu hình học kỳ</Link>}>
+      <dl className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        {active && (
+          <div>
+            <dt className="text-label text-ink-muted">Đang diễn ra</dt>
+            <dd className="text-section font-semibold text-ink">{active.name}</dd>
+            <dd className="text-label text-ink-muted">
+              {active.start} – {active.end} · {active.residents.toLocaleString('vi-VN')} sinh viên đang ở
+            </dd>
+          </div>
+        )}
+        {upcoming && (
+          <div>
+            <dt className="text-label text-ink-muted">Kỳ tới · {upcoming.regLocked ? 'đã khóa đăng ký' : 'đang mở đăng ký'}</dt>
+            <dd className="text-section font-semibold text-ink">{upcoming.name}</dd>
+            <dd className="text-label text-ink-muted">
+              Đăng ký {upcoming.regOpen} – {upcoming.regClose} · {upcoming.applications.toLocaleString('vi-VN')} đơn
+            </dd>
+          </div>
+        )}
+      </dl>
+      <h3 className="text-body font-semibold text-ink mt-6 mb-2">Mốc sắp tới</h3>
+      <ol className="divide-y divide-line border-y border-line">
+        {nextMilestones.map((m) => (
+          <li key={m.t} className="flex items-center gap-3 py-2">
+            <span className="w-14 shrink-0 text-body font-semibold text-ink tabular-nums">{m.d}</span>
+            <span className="text-body text-ink">{m.t}</span>
+          </li>
+        ))}
+      </ol>
+    </SectionCard>
+  );
+}
 
-const SERVICE_STATE = {
-  ok: { label: 'Hoạt động', icon: CheckCircle2, iconTone: 'text-emerald-500', badge: 'bg-emerald-50 text-emerald-700' },
-  warn: { label: 'Chậm', icon: AlertTriangle, iconTone: 'text-amber-500', badge: 'bg-amber-50 text-amber-700' },
-  down: { label: 'Mất kết nối', icon: XCircle, iconTone: 'text-rose-500', badge: 'bg-rose-50 text-rose-700' },
-} as const;
+function EngineCard() {
+  const last = RUNS[0];
+  return (
+    <SectionCard title="Engine xếp phòng" actions={<Link to={R.ALLOCATION_ENGINE} className={LINK}>Mở engine</Link>}>
+      {!last ? (
+        <EmptyState icon={<Cpu className="w-8 h-8" />} title="Chưa có lần chạy nào" description="Chạy engine sau khi đóng cổng đăng ký để tạo đề xuất xếp phòng." />
+      ) : (
+        <>
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="text-section font-semibold text-ink">{last.id}</span>
+            <StatusBadge status={last.status} />
+          </div>
+          <p className="text-label text-ink-muted mt-1">
+            Lần chạy gần nhất {last.when} · {last.type}
+          </p>
+          <dl className="grid grid-cols-2 gap-4 mt-4">
+            <div>
+              <dt className="text-label text-ink-muted">Đơn đã xếp</dt>
+              <dd className="text-2xl font-bold text-ink">{last.total.toLocaleString('vi-VN')}</dd>
+            </div>
+            <div>
+              <dt className="text-label text-ink-muted">Xung đột</dt>
+              <dd className={clsx('text-2xl font-bold', last.conflicts ? 'text-danger' : 'text-ink')}>{last.conflicts}</dd>
+            </div>
+          </dl>
+        </>
+      )}
+    </SectionCard>
+  );
+}
 
-export function AdminDashboardPage() {
-  const navigate = useNavigate();
-  const user = useAuthStore((state) => state.user);
-  const slowServices = SERVICES.filter((s) => s.status !== 'ok').length;
-
-  const tiles: InfoTile[] = [
-    { label: 'Người dùng hoạt động', value: '1.142 · 1.075 SV, 52 staff', icon: Users, tone: 'bg-orange-50 text-orange-600' },
-    { label: 'Request / phút', value: '386 · đỉnh lúc 21:00', icon: Activity, tone: 'bg-sky-50 text-sky-600' },
-    { label: 'Uptime 30 ngày', value: '99.94% · SLA 99.9%', icon: Server, tone: 'bg-emerald-50 text-emerald-600' },
-    { label: 'Dung lượng lưu trữ', value: '412 / 1.000 GB', icon: HardDrive, tone: 'bg-violet-50 text-violet-600' },
-    { label: 'Cảnh báo dịch vụ', value: slowServices ? `${slowServices} dịch vụ phản hồi chậm` : 'Tất cả ổn định', icon: AlertTriangle, tone: 'bg-rose-50 text-rose-600' },
-    { label: 'Phiên bản', value: 'CampusStay v2.3.1 · Production', icon: Database, tone: 'bg-slate-100 text-slate-600' },
+function ConfigCheckCard() {
+  // Mục còn thiếu suy ra từ dữ liệu sẵn có: học kỳ nháp chưa có lịch, tài khoản cán bộ chưa bật xác thực 2 lớp
+  const draftSemesters = SEMESTERS.filter((s) => s.status === 'DRAFT' && (s.regOpen === '—' || s.checkin === '—'));
+  const staffNoMfa = ACCOUNTS.filter((a) => a.role !== 'STUDENT' && a.status === 'ACTIVE' && !a.mfa);
+  const issues = [
+    ...draftSemesters.map((s) => ({ id: s.code, text: `${s.name}: chưa đặt lịch đăng ký và check-in`, to: R.SEMESTERS })),
+    ...(staffNoMfa.length ? [{ id: 'mfa', text: `${staffNoMfa.length} tài khoản cán bộ chưa bật xác thực 2 lớp`, to: R.USERS }] : []),
   ];
 
   return (
+    <SectionCard title="Kiểm tra cấu hình" subtitle={issues.length ? `${issues.length} mục cần bổ sung` : undefined} noPadding>
+      {issues.length === 0 ? (
+        <div className="p-4 sm:p-6">
+          <EmptyState icon={<CheckCircle2 className="w-8 h-8" />} title="Cấu hình đã đầy đủ" description="Học kỳ, luật điều kiện, giá phòng và tài khoản không còn mục thiếu." />
+        </div>
+      ) : (
+        <ul className="divide-y divide-line">
+          {issues.map((i) => (
+            <li key={i.id} className="flex items-center gap-3 px-4 sm:px-6 py-3">
+              <ShieldAlert className="w-5 h-5 text-pending shrink-0" aria-hidden="true" />
+              <span className="flex-1 text-body text-ink">{i.text}</span>
+              <Link to={i.to} className={LINK} aria-label={`Sửa: ${i.text}`}>
+                Sửa
+              </Link>
+            </li>
+          ))}
+        </ul>
+      )}
+    </SectionCard>
+  );
+}
+
+function AccountsCard() {
+  const locked = ACCOUNTS.filter((a) => a.status === 'LOCKED').length;
+  const inactive = ACCOUNTS.filter((a) => a.status === 'INACTIVE').length;
+  return (
+    <SectionCard title="Tài khoản" actions={<Link to={R.USERS} className={LINK}>Quản lý</Link>}>
+      <dl className="grid grid-cols-2 gap-4">
+        {ROLE_ORDER.map((role) => (
+          <div key={role}>
+            <dt className="text-label text-ink-muted">{ROLE_LABELS[role]}</dt>
+            <dd className="text-2xl font-bold text-ink">{ACCOUNTS.filter((a) => a.role === role).length}</dd>
+          </div>
+        ))}
+      </dl>
+      <div className="flex flex-wrap gap-2 mt-4 pt-4 border-t border-line">
+        <span className={clsx('inline-flex items-center gap-1 px-3 py-1 rounded-full text-label font-semibold', STATUS_TONE_CLASS[locked ? 'danger' : 'neutral'])}>
+          <Users className="w-4 h-4" aria-hidden="true" /> {locked} tài khoản bị khóa
+        </span>
+        <span className={clsx('inline-flex items-center px-3 py-1 rounded-full text-label font-semibold', STATUS_TONE_CLASS.neutral)}>{inactive} ngừng hoạt động</span>
+      </div>
+    </SectionCard>
+  );
+}
+
+export function AdminDashboardPage() {
+  const user = useAuthStore((state) => state.user);
+
+  return (
     <div className="space-y-6">
-      <WelcomeSection
-        name={user?.name}
-        subtitle="Quản trị hệ thống · Máy chủ FPT Cloud HCM"
-        actions={[
-          { label: 'Người dùng', onClick: () => navigate(R.USERS) },
-          { label: 'Audit logs', onClick: () => navigate(R.AUDIT_LOGS) },
-        ]}
-        tiles={tiles}
-      />
+      <Greeting name={user?.name} chip={<SystemChip />} />
 
+      {/* Thứ tự DOM = thứ tự ưu tiên trên mobile: học kỳ → engine → cấu hình → tài khoản */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
-        <div className="lg:col-span-2 space-y-6">
-          <LatestNewsCard />
-
-          <SectionCard title="Tình trạng dịch vụ" subtitle="Health-check mỗi 30 giây" noPadding>
-            <div className="grid grid-cols-1 md:grid-cols-2">
-              {SERVICES.map((s, i) => {
-                const st = SERVICE_STATE[s.status as keyof typeof SERVICE_STATE];
-                return (
-                  <div key={s.name} className={clsx('px-5 py-3 flex items-center gap-3 border-b border-slate-100', i % 2 === 0 && 'md:border-r')}>
-                    <st.icon className={clsx('w-4 h-4 shrink-0', st.iconTone)} />
-                    <div className="flex-1 min-w-0">
-                      <div className="text-xs font-semibold text-slate-800 truncate">{s.name}</div>
-                      <div className="text-[11px] text-slate-500">Uptime {s.uptime} · {s.latency}</div>
-                    </div>
-                    <span className={clsx('text-[10px] font-bold px-2 py-0.5 rounded-full', st.badge)}>{st.label}</span>
-                  </div>
-                );
-              })}
-            </div>
-          </SectionCard>
-
-          <SectionCard
-            title="Tác vụ tự động gần đây"
-            subtitle="Actor System"
-            actions={
-              <button type="button" onClick={() => navigate(R.ALLOCATION_ENGINE)} className="text-xs font-bold text-[#F26F21] hover:underline">
-                Xem tất cả
-              </button>
-            }
-            noPadding
-          >
-            <div className="overflow-x-auto">
-              <table className="w-full text-xs">
-                <tbody className="divide-y divide-slate-100">
-                  {JOBS.map((j) => (
-                    <tr key={j.name} className="hover:bg-slate-50">
-                      <td className="px-5 py-3 font-semibold text-slate-800">{j.name}</td>
-                      <td className="px-5 py-3 text-slate-500 whitespace-nowrap">{j.time}</td>
-                      <td className="px-5 py-3 text-slate-500 whitespace-nowrap">{j.dur}</td>
-                      <td className="px-5 py-3 text-right"><StatusBadge status={j.status} /></td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </SectionCard>
+        <div className="lg:col-span-2">
+          <SemesterCard />
         </div>
-
-        <div className="space-y-6">
-          <QuickMenuCard items={QUICK} />
-
-          <SectionCard title="Học kỳ đang vận hành">
-            <div className="space-y-2">
-              <div className="flex items-center gap-3 p-3 rounded-xl bg-sky-50">
-                <span className="w-9 h-9 rounded-xl bg-white text-sky-600 flex items-center justify-center shrink-0"><Calendar className="w-4 h-4" /></span>
-                <div className="text-xs">
-                  <div className="font-bold text-slate-800">Fall 2026</div>
-                  <div className="text-slate-500">01/09 – 31/12/2026 · Tuần 7/16</div>
-                </div>
-              </div>
-              <div className="flex items-center gap-3 p-3 rounded-xl bg-orange-50">
-                <span className="w-9 h-9 rounded-xl bg-white text-[#F26F21] flex items-center justify-center shrink-0"><Clock className="w-4 h-4" /></span>
-                <div className="text-xs">
-                  <div className="font-bold text-[#C2410C]">Spring 2027 — đang mở đăng ký</div>
-                  <div className="text-slate-500">14/10 – 15/11/2026 · 1.284 đơn</div>
-                </div>
-              </div>
-            </div>
-            <AppButton size="sm" variant="outline" className="w-full mt-3" rightIcon={<ArrowRight className="w-3.5 h-3.5" />} onClick={() => navigate(R.SEMESTERS)}>
-              Cấu hình kỳ học
-            </AppButton>
-          </SectionCard>
-
-          <SectionCard title="Tài nguyên máy chủ">
-            <div className="space-y-4 text-xs">
-              {RESOURCES.map((r) => (
-                <div key={r.l}>
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="flex items-center gap-1.5 text-slate-600"><r.icon className="w-3.5 h-3.5" /> {r.l}</span>
-                    <span className="font-bold text-slate-800">{r.v}%</span>
-                  </div>
-                  <ProgressBar value={r.v} tone={r.v > 80 ? 'rose' : r.v > 60 ? 'amber' : 'emerald'} />
-                  <Sparkline points={r.p} className="h-6 mt-1" color="#94a3b8" />
-                </div>
-              ))}
-            </div>
-          </SectionCard>
-
-          <SectionCard
-            title="Hoạt động quản trị"
-            actions={
-              <button type="button" onClick={() => navigate(R.AUDIT_LOGS)} className="text-xs font-bold text-[#F26F21] hover:underline">
-                Xem tất cả
-              </button>
-            }
-            noPadding
-          >
-            <ul className="divide-y divide-slate-100">
-              {AUDIT.map((a) => (
-                <li key={a.action} className="px-5 py-3 flex items-start gap-2.5">
-                  <Avatar name={a.who} size="xs" className="mt-0.5" />
-                  <div className="text-xs">
-                    <div className="text-slate-800"><span className="font-semibold">{a.who}</span> — {a.action}</div>
-                    <div className="text-[11px] text-slate-400">{a.when}</div>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          </SectionCard>
+        <EngineCard />
+        <div className="lg:col-span-2">
+          <ConfigCheckCard />
         </div>
+        <AccountsCard />
       </div>
     </div>
   );

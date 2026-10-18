@@ -65,7 +65,7 @@ export function StaffRoomChangesPage() {
     <div className="space-y-6">
       <PageHeader title="Đổi phòng" description="Theo dõi yêu cầu đổi / hoán đổi phòng và xác minh điều kiện trước khi Manager quyết định" />
 
-      <div className="flex items-center gap-3 p-4 rounded-xl bg-[#EBF2FB] border border-blue-100 text-xs text-[#1A365D]">
+      <div className="flex items-center gap-3 p-4 rounded-xl bg-surface-sunken border border-blue-100 text-xs text-ink">
         <CalendarRange className="w-5 h-5 shrink-0" />
         Đợt đổi phòng tuần 9 đang mở (12/10 – 25/10/2026). Yêu cầu chưa ghép được đối tác sẽ tự hủy khi hết đợt.
       </div>
@@ -78,7 +78,7 @@ export function StaffRoomChangesPage() {
       </div>
 
       <SectionCard noPadding>
-        <div className="p-4 border-b border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-3">
+        <div className="p-4 border-b border-line flex flex-col md:flex-row md:items-center justify-between gap-3">
           <Tabs<TabKey>
             items={[
               { value: 'processing', label: 'Chờ Manager duyệt', count: items.filter((r) => r.status === 'PROCESSING').length },
@@ -89,37 +89,37 @@ export function StaffRoomChangesPage() {
             onChange={setTab}
           />
           <div className="relative">
-            <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
-            <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Mã, tên, MSSV…" className="pl-9 pr-3 py-2 text-xs rounded-lg border border-slate-200 w-full md:w-52" />
+            <Search className="w-4 h-4 text-ink-subtle absolute left-3 top-1/2 -translate-y-1/2" />
+            <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Mã, tên, MSSV…" className="pl-9 pr-3 py-2 text-xs rounded-lg border border-line w-full md:w-52" />
           </div>
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 p-4">
           {list.map((r) => (
-            <div key={r.id} className="p-4 rounded-xl border border-slate-200">
+            <div key={r.id} className="p-4 rounded-xl border border-line">
               <div className="flex items-center justify-between gap-2 mb-3">
-                <span className={clsx('text-[10px] font-bold px-2 py-0.5 rounded flex items-center gap-1', r.kind === 'SWAP' ? 'bg-purple-100 text-purple-700' : 'bg-blue-100 text-blue-700')}>
+                <span className={clsx('text-label font-bold px-2 py-0.5 rounded flex items-center gap-1', r.kind === 'SWAP' ? 'bg-purple-100 text-purple-700' : 'bg-blue-100 text-blue-700')}>
                   {r.kind === 'SWAP' ? <ArrowLeftRight className="w-3 h-3" /> : <Repeat className="w-3 h-3" />}
                   {r.kind === 'SWAP' ? 'Hoán đổi' : 'Đổi phòng'} · {r.id}
                 </span>
                 <StatusBadge status={r.status} customLabel={STATUS_LABEL[r.status]} />
               </div>
               <div className="flex items-center gap-2 text-xs">
-                <div className="flex-1 p-2.5 rounded-lg bg-slate-50 flex items-center gap-2"><Avatar name={r.a.name} size="xs" /><div><div className="font-semibold">{r.a.name}</div><div className="text-slate-500">{r.a.room}</div></div></div>
+                <div className="flex-1 p-2.5 rounded-lg bg-surface-muted flex items-center gap-2"><Avatar name={r.a.name} size="xs" /><div><div className="font-semibold">{r.a.name}</div><div className="text-ink-muted">{r.a.room}</div></div></div>
                 {r.b && <>
                   <ArrowLeftRight className="w-4 h-4 text-purple-500 shrink-0" />
-                  <div className="flex-1 p-2.5 rounded-lg bg-slate-50 flex items-center gap-2"><Avatar name={r.b.name} size="xs" /><div><div className="font-semibold">{r.b.name}</div><div className="text-slate-500">{r.b.room}</div></div></div>
+                  <div className="flex-1 p-2.5 rounded-lg bg-surface-muted flex items-center gap-2"><Avatar name={r.b.name} size="xs" /><div><div className="font-semibold">{r.b.name}</div><div className="text-ink-muted">{r.b.room}</div></div></div>
                 </>}
               </div>
-              <p className="text-xs text-slate-600 mt-3">{r.reason}</p>
-              <ul className="mt-3 grid grid-cols-2 gap-1 text-[11px]">
+              <p className="text-xs text-ink-muted mt-3">{r.reason}</p>
+              <ul className="mt-3 grid grid-cols-2 gap-1 text-label">
                 {r.checks.map((c) => (
-                  <li key={c.label} className={clsx('flex items-center gap-1', c.ok ? 'text-slate-600' : 'text-rose-600 font-semibold')}>
+                  <li key={c.label} className={clsx('flex items-center gap-1', c.ok ? 'text-ink-muted' : 'text-rose-600 font-semibold')}>
                     {c.ok ? <CheckCircle2 className="w-3 h-3 text-emerald-500" /> : <AlertTriangle className="w-3 h-3" />}{c.label}
                   </li>
                 ))}
               </ul>
-              <div className="flex items-center justify-between mt-3 pt-3 border-t border-slate-100 text-[11px]">
-                <span className="text-slate-400">Tạo {r.created}</span>
+              <div className="flex items-center justify-between mt-3 pt-3 border-t border-line text-label">
+                <span className="text-ink-subtle">Tạo {r.created}</span>
                 {r.status === 'PROCESSING' && (r.verified ? (
                   <span className="font-semibold text-emerald-600 flex items-center gap-1"><ShieldCheck className="w-3.5 h-3.5" />Đã xác minh</span>
                 ) : (
@@ -128,7 +128,7 @@ export function StaffRoomChangesPage() {
               </div>
             </div>
           ))}
-          {list.length === 0 && <div className="col-span-full py-10 text-center text-xs text-slate-400">Không có yêu cầu nào.</div>}
+          {list.length === 0 && <div className="col-span-full py-10 text-center text-xs text-ink-subtle">Không có yêu cầu nào.</div>}
         </div>
       </SectionCard>
 

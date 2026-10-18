@@ -100,29 +100,29 @@ export function ManagerPortal() {
   return (
     <div className="space-y-6">
       {/* ── Governance Header ── */}
-      <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-xs">
+      <div className="bg-white rounded-2xl border border-line/80 p-5 shadow-xs">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex items-center gap-3.5">
-            <div className="w-12 h-12 rounded-xl bg-blue-100 text-[#1A365D] font-bold text-base flex items-center justify-center shrink-0">
+            <div className="w-12 h-12 rounded-xl bg-blue-100 text-ink font-bold text-base flex items-center justify-center shrink-0">
               HN
             </div>
             <div>
               <div className="flex items-center gap-2 flex-wrap">
-                <h1 className="text-xl font-bold text-[#1A365D]">ThS. Hoàng Nam</h1>
+                <h1 className="text-xl font-bold text-ink">ThS. Hoàng Nam</h1>
                 <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-700 text-xs font-semibold border border-blue-200">
                   <ShieldCheck className="w-3.5 h-3.5 text-blue-600" />
                   Trưởng Ban Quản lý KTX
                 </span>
               </div>
-              <p className="text-xs text-slate-500 mt-1">
+              <p className="text-xs text-ink-muted mt-1">
                 FPT University HCMC / Tân Uyên • Thẩm quyền: Phê duyệt hồ sơ, xếp phòng, đổi phòng & lịch kỹ thuật
               </p>
             </div>
           </div>
 
           <div className="flex items-center gap-2">
-            <div className="px-3 py-1.5 rounded-lg bg-slate-50 border border-slate-200 text-xs text-slate-600 font-medium">
-              Chế độ thẩm quyền: <strong className="text-[#1A365D]">Governance & Approvals</strong>
+            <div className="px-3 py-1.5 rounded-lg bg-surface-muted border border-line text-xs text-ink-muted font-medium">
+              Chế độ thẩm quyền: <strong className="text-ink">Governance & Approvals</strong>
             </div>
           </div>
         </div>
@@ -147,17 +147,17 @@ export function ManagerPortal() {
               className={clsx(
                 'flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all whitespace-nowrap shrink-0 border',
                 isActive
-                  ? 'bg-[#1A365D] text-white border-[#1A365D] shadow-xs'
-                  : 'bg-white text-slate-600 border-slate-200/80 hover:bg-slate-50 hover:text-slate-900'
+                  ? 'bg-ink text-white border-ink shadow-xs'
+                  : 'bg-white text-ink-muted border-line/80 hover:bg-surface-muted hover:text-ink'
               )}
             >
-              <Icon className={clsx('w-4 h-4', isActive ? 'text-orange-400' : 'text-slate-400')} />
+              <Icon className={clsx('w-4 h-4', isActive ? 'text-orange-400' : 'text-ink-subtle')} />
               <span>{tab.label}</span>
               {tab.count > 0 && (
                 <span
                   className={clsx(
-                    'px-2 py-0.5 rounded-full text-[11px] font-bold',
-                    isActive ? 'bg-[#F26522] text-white' : 'bg-slate-100 text-slate-700'
+                    'px-2 py-0.5 rounded-full text-label font-bold',
+                    isActive ? 'bg-brand-ink text-white' : 'bg-surface-sunken text-ink'
                   )}
                 >
                   {tab.count}
@@ -174,8 +174,8 @@ export function ManagerPortal() {
       {activeTab === 'applications' && (
         <div className="space-y-4">
           <div>
-            <h2 className="text-base font-bold text-[#1A365D]">Phê Duyệt Đơn Đăng Ký Ký Túc Xá</h2>
-            <p className="text-xs text-slate-500 mt-0.5">
+            <h2 className="text-base font-bold text-ink">Phê Duyệt Đơn Đăng Ký Ký Túc Xá</h2>
+            <p className="text-xs text-ink-muted mt-0.5">
               Các hồ sơ có trường hợp đặc thù đã qua Staff rà soát đề xuất — Quyết định sẽ tự động cập nhật hợp đồng và thông báo
             </p>
           </div>
@@ -184,21 +184,21 @@ export function ManagerPortal() {
             {applications.map((app) => (
               <div
                 key={app.code}
-                className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-xs hover:border-slate-300 transition-all space-y-4"
+                className="bg-white rounded-2xl border border-line/80 p-5 shadow-xs hover:border-line-strong transition-all space-y-4"
               >
                 <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
                   <div>
                     <div className="flex items-center gap-2 flex-wrap">
-                      <span className="font-mono text-xs font-bold text-[#1A365D] bg-slate-100 px-2 py-0.5 rounded">
+                      <span className="font-mono text-xs font-bold text-ink bg-surface-sunken px-2 py-0.5 rounded">
                         {app.code}
                       </span>
-                      <h3 className="text-sm font-bold text-slate-900">{app.studentName}</h3>
-                      <span className="text-xs text-slate-500">MSSV: {app.studentId}</span>
-                      <span className="text-xs text-slate-400">•</span>
-                      <span className="text-xs text-slate-600">{app.major}</span>
+                      <h3 className="text-sm font-bold text-ink">{app.studentName}</h3>
+                      <span className="text-xs text-ink-muted">MSSV: {app.studentId}</span>
+                      <span className="text-xs text-ink-subtle">•</span>
+                      <span className="text-xs text-ink-muted">{app.major}</span>
                     </div>
-                    <div className="text-xs text-slate-500 mt-1">
-                      Loại phòng đề xuất: <strong className="text-slate-800">{app.roomType}</strong>
+                    <div className="text-xs text-ink-muted mt-1">
+                      Loại phòng đề xuất: <strong className="text-ink">{app.roomType}</strong>
                     </div>
                   </div>
 
@@ -222,8 +222,8 @@ export function ManagerPortal() {
 
                 {/* Flag & Staff Recommendation */}
                 <div className="space-y-2 text-xs">
-                  <div className="p-3 rounded-xl bg-slate-50 border border-slate-200/80 text-slate-700">
-                    <span className="font-bold text-slate-900">Nội dung đối soát: </span>
+                  <div className="p-3 rounded-xl bg-surface-muted border border-line/80 text-ink">
+                    <span className="font-bold text-ink">Nội dung đối soát: </span>
                     {app.flagDescription}
                   </div>
                   <div className="p-3 rounded-xl bg-blue-50/60 border border-blue-200/70 text-blue-900">
@@ -233,15 +233,15 @@ export function ManagerPortal() {
                 </div>
 
                 {/* Documents & Action Buttons */}
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-3 border-t border-slate-100">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-3 border-t border-line">
                   <div className="flex items-center gap-2 flex-wrap">
-                    <span className="text-xs text-slate-400 font-medium">Hồ sơ đính kèm:</span>
+                    <span className="text-xs text-ink-subtle font-medium">Hồ sơ đính kèm:</span>
                     {app.documents.map((doc, idx) => (
                       <span
                         key={idx}
-                        className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-mono transition-colors"
+                        className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-surface-sunken hover:bg-line text-ink text-xs font-mono transition-colors"
                       >
-                        <FileText className="w-3.5 h-3.5 text-slate-500" />
+                        <FileText className="w-3.5 h-3.5 text-ink-muted" />
                         {doc}
                       </span>
                     ))}
@@ -253,7 +253,7 @@ export function ManagerPortal() {
                         <button
                           type="button"
                           onClick={() => handleAppApplication(app.code, 'REJECTED')}
-                          className="border border-slate-200 bg-white hover:bg-slate-50 hover:border-slate-300 text-slate-700 px-4 py-2 rounded-lg font-medium text-xs sm:text-sm transition-colors inline-flex items-center justify-center gap-1.5"
+                          className="border border-line bg-white hover:bg-surface-muted hover:border-line-strong text-ink px-4 py-2 rounded-lg font-medium text-xs sm:text-sm transition-colors inline-flex items-center justify-center gap-1.5"
                         >
                           <XCircle className="w-4 h-4 text-rose-600" />
                           Từ chối
@@ -261,14 +261,14 @@ export function ManagerPortal() {
                         <button
                           type="button"
                           onClick={() => handleAppApplication(app.code, 'APPROVED')}
-                          className="bg-[#F26522] hover:bg-[#d95314] text-white px-4 py-2 rounded-lg font-medium text-xs sm:text-sm transition-colors inline-flex items-center justify-center gap-1.5 shadow-sm"
+                          className="bg-brand-ink hover:bg-brand-ink-hover text-white px-4 py-2 rounded-lg font-medium text-xs sm:text-sm transition-colors inline-flex items-center justify-center gap-1.5 shadow-sm"
                         >
                           <CheckCircle2 className="w-4 h-4" />
                           Phê duyệt
                         </button>
                       </>
                     ) : (
-                      <span className="text-xs font-semibold text-slate-500">
+                      <span className="text-xs font-semibold text-ink-muted">
                         Đã ghi nhận nhật ký kiểm toán quản trị
                       </span>
                     )}
@@ -284,8 +284,8 @@ export function ManagerPortal() {
       {activeTab === 'assignments' && (
         <div className="space-y-4">
           <div>
-            <h2 className="text-base font-bold text-[#1A365D]">Phê Duyệt Đề Xuất Phân Bổ Phòng (Batch Run)</h2>
-            <p className="text-xs text-slate-500 mt-0.5">
+            <h2 className="text-base font-bold text-ink">Phê Duyệt Đề Xuất Phân Bổ Phòng (Batch Run)</h2>
+            <p className="text-xs text-ink-muted mt-0.5">
               Ký duyệt kết quả phân bổ phòng tự động sau khi Staff đã rà soát và xử lý các ngoại lệ
             </p>
           </div>
@@ -294,17 +294,17 @@ export function ManagerPortal() {
             {batches.map((b) => (
               <div
                 key={b.batchCode}
-                className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-xs space-y-4"
+                className="bg-white rounded-2xl border border-line/80 p-5 shadow-xs space-y-4"
               >
                 <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
                   <div>
                     <div className="flex items-center gap-2">
-                      <span className="font-mono text-xs font-bold text-[#F26522] bg-orange-50 px-2 py-0.5 rounded">
+                      <span className="font-mono text-xs font-bold text-brand-ink bg-orange-50 px-2 py-0.5 rounded">
                         {b.batchCode}
                       </span>
-                      <h3 className="text-base font-bold text-slate-900">{b.title}</h3>
+                      <h3 className="text-base font-bold text-ink">{b.title}</h3>
                     </div>
-                    <p className="text-xs text-slate-500 mt-1">
+                    <p className="text-xs text-ink-muted mt-1">
                       Học kỳ: <strong>{b.semester}</strong> • Rà soát kỹ thuật bởi: <strong>{b.reviewedByStaff}</strong>
                     </p>
                   </div>
@@ -329,9 +329,9 @@ export function ManagerPortal() {
 
                 {/* Key Metrics Grid */}
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
-                  <div className="p-3 rounded-xl bg-slate-50 border border-slate-200/70">
-                    <div className="text-slate-400 font-medium">Tổng chỗ phân bổ</div>
-                    <div className="text-lg font-bold text-slate-900 mt-0.5">{b.totalAllocations} sinh viên</div>
+                  <div className="p-3 rounded-xl bg-surface-muted border border-line/70">
+                    <div className="text-ink-subtle font-medium">Tổng chỗ phân bổ</div>
+                    <div className="text-lg font-bold text-ink mt-0.5">{b.totalAllocations} sinh viên</div>
                   </div>
                   <div className="p-3 rounded-xl bg-emerald-50/60 border border-emerald-200/70">
                     <div className="text-emerald-700 font-medium">Tỷ lệ đúng nguyện vọng</div>
@@ -348,29 +348,29 @@ export function ManagerPortal() {
                 </div>
 
                 {/* Highlight Points */}
-                <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-700 space-y-1">
+                <div className="p-3.5 rounded-xl bg-surface-muted border border-line text-xs text-ink space-y-1">
                   {b.highlights.map((h, idx) => (
                     <div key={idx} className="flex items-center gap-2">
-                      <span className="w-1.5 h-1.5 rounded-full bg-[#F26522] shrink-0" />
+                      <span className="w-1.5 h-1.5 rounded-full bg-brand-ink shrink-0" />
                       <span>{h}</span>
                     </div>
                   ))}
                 </div>
 
-                <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-100">
+                <div className="flex items-center justify-end gap-2 pt-3 border-t border-line">
                   {b.decision === 'PENDING' ? (
                     <>
                       <button
                         type="button"
                         onClick={() => handleAppBatch(b.batchCode, 'REJECTED')}
-                        className="border border-slate-200 bg-white hover:bg-slate-50 hover:border-slate-300 text-slate-700 px-4 py-2 rounded-lg font-medium text-xs sm:text-sm transition-colors inline-flex items-center justify-center gap-1.5"
+                        className="border border-line bg-white hover:bg-surface-muted hover:border-line-strong text-ink px-4 py-2 rounded-lg font-medium text-xs sm:text-sm transition-colors inline-flex items-center justify-center gap-1.5"
                       >
                         Yêu cầu Staff rà soát lại
                       </button>
                       <button
                         type="button"
                         onClick={() => handleAppBatch(b.batchCode, 'APPROVED')}
-                        className="bg-[#F26522] hover:bg-[#d95314] text-white px-4 py-2 rounded-lg font-medium text-xs sm:text-sm transition-colors inline-flex items-center justify-center gap-1.5 shadow-sm"
+                        className="bg-brand-ink hover:bg-brand-ink-hover text-white px-4 py-2 rounded-lg font-medium text-xs sm:text-sm transition-colors inline-flex items-center justify-center gap-1.5 shadow-sm"
                       >
                         <CheckCircle2 className="w-4 h-4" />
                         Phê duyệt & Phát hành hợp đồng điện tử
@@ -392,8 +392,8 @@ export function ManagerPortal() {
       {activeTab === 'roomChanges' && (
         <div className="space-y-4">
           <div>
-            <h2 className="text-base font-bold text-[#1A365D]">Phê Duyệt Đổi & Hoán Đổi Phòng KTX</h2>
-            <p className="text-xs text-slate-500 mt-0.5">
+            <h2 className="text-base font-bold text-ink">Phê Duyệt Đổi & Hoán Đổi Phòng KTX</h2>
+            <p className="text-xs text-ink-muted mt-0.5">
               Xác thực tính hợp lệ giữa các bên sinh viên thỏa thuận và phê duyệt cập nhật hệ thống
             </p>
           </div>
@@ -402,10 +402,10 @@ export function ManagerPortal() {
             {roomChanges.map((change) => (
               <div
                 key={change.id}
-                className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-xs space-y-4"
+                className="bg-white rounded-2xl border border-line/80 p-5 shadow-xs space-y-4"
               >
                 <div className="flex items-center justify-between">
-                  <span className="font-mono text-xs font-bold text-[#1A365D] bg-slate-100 px-2 py-0.5 rounded">
+                  <span className="font-mono text-xs font-bold text-ink bg-surface-sunken px-2 py-0.5 rounded">
                     {change.id} • {change.kind}
                   </span>
                   <span
@@ -424,9 +424,9 @@ export function ManagerPortal() {
 
                 {/* Transfer Diagram */}
                 <div className="flex items-center gap-2 text-xs">
-                  <div className="flex-1 p-3 rounded-xl bg-slate-50 border border-slate-200/80">
-                    <div className="font-bold text-slate-900">{change.studentA.name}</div>
-                    <div className="text-slate-500">{change.studentA.studentId}</div>
+                  <div className="flex-1 p-3 rounded-xl bg-surface-muted border border-line/80">
+                    <div className="font-bold text-ink">{change.studentA.name}</div>
+                    <div className="text-ink-muted">{change.studentA.studentId}</div>
                     <div className="text-blue-700 font-semibold mt-1">Phòng hiện tại: {change.studentA.room}</div>
                   </div>
 
@@ -434,23 +434,23 @@ export function ManagerPortal() {
                     <ArrowLeftRight className="w-4 h-4" />
                   </div>
 
-                  <div className="flex-1 p-3 rounded-xl bg-slate-50 border border-slate-200/80">
+                  <div className="flex-1 p-3 rounded-xl bg-surface-muted border border-line/80">
                     {change.studentB ? (
                       <>
-                        <div className="font-bold text-slate-900">{change.studentB.name}</div>
-                        <div className="text-slate-500">{change.studentB.studentId}</div>
+                        <div className="font-bold text-ink">{change.studentB.name}</div>
+                        <div className="text-ink-muted">{change.studentB.studentId}</div>
                         <div className="text-blue-700 font-semibold mt-1">Phòng hiện tại: {change.studentB.room}</div>
                       </>
                     ) : (
                       <>
-                        <div className="font-bold text-slate-900">Phòng chuyển đến</div>
+                        <div className="font-bold text-ink">Phòng chuyển đến</div>
                         <div className="text-blue-700 font-semibold mt-1">{change.targetRoom}</div>
                       </>
                     )}
                   </div>
                 </div>
 
-                <div className="text-xs text-slate-600">
+                <div className="text-xs text-ink-muted">
                   <strong>Lý do sinh viên:</strong> {change.reason}
                 </div>
 
@@ -459,27 +459,27 @@ export function ManagerPortal() {
                   <span>{change.staffVerificationNote}</span>
                 </div>
 
-                <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-100">
+                <div className="flex items-center justify-end gap-2 pt-3 border-t border-line">
                   {change.decision === 'PENDING' ? (
                     <>
                       <button
                         type="button"
                         onClick={() => handleAppRoomChange(change.id, 'REJECTED')}
-                        className="border border-slate-200 bg-white hover:bg-slate-50 hover:border-slate-300 text-slate-700 px-4 py-2 rounded-lg font-medium text-xs sm:text-sm transition-colors inline-flex items-center justify-center gap-1.5"
+                        className="border border-line bg-white hover:bg-surface-muted hover:border-line-strong text-ink px-4 py-2 rounded-lg font-medium text-xs sm:text-sm transition-colors inline-flex items-center justify-center gap-1.5"
                       >
                         Từ chối
                       </button>
                       <button
                         type="button"
                         onClick={() => handleAppRoomChange(change.id, 'APPROVED')}
-                        className="bg-[#F26522] hover:bg-[#d95314] text-white px-4 py-2 rounded-lg font-medium text-xs sm:text-sm transition-colors inline-flex items-center justify-center gap-1.5 shadow-sm"
+                        className="bg-brand-ink hover:bg-brand-ink-hover text-white px-4 py-2 rounded-lg font-medium text-xs sm:text-sm transition-colors inline-flex items-center justify-center gap-1.5 shadow-sm"
                       >
                         <CheckCircle2 className="w-4 h-4" />
                         Phê duyệt đổi phòng
                       </button>
                     </>
                   ) : (
-                    <span className="text-xs font-semibold text-slate-500">Đã cập nhật hệ thống</span>
+                    <span className="text-xs font-semibold text-ink-muted">Đã cập nhật hệ thống</span>
                   )}
                 </div>
               </div>
@@ -492,8 +492,8 @@ export function ManagerPortal() {
       {activeTab === 'schedules' && (
         <div className="space-y-4">
           <div>
-            <h2 className="text-base font-bold text-[#1A365D]">Phê Duyệt Lịch Bảo Trì Kỹ Thuật Định Kỳ</h2>
-            <p className="text-xs text-slate-500 mt-0.5">
+            <h2 className="text-base font-bold text-ink">Phê Duyệt Lịch Bảo Trì Kỹ Thuật Định Kỳ</h2>
+            <p className="text-xs text-ink-muted mt-0.5">
               Phê duyệt kế hoạch can thiệp kỹ thuật quy mô tòa nhà nhằm giảm thiểu ảnh hưởng sinh hoạt của sinh viên
             </p>
           </div>
@@ -502,18 +502,18 @@ export function ManagerPortal() {
             {schedules.map((item) => (
               <div
                 key={item.id}
-                className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-xs space-y-3"
+                className="bg-white rounded-2xl border border-line/80 p-5 shadow-xs space-y-3"
               >
                 <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
                   <div>
                     <div className="flex items-center gap-2">
-                      <span className="font-mono text-xs font-bold text-[#1A365D] bg-slate-100 px-2 py-0.5 rounded">
+                      <span className="font-mono text-xs font-bold text-ink bg-surface-sunken px-2 py-0.5 rounded">
                         {item.id}
                       </span>
-                      <h3 className="text-sm font-bold text-slate-900">{item.title}</h3>
+                      <h3 className="text-sm font-bold text-ink">{item.title}</h3>
                     </div>
-                    <div className="text-xs text-slate-500 mt-1">
-                      Phạm vi: <strong className="text-slate-800">{item.scope}</strong> • Chu kỳ: {item.recurrence}
+                    <div className="text-xs text-ink-muted mt-1">
+                      Phạm vi: <strong className="text-ink">{item.scope}</strong> • Chu kỳ: {item.recurrence}
                     </div>
                     <div className="text-xs text-blue-700 font-medium mt-0.5">
                       Thời gian thi công: {item.executionWindow}
@@ -538,8 +538,8 @@ export function ManagerPortal() {
                   <strong>Thông báo ảnh hưởng:</strong> {item.studentImpactNotice}
                 </div>
 
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-3 border-t border-slate-100 text-xs">
-                  <span className="text-slate-500">Đề xuất bởi: <strong className="text-slate-700">{item.proposer}</strong></span>
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-3 border-t border-line text-xs">
+                  <span className="text-ink-muted">Đề xuất bởi: <strong className="text-ink">{item.proposer}</strong></span>
 
                   <div className="flex items-center gap-2">
                     {item.decision === 'PENDING' ? (
@@ -547,14 +547,14 @@ export function ManagerPortal() {
                         <button
                           type="button"
                           onClick={() => handleAppSchedule(item.id, 'REJECTED')}
-                          className="border border-slate-200 bg-white hover:bg-slate-50 hover:border-slate-300 text-slate-700 px-4 py-2 rounded-lg font-medium text-xs sm:text-sm transition-colors inline-flex items-center justify-center gap-1.5"
+                          className="border border-line bg-white hover:bg-surface-muted hover:border-line-strong text-ink px-4 py-2 rounded-lg font-medium text-xs sm:text-sm transition-colors inline-flex items-center justify-center gap-1.5"
                         >
                           Hoàn trả điều chỉnh
                         </button>
                         <button
                           type="button"
                           onClick={() => handleAppSchedule(item.id, 'APPROVED')}
-                          className="bg-[#F26522] hover:bg-[#d95314] text-white px-4 py-2 rounded-lg font-medium text-xs sm:text-sm transition-colors inline-flex items-center justify-center gap-1.5 shadow-sm"
+                          className="bg-brand-ink hover:bg-brand-ink-hover text-white px-4 py-2 rounded-lg font-medium text-xs sm:text-sm transition-colors inline-flex items-center justify-center gap-1.5 shadow-sm"
                         >
                           <CheckCircle2 className="w-4 h-4" />
                           Phê duyệt lịch & Phát thông báo
@@ -578,7 +578,7 @@ export function ManagerPortal() {
 
       {/* ── Toast Notification ── */}
       {toastMessage && (
-        <div className="fixed bottom-6 right-6 z-50 bg-[#1A365D] text-white px-5 py-3 rounded-xl shadow-lg text-xs sm:text-sm flex items-center gap-2.5 border border-white/10 animate-fade-in">
+        <div className="fixed bottom-6 right-6 z-50 bg-ink text-white px-5 py-3 rounded-xl shadow-lg text-xs sm:text-sm flex items-center gap-2.5 border border-white/10 animate-fade-in">
           <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
           <span>{toastMessage}</span>
         </div>

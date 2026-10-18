@@ -153,7 +153,7 @@ export function StaffInventoryPage() {
       </div>
 
       <SectionCard noPadding>
-        <div className="p-4 border-b border-slate-100 space-y-3">
+        <div className="p-4 border-b border-line space-y-3">
           <Tabs
             items={[
               { value: 'ALL' as const, label: 'Tất cả', count: rooms.length },
@@ -170,7 +170,7 @@ export function StaffInventoryPage() {
           />
           <div className="flex flex-col md:flex-row gap-2">
             <div className="relative flex-1">
-              <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+              <Search className="w-4 h-4 text-ink-subtle absolute left-3 top-1/2 -translate-y-1/2" />
               <input
                 value={query}
                 onChange={(e) => {
@@ -178,16 +178,16 @@ export function StaffInventoryPage() {
                   setPage(1);
                 }}
                 placeholder="Tìm theo số phòng hoặc tên sinh viên..."
-                className="w-full pl-9 pr-3 py-2 text-xs rounded-lg border border-slate-200"
+                className="w-full pl-9 pr-3 py-2 text-xs rounded-lg border border-line"
               />
             </div>
-            <select value={building} onChange={(e) => { setBuilding(e.target.value); setPage(1); }} className="px-3 py-2 text-xs rounded-lg border border-slate-200 bg-white">
+            <select value={building} onChange={(e) => { setBuilding(e.target.value); setPage(1); }} className="px-3 py-2 text-xs rounded-lg border border-line bg-white">
               <option value="ALL">Tất cả tòa</option>
               {['A', 'B', 'C', 'D'].map((b) => (
                 <option key={b} value={b}>Tòa {b}</option>
               ))}
             </select>
-            <select value={floor} onChange={(e) => { setFloor(e.target.value); setPage(1); }} className="px-3 py-2 text-xs rounded-lg border border-slate-200 bg-white">
+            <select value={floor} onChange={(e) => { setFloor(e.target.value); setPage(1); }} className="px-3 py-2 text-xs rounded-lg border border-line bg-white">
               <option value="ALL">Mọi tầng</option>
               {[1, 2, 3, 4, 5].map((f) => (
                 <option key={f} value={f}>Tầng {f}</option>
@@ -195,8 +195,8 @@ export function StaffInventoryPage() {
             </select>
           </div>
           {selected.length > 0 && (
-            <div className="flex flex-wrap items-center gap-2 p-2.5 rounded-lg bg-[#EBF2FB] text-xs">
-              <span className="font-semibold text-[#1A365D]">Đã chọn {selected.length} phòng</span>
+            <div className="flex flex-wrap items-center gap-2 p-2.5 rounded-lg bg-surface-sunken text-xs">
+              <span className="font-semibold text-ink">Đã chọn {selected.length} phòng</span>
               <span className="flex-1" />
               <AppButton size="sm" variant="outline" onClick={() => bulkSet('AVAILABLE')}>Mở lại</AppButton>
               <AppButton size="sm" variant="outline" leftIcon={<Wrench className="w-3.5 h-3.5" />} onClick={() => bulkSet('MAINTENANCE')}>Chuyển bảo trì</AppButton>
@@ -207,7 +207,7 @@ export function StaffInventoryPage() {
 
         <div className="overflow-x-auto">
           <table className="w-full text-xs">
-            <thead className="bg-slate-50 text-slate-500">
+            <thead className="bg-surface-muted text-ink-muted">
               <tr>
                 <th className="px-4 py-3 w-8">
                   <input
@@ -216,7 +216,7 @@ export function StaffInventoryPage() {
                     onChange={() =>
                       setSelected((all) => (allVisibleSelected ? all.filter((id) => !visible.some((r) => r.id === id)) : [...new Set([...all, ...visible.map((r) => r.id)])]))
                     }
-                    className="accent-[#F26F21]"
+                    className="accent-brand-ink"
                   />
                 </th>
                 <th className="text-left font-semibold px-4 py-3">Phòng</th>
@@ -228,18 +228,18 @@ export function StaffInventoryPage() {
                 <th className="px-4 py-3" />
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">
+            <tbody className="divide-y divide-line">
               {visible.map((r) => (
-                <tr key={r.id} className={clsx('hover:bg-slate-50', selected.includes(r.id) && 'bg-orange-50/40')}>
+                <tr key={r.id} className={clsx('hover:bg-surface-muted', selected.includes(r.id) && 'bg-orange-50/40')}>
                   <td className="px-4 py-3">
-                    <input type="checkbox" checked={selected.includes(r.id)} onChange={() => toggleSelect(r.id)} className="accent-[#F26F21]" />
+                    <input type="checkbox" checked={selected.includes(r.id)} onChange={() => toggleSelect(r.id)} className="accent-brand-ink" />
                   </td>
                   <td className="px-4 py-3">
-                    <div className="font-bold text-slate-800">{r.number}</div>
-                    <div className="text-[11px] text-slate-400">Tòa {r.building} • Tầng {r.floor}</div>
+                    <div className="font-bold text-ink">{r.number}</div>
+                    <div className="text-label text-ink-subtle">Tòa {r.building} • Tầng {r.floor}</div>
                   </td>
                   <td className="px-4 py-3">
-                    <span className="flex items-center gap-1.5 text-slate-600">
+                    <span className="flex items-center gap-1.5 text-ink-muted">
                       {r.hasAc ? <Wind className="w-3.5 h-3.5 text-blue-500" /> : <Sun className="w-3.5 h-3.5 text-amber-500" />}
                       {r.type}
                     </span>
@@ -247,7 +247,7 @@ export function StaffInventoryPage() {
                   <td className="px-4 py-3 w-36">
                     <div className="flex items-center gap-2">
                       <ProgressBar value={r.occupants.length} max={r.capacity} tone={r.occupants.length === r.capacity ? 'navy' : 'emerald'} />
-                      <span className="font-semibold text-slate-700 whitespace-nowrap">{r.occupants.length}/{r.capacity}</span>
+                      <span className="font-semibold text-ink whitespace-nowrap">{r.occupants.length}/{r.capacity}</span>
                     </div>
                   </td>
                   <td className="px-4 py-3">
@@ -255,10 +255,10 @@ export function StaffInventoryPage() {
                       {r.occupants.slice(0, 4).map((o) => (
                         <Avatar key={o} name={o} size="xs" className="ring-2 ring-white" />
                       ))}
-                      {r.occupants.length === 0 && <span className="text-slate-400">—</span>}
+                      {r.occupants.length === 0 && <span className="text-ink-subtle">—</span>}
                     </div>
                   </td>
-                  <td className="px-4 py-3 text-slate-500">
+                  <td className="px-4 py-3 text-ink-muted">
                     <div className="flex items-center gap-1.5">
                       {r.lastInspection}
                       {r.assetIssues > 0 && (
@@ -272,7 +272,7 @@ export function StaffInventoryPage() {
                     <StatusBadge status={r.status} />
                   </td>
                   <td className="px-4 py-3 text-right">
-                    <button type="button" onClick={() => setDetail(r)} className="text-[#F26F21] font-semibold hover:underline">
+                    <button type="button" onClick={() => setDetail(r)} className="text-brand-ink font-semibold hover:underline">
                       Chi tiết
                     </button>
                   </td>
@@ -282,12 +282,12 @@ export function StaffInventoryPage() {
           </table>
         </div>
 
-        <div className="px-4 py-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
+        <div className="px-4 py-3 border-t border-line flex items-center justify-between text-xs text-ink-muted">
           <span>
             Hiển thị {(page - 1) * PAGE_SIZE + 1}–{Math.min(page * PAGE_SIZE, filtered.length)} / {filtered.length} phòng
           </span>
           <div className="flex items-center gap-1">
-            <button type="button" disabled={page === 1} onClick={() => setPage(page - 1)} className="px-2.5 py-1 rounded-md border border-slate-200 disabled:opacity-40">
+            <button type="button" disabled={page === 1} onClick={() => setPage(page - 1)} className="px-2.5 py-1 rounded-md border border-line disabled:opacity-40">
               ‹
             </button>
             {Array.from({ length: pages }).slice(0, 7).map((_, i) => (
@@ -295,12 +295,12 @@ export function StaffInventoryPage() {
                 key={i}
                 type="button"
                 onClick={() => setPage(i + 1)}
-                className={clsx('px-2.5 py-1 rounded-md border', page === i + 1 ? 'bg-[#F26F21] text-white border-[#F26F21]' : 'border-slate-200')}
+                className={clsx('px-2.5 py-1 rounded-md border', page === i + 1 ? 'bg-brand-ink text-white border-brand' : 'border-line')}
               >
                 {i + 1}
               </button>
             ))}
-            <button type="button" disabled={page === pages} onClick={() => setPage(page + 1)} className="px-2.5 py-1 rounded-md border border-slate-200 disabled:opacity-40">
+            <button type="button" disabled={page === pages} onClick={() => setPage(page + 1)} className="px-2.5 py-1 rounded-md border border-line disabled:opacity-40">
               ›
             </button>
           </div>
@@ -325,23 +325,23 @@ export function StaffInventoryPage() {
         {detail && (
           <div className="space-y-5">
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
-              <div className="p-3 rounded-lg bg-slate-50"><div className="text-slate-400">Trạng thái</div><div className="mt-1"><StatusBadge status={detail.status} /></div></div>
-              <div className="p-3 rounded-lg bg-slate-50"><div className="text-slate-400">Sức chứa</div><div className="font-bold mt-1">{detail.capacity} giường</div></div>
-              <div className="p-3 rounded-lg bg-slate-50"><div className="text-slate-400">Đang ở</div><div className="font-bold mt-1">{detail.occupants.length} SV</div></div>
-              <div className="p-3 rounded-lg bg-slate-50"><div className="text-slate-400">Kiểm tra</div><div className="font-bold mt-1">{detail.lastInspection}</div></div>
+              <div className="p-3 rounded-lg bg-surface-muted"><div className="text-ink-subtle">Trạng thái</div><div className="mt-1"><StatusBadge status={detail.status} /></div></div>
+              <div className="p-3 rounded-lg bg-surface-muted"><div className="text-ink-subtle">Sức chứa</div><div className="font-bold mt-1">{detail.capacity} giường</div></div>
+              <div className="p-3 rounded-lg bg-surface-muted"><div className="text-ink-subtle">Đang ở</div><div className="font-bold mt-1">{detail.occupants.length} SV</div></div>
+              <div className="p-3 rounded-lg bg-surface-muted"><div className="text-ink-subtle">Kiểm tra</div><div className="font-bold mt-1">{detail.lastInspection}</div></div>
             </div>
             <div>
-              <div className="text-xs font-bold text-slate-700 mb-2 flex items-center gap-1.5"><Users className="w-4 h-4" /> Danh sách giường</div>
+              <div className="text-xs font-bold text-ink mb-2 flex items-center gap-1.5"><Users className="w-4 h-4" /> Danh sách giường</div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 {Array.from({ length: detail.capacity }).map((_, i) => {
                   const o = detail.occupants[i];
                   return (
-                    <div key={i} className={clsx('p-3 rounded-lg border flex items-center gap-3 text-xs', o ? 'border-slate-200' : 'border-dashed border-emerald-300 bg-emerald-50/40')}>
-                      <span className="font-bold text-[#1A365D] w-6">G{i + 1}</span>
+                    <div key={i} className={clsx('p-3 rounded-lg border flex items-center gap-3 text-xs', o ? 'border-line' : 'border-dashed border-emerald-300 bg-emerald-50/40')}>
+                      <span className="font-bold text-ink w-6">G{i + 1}</span>
                       {o ? (
                         <>
                           <Avatar name={o} size="xs" />
-                          <span className="font-semibold text-slate-800">{o}</span>
+                          <span className="font-semibold text-ink">{o}</span>
                         </>
                       ) : (
                         <span className="text-emerald-700 font-semibold">Giường trống</span>
@@ -352,13 +352,13 @@ export function StaffInventoryPage() {
               </div>
             </div>
             <div>
-              <div className="text-xs font-bold text-slate-700 mb-2 flex items-center gap-1.5"><Package className="w-4 h-4" /> Tài sản trong phòng</div>
+              <div className="text-xs font-bold text-ink mb-2 flex items-center gap-1.5"><Package className="w-4 h-4" /> Tài sản trong phòng</div>
               <table className="w-full text-xs">
-                <tbody className="divide-y divide-slate-100">
+                <tbody className="divide-y divide-line">
                   {ASSETS.map((a) => (
                     <tr key={a.name}>
-                      <td className="py-2 text-slate-700">{a.name}</td>
-                      <td className="py-2 text-right text-slate-500">{a.ok}/{a.qty}</td>
+                      <td className="py-2 text-ink">{a.name}</td>
+                      <td className="py-2 text-right text-ink-muted">{a.ok}/{a.qty}</td>
                       <td className="py-2 text-right w-28">
                         {a.ok === a.qty ? (
                           <span className="text-emerald-600 font-semibold">Tốt</span>

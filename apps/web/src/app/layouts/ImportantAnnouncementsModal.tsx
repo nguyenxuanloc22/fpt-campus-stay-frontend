@@ -4,6 +4,9 @@ import { BellRing, ChevronLeft, ChevronRight, ExternalLink, Pin, X } from 'lucid
 import { useAuthStore } from '@features/auth';
 import { ANNOUNCEMENTS, ANNOUNCEMENT_CATEGORY_LABEL } from '@features/notifications/systemAnnouncements';
 import { APP_ROUTES } from '@campusstay/constants';
+import { AppButton } from '@shared-ui';
+
+const NAV_BTN = 'w-touch h-touch sm:w-10 sm:h-10 inline-flex items-center justify-center rounded-control border border-line-control bg-surface text-ink hover:bg-surface-muted disabled:opacity-40';
 
 const DISMISS_KEY = 'campusstay_important_dismissed';
 
@@ -57,62 +60,66 @@ export function ImportantAnnouncementsModal() {
   };
 
   return (
-    <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-[2px]" role="dialog" aria-modal="true" aria-labelledby="important-title">
-      <div className="w-full max-w-2xl bg-white rounded-2xl shadow-2xl overflow-hidden">
-        <div className="flex items-center gap-3 px-6 py-4 bg-gradient-to-r from-[#F26F21] to-[#FF9A4D] text-white">
-          <span className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center">
-            <BellRing className="w-5 h-5" />
-          </span>
+    <div className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center sm:p-4 bg-ink/50" role="dialog" aria-modal="true" aria-labelledby="important-title">
+      <div className="w-full sm:max-w-2xl bg-surface rounded-t-card sm:rounded-card shadow-overlay overflow-hidden flex flex-col max-h-[90dvh]">
+        <div className="flex items-start gap-3 px-4 sm:px-6 py-4 border-b border-line">
+          <BellRing className="w-5 h-5 mt-1 text-brand shrink-0" aria-hidden="true" />
           <div className="flex-1 min-w-0">
-            <h2 id="important-title" className="text-lg font-extrabold leading-tight">Thông báo quan trọng</h2>
-            <p className="text-xs text-white/85 flex items-center gap-1">
-              <Pin className="w-3 h-3" /> {pinned.length} thông báo đã ghim
+            <h2 id="important-title" className="text-section font-semibold text-ink">Thông báo quan trọng</h2>
+            <p className="text-label text-ink-muted flex items-center gap-1">
+              <Pin className="w-3 h-3" aria-hidden="true" /> {pinned.length} thông báo đã ghim
             </p>
           </div>
-          <button type="button" onClick={close} className="p-2 rounded-lg hover:bg-white/15" aria-label="Đóng">
-            <X className="w-5 h-5" />
+          <button
+            type="button"
+            onClick={close}
+            className="-mr-2 w-touch h-touch shrink-0 inline-flex items-center justify-center rounded-control text-ink-muted hover:bg-surface-sunken hover:text-ink"
+            aria-label="Đóng thông báo"
+          >
+            <X className="w-5 h-5" aria-hidden="true" />
           </button>
         </div>
 
-        <div className="px-6 py-5 max-h-[60vh] overflow-y-auto">
-          <div className="flex flex-wrap items-center gap-2 mb-3 text-xs">
-            <span className="px-2 py-0.5 rounded-full bg-orange-100 text-[#C2410C] font-bold">{ANNOUNCEMENT_CATEGORY_LABEL[current.category]}</span>
-            <span className="text-slate-500">{current.source} · {current.date}</span>
+        <div className="px-4 sm:px-6 py-4 overflow-y-auto">
+          <div className="flex flex-wrap items-center gap-2 mb-3 text-label">
+            <span className="px-2 py-0.5 rounded-full bg-danger-soft text-danger font-semibold">Quan trọng</span>
+            <span className="px-2 py-0.5 rounded-full bg-surface-sunken text-ink-muted font-semibold">{ANNOUNCEMENT_CATEGORY_LABEL[current.category]}</span>
+            <span className="text-ink-muted">{current.source} · {current.date}</span>
           </div>
-          <h3 className="text-base font-extrabold text-slate-900 mb-3">{current.title}</h3>
-          <div className="rounded-xl border border-orange-100 bg-orange-50/40 p-4 text-sm text-slate-700 leading-relaxed whitespace-pre-line">{current.body}</div>
+          <h3 className="text-section font-semibold text-ink mb-3">{current.title}</h3>
+          <div className="rounded-control bg-surface-muted border border-line p-4 text-body text-ink leading-relaxed whitespace-pre-line">{current.body}</div>
           <button
             type="button"
             onClick={() => {
               setOpen(false);
               navigate(APP_ROUTES.COMMON.NOTIFICATIONS);
             }}
-            className="mt-3 inline-flex items-center gap-1 text-sm font-semibold text-[#F26F21] hover:underline"
+            className="mt-3 min-h-touch inline-flex items-center gap-1 text-body font-semibold text-brand-ink hover:underline"
           >
-            Chi tiết <ExternalLink className="w-3.5 h-3.5" />
+            Xem chi tiết <ExternalLink className="w-4 h-4" aria-hidden="true" />
           </button>
         </div>
 
-        <div className="flex flex-wrap items-center gap-3 px-6 py-4 border-t border-slate-100 bg-slate-50">
-          <label className="flex items-center gap-2 text-sm text-slate-600 cursor-pointer select-none">
-            <input type="checkbox" checked={dontShow} onChange={(e) => setDontShow(e.target.checked)} className="w-4 h-4 accent-[#F26F21]" />
-            Không hiển thị lại trong phiên đăng nhập này
+        <div className="flex flex-wrap items-center gap-3 px-4 sm:px-6 py-4 pb-[max(1rem,env(safe-area-inset-bottom))] border-t border-line">
+          <label className="flex items-center gap-2 min-h-touch text-body text-ink-muted cursor-pointer select-none">
+            <input type="checkbox" checked={dontShow} onChange={(e) => setDontShow(e.target.checked)} className="w-5 h-5 accent-brand-ink" />
+            Không hiện lại trong phiên đăng nhập này
           </label>
-          <div className="ml-auto flex items-center gap-2">
+          <div className="w-full sm:w-auto sm:ml-auto flex items-center gap-2">
             {pinned.length > 1 && (
               <>
-                <button type="button" disabled={index === 0} onClick={() => setIndex((i) => i - 1)} className="p-2 rounded-lg border border-slate-200 bg-white disabled:opacity-40" aria-label="Thông báo trước">
-                  <ChevronLeft className="w-4 h-4" />
+                <button type="button" disabled={index === 0} onClick={() => setIndex((i) => i - 1)} className={NAV_BTN} aria-label="Thông báo trước">
+                  <ChevronLeft className="w-4 h-4" aria-hidden="true" />
                 </button>
-                <span className="text-xs text-slate-500 tabular-nums">{index + 1}/{pinned.length}</span>
-                <button type="button" disabled={index === pinned.length - 1} onClick={() => setIndex((i) => i + 1)} className="p-2 rounded-lg border border-slate-200 bg-white disabled:opacity-40" aria-label="Thông báo sau">
-                  <ChevronRight className="w-4 h-4" />
+                <span className="text-label text-ink-muted tabular-nums">{index + 1}/{pinned.length}</span>
+                <button type="button" disabled={index === pinned.length - 1} onClick={() => setIndex((i) => i + 1)} className={NAV_BTN} aria-label="Thông báo sau">
+                  <ChevronRight className="w-4 h-4" aria-hidden="true" />
                 </button>
               </>
             )}
-            <button type="button" onClick={close} className="px-5 py-2 rounded-xl bg-[#F26F21] hover:bg-[#D95F17] text-white text-sm font-bold shadow-sm">
-              Đóng
-            </button>
+            <AppButton className="flex-1 sm:flex-none" onClick={close}>
+              Đã hiểu
+            </AppButton>
           </div>
         </div>
       </div>

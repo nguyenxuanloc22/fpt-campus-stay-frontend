@@ -90,7 +90,7 @@ export function StaffApplicationsPage() {
       <div className="grid grid-cols-1 xl:grid-cols-5 gap-6">
         <div className="xl:col-span-3">
           <SectionCard noPadding>
-            <div className="p-4 border-b border-slate-100 space-y-3">
+            <div className="p-4 border-b border-line space-y-3">
               <Tabs<TabKey>
                 items={[
                   { value: 'flagged', label: 'Cần rà soát', count: count('FLAGGED') },
@@ -102,10 +102,10 @@ export function StaffApplicationsPage() {
               />
               <div className="flex flex-col sm:flex-row gap-2">
                 <div className="relative flex-1">
-                  <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
-                  <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Mã đơn, tên, MSSV…" className="w-full pl-9 pr-3 py-2 text-xs rounded-lg border border-slate-200" />
+                  <Search className="w-4 h-4 text-ink-subtle absolute left-3 top-1/2 -translate-y-1/2" />
+                  <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Mã đơn, tên, MSSV…" className="w-full pl-9 pr-3 py-2 text-xs rounded-lg border border-line" />
                 </div>
-                <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value as 'ALL' | ApplicationStatus)} className="px-3 py-2 text-xs rounded-lg border border-slate-200 bg-white">
+                <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value as 'ALL' | ApplicationStatus)} className="px-3 py-2 text-xs rounded-lg border border-line bg-white">
                   <option value="ALL">Mọi trạng thái</option>
                   <option value="PENDING_PAYMENT">Chờ đóng cọc</option>
                   <option value="PROCESSING">Đang xử lý</option>
@@ -115,21 +115,21 @@ export function StaffApplicationsPage() {
                 </select>
               </div>
             </div>
-            <ul className="divide-y divide-slate-100 max-h-[600px] overflow-y-auto">
+            <ul className="divide-y divide-line max-h-[600px] overflow-y-auto">
               {filtered.map((a) => (
                 <li key={a.code}>
-                  <button type="button" onClick={() => setActiveCode(a.code)} className={clsx('w-full px-4 py-3 flex items-center gap-3 text-left', active.code === a.code ? 'bg-orange-50/60' : 'hover:bg-slate-50')}>
+                  <button type="button" onClick={() => setActiveCode(a.code)} className={clsx('w-full px-4 py-3 flex items-center gap-3 text-left', active.code === a.code ? 'bg-orange-50/60' : 'hover:bg-surface-muted')}>
                     <Avatar name={a.name} />
                     <div className="flex-1 min-w-0">
-                      <div className="text-xs font-bold text-slate-800 truncate">{a.name} <span className="font-normal text-slate-400">{a.studentId}</span></div>
-                      <div className="text-[11px] text-slate-500 truncate">{a.code} · {a.roomType}</div>
-                      {a.flag && <div className="text-[11px] text-rose-600 truncate flex items-center gap-1"><Flag className="w-3 h-3" />{a.flag}</div>}
+                      <div className="text-xs font-bold text-ink truncate">{a.name} <span className="font-normal text-ink-subtle">{a.studentId}</span></div>
+                      <div className="text-label text-ink-muted truncate">{a.code} · {a.roomType}</div>
+                      {a.flag && <div className="text-label text-rose-600 truncate flex items-center gap-1"><Flag className="w-3 h-3" />{a.flag}</div>}
                     </div>
                     <StatusBadge status={a.status} />
                   </button>
                 </li>
               ))}
-              {filtered.length === 0 && <li className="py-10 text-center text-xs text-slate-400">Không có đơn nào cần xử lý 🎉</li>}
+              {filtered.length === 0 && <li className="py-10 text-center text-xs text-ink-subtle">Không có đơn nào cần xử lý 🎉</li>}
             </ul>
           </SectionCard>
         </div>
@@ -140,21 +140,21 @@ export function StaffApplicationsPage() {
               <div className="flex items-center gap-3">
                 <Avatar name={active.name} size="lg" />
                 <div>
-                  <div className="text-sm font-bold text-slate-800">{active.name}</div>
-                  <div className="text-slate-500">{active.studentId} · {active.gender} · {active.major}</div>
+                  <div className="text-sm font-bold text-ink">{active.name}</div>
+                  <div className="text-ink-muted">{active.studentId} · {active.gender} · {active.major}</div>
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-2">
-                <div className="p-2.5 rounded-lg bg-slate-50"><div className="text-slate-400">Loại phòng</div><div className="font-semibold">{active.roomType}</div></div>
-                <div className="p-2.5 rounded-lg bg-slate-50"><div className="text-slate-400 flex items-center gap-1"><Users className="w-3 h-3" />Bạn cùng phòng</div><div className="font-semibold">{active.roommate}</div></div>
+                <div className="p-2.5 rounded-lg bg-surface-muted"><div className="text-ink-subtle">Loại phòng</div><div className="font-semibold">{active.roomType}</div></div>
+                <div className="p-2.5 rounded-lg bg-surface-muted"><div className="text-ink-subtle flex items-center gap-1"><Users className="w-3 h-3" />Bạn cùng phòng</div><div className="font-semibold">{active.roommate}</div></div>
               </div>
               <div>
-                <div className="font-bold text-slate-700 mb-2 flex items-center gap-1.5"><ShieldCheck className="w-4 h-4" />Kết quả kiểm tra tự động</div>
+                <div className="font-bold text-ink mb-2 flex items-center gap-1.5"><ShieldCheck className="w-4 h-4" />Kết quả kiểm tra tự động</div>
                 <ul className="space-y-1.5">
                   {active.checks.map((c) => (
                     <li key={c.label} className="flex items-center gap-2">
                       {c.ok ? <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" /> : <XCircle className="w-3.5 h-3.5 text-rose-500" />}
-                      <span className={c.ok ? 'text-slate-700' : 'text-rose-700 font-semibold'}>{c.label}</span>
+                      <span className={c.ok ? 'text-ink' : 'text-rose-700 font-semibold'}>{c.label}</span>
                     </li>
                   ))}
                 </ul>
@@ -170,8 +170,8 @@ export function StaffApplicationsPage() {
                   <AppButton size="sm" leftIcon={<Send className="w-3.5 h-3.5" />} onClick={() => setEscalateOpen(true)}>Chuyển Manager</AppButton>
                 </div>
               )}
-              {active.review === 'ESCALATED' && <p className="text-[11px] text-purple-700">Đang chờ Manager phê duyệt / từ chối.</p>}
-              {active.review === 'CLEARED' && <p className="text-[11px] text-emerald-700">Đã xác nhận hợp lệ.</p>}
+              {active.review === 'ESCALATED' && <p className="text-label text-purple-700">Đang chờ Manager phê duyệt / từ chối.</p>}
+              {active.review === 'CLEARED' && <p className="text-label text-emerald-700">Đã xác nhận hợp lệ.</p>}
             </div>
           </SectionCard>
         </div>
@@ -189,8 +189,8 @@ export function StaffApplicationsPage() {
           </>
         }
       >
-        <label className="block text-xs font-semibold text-slate-700 mb-1">Ý kiến đề xuất của cán bộ (tối thiểu 10 ký tự)</label>
-        <textarea value={comment} onChange={(e) => setComment(e.target.value)} rows={4} className="w-full px-3 py-2 text-xs border border-slate-200 rounded-lg" placeholder="VD: Hồ sơ y tế hợp lệ, đề xuất chấp thuận và ưu tiên tầng 1." />
+        <label className="block text-xs font-semibold text-ink mb-1">Ý kiến đề xuất của cán bộ (tối thiểu 10 ký tự)</label>
+        <textarea value={comment} onChange={(e) => setComment(e.target.value)} rows={4} className="w-full px-3 py-2 text-xs border border-line rounded-lg" placeholder="VD: Hồ sơ y tế hợp lệ, đề xuất chấp thuận và ưu tiên tầng 1." />
       </Modal>
 
       {toastNode}

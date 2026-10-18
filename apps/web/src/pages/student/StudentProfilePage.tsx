@@ -37,11 +37,11 @@ type TabKey = 'info' | 'emergency' | 'settings' | 'activity';
 
 function Field({ icon: Icon, label, value }: { icon: React.ComponentType<{ className?: string }>; label: string; value: React.ReactNode }) {
   return (
-    <div className="p-3 bg-slate-50 rounded-xl flex items-start gap-3">
-      <Icon className="w-4 h-4 text-slate-400 mt-0.5 shrink-0" />
+    <div className="p-3 bg-surface-muted rounded-xl flex items-start gap-3">
+      <Icon className="w-4 h-4 text-ink-subtle mt-0.5 shrink-0" />
       <div className="min-w-0">
-        <div className="text-[11px] text-slate-400 font-medium">{label}</div>
-        <div className="text-xs font-semibold text-slate-700 break-words">{value}</div>
+        <div className="text-label text-ink-subtle font-medium">{label}</div>
+        <div className="text-xs font-semibold text-ink break-words">{value}</div>
       </div>
     </div>
   );
@@ -54,7 +54,7 @@ function Toggle({ checked, onChange }: { checked: boolean; onChange: (v: boolean
       role="switch"
       aria-checked={checked}
       onClick={() => onChange(!checked)}
-      className={clsx('w-10 h-6 rounded-full p-0.5 transition', checked ? 'bg-[#F26F21]' : 'bg-slate-300')}
+      className={clsx('w-10 h-6 rounded-full p-0.5 transition', checked ? 'bg-brand-ink' : 'bg-slate-300')}
     >
       <span className={clsx('block w-5 h-5 rounded-full bg-white shadow transition', checked && 'translate-x-4')} />
     </button>
@@ -91,20 +91,20 @@ export function StudentProfilePage() {
       <PageHeader title="Hồ Sơ Sinh Viên" description="Thông tin cá nhân đồng bộ từ hệ thống FPT SIS • Lần đồng bộ cuối 07:00 hôm nay" />
 
       {/* Header card */}
-      <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden">
-        <div className="h-20 bg-slate-100" />
+      <div className="bg-white rounded-2xl border border-line/80 shadow-xs overflow-hidden">
+        <div className="h-20 bg-surface-sunken" />
         <div className="px-6 pb-6 -mt-10 flex flex-col md:flex-row md:items-end gap-4">
           <div className="w-20 h-20 rounded-2xl bg-white p-1 shadow">
-            <div className="w-full h-full rounded-xl bg-[#FFF2EA] text-[#F26F21] flex items-center justify-center font-bold text-3xl">
+            <div className="w-full h-full rounded-xl bg-brand-soft text-brand-ink flex items-center justify-center font-bold text-3xl">
               {user?.name?.split(' ').pop()?.charAt(0) || 'A'}
             </div>
           </div>
           <div className="flex-1">
             <div className="flex flex-wrap items-center gap-2">
-              <h2 className="text-lg font-bold text-slate-800">{user?.name}</h2>
+              <h2 className="text-lg font-bold text-ink">{user?.name}</h2>
               <StatusBadge status="ACTIVE" customLabel="Đang lưu trú" />
             </div>
-            <div className="text-xs text-slate-500">
+            <div className="text-xs text-ink-muted">
               MSSV: <strong>{user?.studentId || 'SE171234'}</strong> • {user?.major || 'Kỹ thuật phần mềm (SE)'} • Khóa K17
             </div>
           </div>
@@ -114,9 +114,9 @@ export function StudentProfilePage() {
               ['96', 'Điểm nội quy'],
               ['0', 'Vi phạm'],
             ].map(([v, l]) => (
-              <div key={l} className="px-3 py-2 rounded-xl bg-slate-50">
-                <div className="text-lg font-bold text-slate-900">{v}</div>
-                <div className="text-[10px] text-slate-500">{l}</div>
+              <div key={l} className="px-3 py-2 rounded-xl bg-surface-muted">
+                <div className="text-lg font-bold text-ink">{v}</div>
+                <div className="text-label text-ink-muted">{l}</div>
               </div>
             ))}
           </div>
@@ -177,12 +177,12 @@ export function StudentProfilePage() {
                 {editing ? (
                   <>
                     <div>
-                      <label className="text-[11px] text-slate-500">Số điện thoại</label>
-                      <input value={phone} onChange={(e) => setPhone(e.target.value)} className="w-full px-3 py-2 text-xs border border-slate-200 rounded-lg" />
+                      <label className="text-label text-ink-muted">Số điện thoại</label>
+                      <input value={phone} onChange={(e) => setPhone(e.target.value)} className="w-full px-3 py-2 text-xs border border-line rounded-lg" />
                     </div>
                     <div>
-                      <label className="text-[11px] text-slate-500">Email cá nhân</label>
-                      <input value={personalEmail} onChange={(e) => setPersonalEmail(e.target.value)} className="w-full px-3 py-2 text-xs border border-slate-200 rounded-lg" />
+                      <label className="text-label text-ink-muted">Email cá nhân</label>
+                      <input value={personalEmail} onChange={(e) => setPersonalEmail(e.target.value)} className="w-full px-3 py-2 text-xs border border-line rounded-lg" />
                     </div>
                   </>
                 ) : (
@@ -199,8 +199,8 @@ export function StudentProfilePage() {
           <div className="space-y-6">
             <SectionCard title="Mức độ hoàn thiện hồ sơ">
               <div className="flex items-end justify-between mb-2">
-                <span className="text-2xl font-bold text-slate-900">85%</span>
-                <span className="text-[11px] text-slate-500">Còn 2 mục</span>
+                <span className="text-2xl font-bold text-ink">85%</span>
+                <span className="text-label text-ink-muted">Còn 2 mục</span>
               </div>
               <ProgressBar value={85} tone="emerald" size="md" />
               <ul className="mt-4 space-y-2 text-xs">
@@ -212,7 +212,7 @@ export function StudentProfilePage() {
                   ['Tài khoản ngân hàng hoàn cọc', false],
                 ].map(([l, ok]) => (
                   <li key={String(l)} className="flex items-center justify-between">
-                    <span className="text-slate-600">{l}</span>
+                    <span className="text-ink-muted">{l}</span>
                     <span className={ok ? 'text-emerald-600 font-semibold' : 'text-amber-600 font-semibold'}>{ok ? 'Đã có' : 'Thiếu'}</span>
                   </li>
                 ))}
@@ -220,9 +220,9 @@ export function StudentProfilePage() {
             </SectionCard>
             <SectionCard title={<span className="flex items-center gap-2"><HeartPulse className="w-4 h-4 text-rose-500" /> Thông tin y tế</span>}>
               <div className="space-y-2 text-xs">
-                <div className="flex justify-between"><span className="text-slate-500">Nhóm máu</span><span className="font-semibold">O+</span></div>
-                <div className="flex justify-between"><span className="text-slate-500">Dị ứng</span><span className="font-semibold">Phấn hoa</span></div>
-                <div className="flex justify-between"><span className="text-slate-500">BHYT</span><span className="font-semibold">SV4 74 xxx 2210</span></div>
+                <div className="flex justify-between"><span className="text-ink-muted">Nhóm máu</span><span className="font-semibold">O+</span></div>
+                <div className="flex justify-between"><span className="text-ink-muted">Dị ứng</span><span className="font-semibold">Phấn hoa</span></div>
+                <div className="flex justify-between"><span className="text-ink-muted">BHYT</span><span className="font-semibold">SV4 74 xxx 2210</span></div>
               </div>
               <AppButton size="sm" variant="outline" className="w-full mt-4" onClick={() => show('Đã mở biểu mẫu cập nhật y tế', 'info')}>
                 Cập nhật
@@ -244,20 +244,20 @@ export function StudentProfilePage() {
               ] as const
             ).map(([k, label]) => (
               <div key={k} className={k === 'address' ? 'md:col-span-2' : ''}>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">{label}</label>
+                <label className="block text-xs font-semibold text-ink mb-1">{label}</label>
                 <input
                   value={emergency[k]}
                   onChange={(e) => setEmergency({ ...emergency, [k]: e.target.value })}
-                  className="w-full px-3 py-2 text-xs border border-slate-200 rounded-lg"
+                  className="w-full px-3 py-2 text-xs border border-line rounded-lg"
                 />
               </div>
             ))}
           </div>
-          <div className="flex items-center gap-3 mt-5 p-3 rounded-xl bg-slate-50 max-w-3xl">
+          <div className="flex items-center gap-3 mt-5 p-3 rounded-xl bg-surface-muted max-w-3xl">
             <Avatar name={emergency.name} size="md" />
             <div className="flex-1 text-xs">
-              <div className="font-semibold text-slate-800">{emergency.name}</div>
-              <div className="text-slate-500">
+              <div className="font-semibold text-ink">{emergency.name}</div>
+              <div className="text-ink-muted">
                 {emergency.relation} • {emergency.phone}
               </div>
             </div>
@@ -270,8 +270,8 @@ export function StudentProfilePage() {
 
       {tab === 'settings' && (
         <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-          <SectionCard title={<span className="flex items-center gap-2"><Bell className="w-4 h-4 text-[#F26F21]" /> Thông báo</span>}>
-            <ul className="divide-y divide-slate-100">
+          <SectionCard title={<span className="flex items-center gap-2"><Bell className="w-4 h-4 text-brand-ink" /> Thông báo</span>}>
+            <ul className="divide-y divide-line">
               {(
                 [
                   ['email', 'Nhận thông báo qua email', 'anhntmse171234@fpt.edu.vn'],
@@ -284,8 +284,8 @@ export function StudentProfilePage() {
               ).map(([k, label, desc]) => (
                 <li key={k} className="py-3 flex items-center justify-between gap-3">
                   <div>
-                    <div className="text-xs font-semibold text-slate-800">{label}</div>
-                    <div className="text-[11px] text-slate-500">{desc}</div>
+                    <div className="text-xs font-semibold text-ink">{label}</div>
+                    <div className="text-label text-ink-muted">{desc}</div>
                   </div>
                   <Toggle checked={notify[k]} onChange={(v) => setNotify({ ...notify, [k]: v })} />
                 </li>
@@ -293,19 +293,19 @@ export function StudentProfilePage() {
             </ul>
           </SectionCard>
           <div className="space-y-6">
-            <SectionCard title={<span className="flex items-center gap-2"><Shield className="w-4 h-4 text-slate-900" /> Bảo mật tài khoản</span>}>
+            <SectionCard title={<span className="flex items-center gap-2"><Shield className="w-4 h-4 text-ink" /> Bảo mật tài khoản</span>}>
               <div className="space-y-4">
                 <div className="flex items-center justify-between gap-3">
                   <div>
-                    <div className="text-xs font-semibold text-slate-800">Xác thực 2 lớp (OTP)</div>
-                    <div className="text-[11px] text-slate-500">Yêu cầu OTP khi ký hợp đồng & thanh toán</div>
+                    <div className="text-xs font-semibold text-ink">Xác thực 2 lớp (OTP)</div>
+                    <div className="text-label text-ink-muted">Yêu cầu OTP khi ký hợp đồng & thanh toán</div>
                   </div>
                   <Toggle checked={twoFa} onChange={setTwoFa} />
                 </div>
                 <div className="flex items-center justify-between gap-3">
                   <div>
-                    <div className="text-xs font-semibold text-slate-800">Đăng nhập bằng FPT SSO</div>
-                    <div className="text-[11px] text-slate-500">Mật khẩu được quản lý bởi FPT Education</div>
+                    <div className="text-xs font-semibold text-ink">Đăng nhập bằng FPT SSO</div>
+                    <div className="text-label text-ink-muted">Mật khẩu được quản lý bởi FPT Education</div>
                   </div>
                   <AppButton size="sm" variant="outline" leftIcon={<Lock className="w-3.5 h-3.5" />} onClick={() => show('Chuyển hướng tới trang đổi mật khẩu FPT SSO', 'info')}>
                     Đổi mật khẩu
@@ -314,21 +314,21 @@ export function StudentProfilePage() {
               </div>
             </SectionCard>
             <SectionCard title="Thiết bị đang đăng nhập" noPadding>
-              <ul className="divide-y divide-slate-100">
+              <ul className="divide-y divide-line">
                 {[
                   { d: 'Chrome trên Windows 11', where: 'Bình Dương • Đang hoạt động', current: true },
                   { d: 'CampusStay iOS — iPhone 15', where: 'Bình Dương • 2 ngày trước', current: false },
                 ].map((s) => (
                   <li key={s.d} className="px-5 py-3 flex items-center gap-3">
-                    <Smartphone className="w-4 h-4 text-slate-400" />
+                    <Smartphone className="w-4 h-4 text-ink-subtle" />
                     <div className="flex-1 text-xs">
-                      <div className="font-semibold text-slate-800">{s.d}</div>
-                      <div className="text-slate-500">{s.where}</div>
+                      <div className="font-semibold text-ink">{s.d}</div>
+                      <div className="text-ink-muted">{s.where}</div>
                     </div>
                     {s.current ? (
-                      <span className="text-[11px] font-semibold text-emerald-600">Thiết bị này</span>
+                      <span className="text-label font-semibold text-emerald-600">Thiết bị này</span>
                     ) : (
-                      <button type="button" onClick={() => show('Đã đăng xuất thiết bị', 'info')} className="text-[11px] font-semibold text-rose-600 hover:underline">
+                      <button type="button" onClick={() => show('Đã đăng xuất thiết bị', 'info')} className="text-label font-semibold text-rose-600 hover:underline">
                         Đăng xuất
                       </button>
                     )}
@@ -342,15 +342,15 @@ export function StudentProfilePage() {
 
       {tab === 'activity' && (
         <SectionCard title="Nhật ký hoạt động tài khoản" subtitle="30 ngày gần nhất" noPadding>
-          <ul className="divide-y divide-slate-100">
+          <ul className="divide-y divide-line">
             {ACTIVITY.map((a) => (
               <li key={a.time} className="px-5 py-3 flex items-center gap-3">
                 <div className="w-8 h-8 rounded-lg bg-orange-50 text-orange-600 flex items-center justify-center">
                   <a.icon className="w-4 h-4" />
                 </div>
                 <div className="flex-1 text-xs">
-                  <div className="font-semibold text-slate-800">{a.text}</div>
-                  <div className="text-slate-400">
+                  <div className="font-semibold text-ink">{a.text}</div>
+                  <div className="text-ink-subtle">
                     {a.time} • IP {a.ip}
                   </div>
                 </div>

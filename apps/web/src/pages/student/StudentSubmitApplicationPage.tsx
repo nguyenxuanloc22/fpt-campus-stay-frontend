@@ -25,14 +25,14 @@ const OPEN_INVOICES = [
 const REFUND_KINDS = ['Hoàn cọc khi trả phòng', 'Thanh toán trùng / chuyển dư', 'Chấm dứt hợp đồng sớm'] as const;
 const PURPOSES = ['Vay vốn ngân hàng chính sách', 'Đăng ký tạm trú', 'Hồ sơ học bổng', 'Khác'] as const;
 
-const input = 'w-full px-3 py-2.5 text-sm border border-slate-200 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-[#F26F21]';
+const input = 'w-full px-3 py-2.5 text-sm border border-line rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-brand';
 
 function Field({ label, hint, children }: { label: string; hint?: string; children: React.ReactNode }) {
   return (
     <label className="block">
-      <span className="block text-xs font-bold text-slate-700 mb-1.5">{label}</span>
+      <span className="block text-xs font-bold text-ink mb-1.5">{label}</span>
       {children}
-      {hint && <span className="block text-[11px] text-slate-400 mt-1">{hint}</span>}
+      {hint && <span className="block text-label text-ink-subtle mt-1">{hint}</span>}
     </label>
   );
 }
@@ -127,16 +127,16 @@ export function StudentSubmitApplicationPage() {
                   <button
                     type="button"
                     onClick={() => setType(t.type)}
-                    className={clsx('w-full flex items-start gap-3 p-3 rounded-xl border text-left transition', active ? v.ring : 'border-transparent hover:bg-slate-50')}
+                    className={clsx('w-full flex items-start gap-3 p-3 rounded-xl border text-left transition', active ? v.ring : 'border-transparent hover:bg-surface-muted')}
                   >
                     <span className={clsx('w-10 h-10 rounded-xl flex items-center justify-center shrink-0', v.tile)}>
                       <v.icon className="w-5 h-5" />
                     </span>
                     <span className="flex-1 min-w-0">
-                      <span className="block text-sm font-bold text-slate-800">{t.title}</span>
-                      <span className="block text-[11px] text-slate-500 leading-snug mt-0.5">{t.description}</span>
+                      <span className="block text-sm font-bold text-ink">{t.title}</span>
+                      <span className="block text-label text-ink-muted leading-snug mt-0.5">{t.description}</span>
                     </span>
-                    {active && <CheckCircle2 className="w-4 h-4 text-[#F26F21] shrink-0 mt-1" />}
+                    {active && <CheckCircle2 className="w-4 h-4 text-brand-ink shrink-0 mt-1" />}
                   </button>
                 </li>
               );
@@ -144,8 +144,8 @@ export function StudentSubmitApplicationPage() {
           </ul>
         </SectionCard>
 
-        <form onSubmit={onSubmit} className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-          <div className="px-6 py-5 bg-gradient-to-r from-orange-50 via-white to-white border-b border-slate-100 flex flex-wrap items-center gap-4">
+        <form onSubmit={onSubmit} className="bg-white rounded-2xl border border-line shadow-sm overflow-hidden">
+          <div className="px-6 py-5 bg-gradient-to-r from-orange-50 via-white to-white border-b border-line flex flex-wrap items-center gap-4">
             {(() => {
               const v = APPLICATION_VISUAL[type];
               return (
@@ -155,12 +155,12 @@ export function StudentSubmitApplicationPage() {
               );
             })()}
             <div className="flex-1 min-w-0">
-              <div className="text-[11px] font-bold uppercase tracking-[0.12em] text-[#F26F21]">2. Nội dung đơn</div>
-              <h2 className="text-lg font-extrabold text-slate-900">{meta.title}</h2>
+              <div className="text-label font-bold uppercase tracking-[0.12em] text-brand-ink">2. Nội dung đơn</div>
+              <h2 className="text-lg font-extrabold text-ink">{meta.title}</h2>
             </div>
-            <div className="flex flex-wrap gap-2 text-[11px]">
-              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-white border border-slate-200 text-slate-600"><UserCog className="w-3.5 h-3.5 text-sky-500" />{meta.handler}</span>
-              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-white border border-slate-200 text-slate-600"><Clock className="w-3.5 h-3.5 text-amber-500" />{meta.sla}</span>
+            <div className="flex flex-wrap gap-2 text-label">
+              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-white border border-line text-ink-muted"><UserCog className="w-3.5 h-3.5 text-sky-500" />{meta.handler}</span>
+              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-white border border-line text-ink-muted"><Clock className="w-3.5 h-3.5 text-amber-500" />{meta.sla}</span>
             </div>
           </div>
 
@@ -177,18 +177,18 @@ export function StudentSubmitApplicationPage() {
                 </Field>
                 <div className="grid grid-cols-2 gap-2">
                   {[false, true].map((u) => (
-                    <button key={String(u)} type="button" onClick={() => setUrgent(u)} className={clsx('p-3 rounded-xl border text-left', urgent === u ? (u ? 'border-rose-300 bg-rose-50' : 'border-orange-300 bg-orange-50') : 'border-slate-200')}>
-                      <div className={clsx('text-sm font-bold', u ? 'text-rose-700' : 'text-slate-800')}>{u ? 'Khẩn cấp' : 'Bình thường'}</div>
-                      <div className="text-[11px] text-slate-500">{u ? 'Mất điện, rò nước, chập cháy — xử lý trong 2 giờ' : 'Xử lý trong 24 – 72 giờ'}</div>
+                    <button key={String(u)} type="button" onClick={() => setUrgent(u)} className={clsx('p-3 rounded-xl border text-left', urgent === u ? (u ? 'border-rose-300 bg-rose-50' : 'border-orange-300 bg-orange-50') : 'border-line')}>
+                      <div className={clsx('text-sm font-bold', u ? 'text-rose-700' : 'text-ink')}>{u ? 'Khẩn cấp' : 'Bình thường'}</div>
+                      <div className="text-label text-ink-muted">{u ? 'Mất điện, rò nước, chập cháy — xử lý trong 2 giờ' : 'Xử lý trong 24 – 72 giờ'}</div>
                     </button>
                   ))}
                 </div>
                 <div>
-                  <span className="block text-xs font-bold text-slate-700 mb-1.5">Ảnh hiện trạng (tối đa 4)</span>
+                  <span className="block text-xs font-bold text-ink mb-1.5">Ảnh hiện trạng (tối đa 4)</span>
                   <div className="flex gap-2 flex-wrap">
-                    {Array.from({ length: photos }).map((_, i) => <div key={i} className="w-16 h-16 rounded-xl bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center text-[10px] text-slate-500">IMG_{i + 1}</div>)}
+                    {Array.from({ length: photos }).map((_, i) => <div key={i} className="w-16 h-16 rounded-xl bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center text-label text-ink-muted">IMG_{i + 1}</div>)}
                     {photos < 4 && (
-                      <button type="button" onClick={() => setPhotos((p) => p + 1)} className="w-16 h-16 rounded-xl border-2 border-dashed border-slate-300 flex items-center justify-center text-slate-400 hover:border-[#F26F21] hover:text-[#F26F21]" aria-label="Thêm ảnh">
+                      <button type="button" onClick={() => setPhotos((p) => p + 1)} className="w-16 h-16 rounded-xl border-2 border-dashed border-line-strong flex items-center justify-center text-ink-subtle hover:border-brand hover:text-brand-ink" aria-label="Thêm ảnh">
                         <Camera className="w-5 h-5" />
                       </button>
                     )}
@@ -200,13 +200,13 @@ export function StudentSubmitApplicationPage() {
             {type === 'ROOM_CHANGE' && (
               <>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                  <button type="button" onClick={() => setSwapMode('SWAP')} className={clsx('p-3 rounded-xl border text-left', swapMode === 'SWAP' ? 'border-sky-300 bg-sky-50' : 'border-slate-200')}>
-                    <div className="text-sm font-bold text-slate-800 flex items-center gap-1.5"><ArrowLeftRight className="w-4 h-4 text-sky-600" />Hoán đổi với bạn cụ thể</div>
-                    <div className="text-[11px] text-slate-500 mt-0.5">Nhập MSSV, bạn ấy cần chấp nhận lời mời</div>
+                  <button type="button" onClick={() => setSwapMode('SWAP')} className={clsx('p-3 rounded-xl border text-left', swapMode === 'SWAP' ? 'border-sky-300 bg-sky-50' : 'border-line')}>
+                    <div className="text-sm font-bold text-ink flex items-center gap-1.5"><ArrowLeftRight className="w-4 h-4 text-sky-600" />Hoán đổi với bạn cụ thể</div>
+                    <div className="text-label text-ink-muted mt-0.5">Nhập MSSV, bạn ấy cần chấp nhận lời mời</div>
                   </button>
-                  <button type="button" onClick={() => setSwapMode('MOVE')} className={clsx('p-3 rounded-xl border text-left', swapMode === 'MOVE' ? 'border-sky-300 bg-sky-50' : 'border-slate-200')}>
-                    <div className="text-sm font-bold text-slate-800 flex items-center gap-1.5"><Repeat className="w-4 h-4 text-sky-600" />Chưa có đối tác</div>
-                    <div className="text-[11px] text-slate-500 mt-0.5">Đơn được treo chờ ghép đến hết đợt đổi phòng</div>
+                  <button type="button" onClick={() => setSwapMode('MOVE')} className={clsx('p-3 rounded-xl border text-left', swapMode === 'MOVE' ? 'border-sky-300 bg-sky-50' : 'border-line')}>
+                    <div className="text-sm font-bold text-ink flex items-center gap-1.5"><Repeat className="w-4 h-4 text-sky-600" />Chưa có đối tác</div>
+                    <div className="text-label text-ink-muted mt-0.5">Đơn được treo chờ ghép đến hết đợt đổi phòng</div>
                   </button>
                 </div>
                 {swapMode === 'SWAP' && (
@@ -232,7 +232,7 @@ export function StudentSubmitApplicationPage() {
                     <input value={txRef} onChange={(e) => setTxRef(e.target.value.toUpperCase())} placeholder="VD: FT26288123456" className={input} />
                   </Field>
                 </div>
-                <p className="flex items-start gap-2 text-[11px] text-emerald-800 bg-emerald-50 border border-emerald-100 rounded-xl p-3">
+                <p className="flex items-start gap-2 text-label text-emerald-800 bg-emerald-50 border border-emerald-100 rounded-xl p-3">
                   <Info className="w-4 h-4 shrink-0" />Tiền được hoàn về tài khoản đã dùng để thanh toán VietQR, sau khi cán bộ đối chiếu biên bản trả phòng.
                 </p>
               </>
@@ -275,8 +275,8 @@ export function StudentSubmitApplicationPage() {
             </Field>
           </div>
 
-          <div className="px-6 py-4 border-t border-slate-100 bg-slate-50 flex flex-wrap items-center gap-3">
-            <span className="text-[11px] text-slate-500 flex-1 min-w-[200px]">Sau khi gửi, bạn nhận thông báo ở chuông mỗi khi đơn đổi trạng thái.</span>
+          <div className="px-6 py-4 border-t border-line bg-surface-muted flex flex-wrap items-center gap-3">
+            <span className="text-label text-ink-muted flex-1 min-w-[200px]">Sau khi gửi, bạn nhận thông báo ở chuông mỗi khi đơn đổi trạng thái.</span>
             <AppButton type="button" variant="outline" onClick={() => navigate(APP_ROUTES.STUDENT.APPLICATIONS)}>Xem đơn đã gửi</AppButton>
             <AppButton type="submit" disabled={!canSubmit} leftIcon={<Send className="w-4 h-4" />}>Gửi đơn</AppButton>
           </div>
