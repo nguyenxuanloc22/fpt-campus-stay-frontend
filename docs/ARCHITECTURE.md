@@ -94,12 +94,15 @@ apps/web/src/
 ├─ app/          router (lazy theo vai trò), layouts (Header, Sidebar), guards (RequireAuth, RequirePermission)
 ├─ features/     <domain>/{components, hooks, mocks.ts, index.ts}  — auth, application, assignment, invoice, …
 ├─ pages/        student/ staff/ manager/ admin/  — mỗi route một file Page
-└─ shared-ui/    design tokens + component dùng chung (xem CONVENTIONS §8)
+├─ shared-ui/    component dùng chung, i18n (t, từ điển vi/), preferences (ngôn ngữ, sáng/tối) — xem CONVENTIONS §8–9
+└─ index.css     design token duy nhất (@theme) + bộ token chế độ tối
 packages/        api-client · constants · permissions · types · validators
 ```
 - **State server:** TanStack Query (cache, retry, optimistic update). **State client:** Zustand (phiên đăng nhập, tùy chọn giao diện).
 - **Form:** react-hook-form + zod (`@campusstay/validators`) — cùng schema kiểm tra ở client và mô tả ở OpenAPI.
 - **Phân quyền:** `can()`, `usePermission()`, `<Can>`, `<RequirePermission>` đọc từ `packages/permissions`.
+- **Đa ngôn ngữ (EN mặc định / VI):** chuỗi giao diện viết bằng tiếng Anh, bọc `t('…')`; bản tiếng Việt trong `shared-ui/i18n/vi/*`. Từ điển tiếng Việt là chunk riêng, chỉ tải khi người dùng chọn tiếng Việt (`main.tsx` gọi `loadDictionary()` trước khi nạp ứng dụng). Đổi ngôn ngữ trên Header sẽ lưu lựa chọn và tải lại trang. Test `vi.test.ts` bảo đảm mọi chuỗi `t()` đều có bản dịch.
+- **Sáng / tối:** chỉ khai báo lại token màu dưới `:root[data-theme='dark']` (index.css) — component không đổi; AppLayout gắn `data-theme` lên `<html>`. Mặc định theo hệ điều hành, lựa chọn lưu ở `campusstay_preferences`.
 
 ### 4.2. Mobile (Flutter, chỉ dành cho Student)
 Clean Architecture 3 lớp: Presentation (Screen, Widget, Riverpod `AsyncValue`) → Domain (Entity, Repository interface) → Data (DTO, DataSource, Repository impl) → Core (`DioClient`, `FlutterSecureStorage`). Tài khoản không phải Student đăng nhập sẽ được đăng xuất và chuyển tới màn hình hướng dẫn dùng Web.
@@ -114,7 +117,13 @@ Nguyên tắc: **một trang = một nhóm use case liên quan**; các use case 
 - **Thông báo cá nhân** — chuông trên Header, cạnh thông tin người dùng: chỉ những gì liên quan trực tiếp tới người đó hoặc phòng của họ (kết quả xếp phòng, lời mời hoán đổi, hóa đơn sắp đến hạn, lịch sửa thiết bị).
 - **Thông báo chung** — trang `/notifications` (nhóm “Thông tin” trên Sidebar, mọi vai trò): thông báo hệ thống diện rộng do Quản trị viên cấu hình hoặc Ban quản lý KTX gửi. Thông báo được **ghim quan trọng** hiện thành popup “Thông báo quan trọng” ngay sau khi đăng nhập; tick “Không hiển thị lại trong phiên đăng nhập này” để ẩn đến lần đăng nhập sau.
 
-**Bố cục chung 4 vai trò (tham khảo FAP):** Sidebar toàn chiều cao, logo ở đầu, chức năng chia theo **nhóm có tiêu đề chữ in hoa màu cam** (Student: THÔNG TIN · LƯU TRÚ · ĐƠN TỪ · TÀI CHÍNH; Staff: THÔNG TIN · PHÒNG & LƯU TRÚ · ĐƠN TỪ · VẬN HÀNH; Manager: THÔNG TIN · PHÊ DUYỆT · BÁO CÁO; Admin: THÔNG TIN · CẤU HÌNH · HỆ THỐNG · BÁO CÁO), mỗi mục có ô icon, mục đang chọn tô cam. Header: nút thu gọn Sidebar, tiêu đề trang + breadcrumb, cơ sở, chuông, tài khoản.
+**Bố cục chung 4 vai trò (tham khảo FAP):** Sidebar toàn chiều cao, logo ở đầu. Trang đơn là mục cấp 1; nhóm nhiều trang là **mục sổ xuống** (icon + mũi tên, các trang con thụt vào theo đường kẻ), tự mở khi đang ở trang con:
+- Student: Overview · **Accommodation** ▾ (Room registration, My room, Check-in/out) · **Requests** ▾ (Submit a request, My requests) · Invoices & payments · Announcements
+- Staff: Overview · **Applications & allocation** ▾ (Application review, Room allocation, Room changes) · Rooms & beds · Check-in/out · Maintenance & inspection · **Communication** ▾ (Send announcement, Announcements)
+- Manager: Overview · **Approvals** ▾ (Approval center, Allocation approval) · Reports · Announcements
+- Admin: Overview · **Configuration** ▾ (Semesters & timeline, Eligibility rules, Room types & pricing, Allocation engine) · **System** ▾ (Accounts & roles, Integrations, Change log) · Reports · Announcements
+
+Header: breadcrumb (tiêu đề trang là h1 trong nội dung), nhãn cơ sở, **chọn ngôn ngữ English / Tiếng Việt** (có cờ), **nút sáng / tối**, chuông thông báo cá nhân, menu tài khoản. Sinh viên trên mobile dùng thanh tab dưới đáy.
 
 ### 5.0. Dùng chung — 2 trang
 | Trang | Route | Nội dung |
@@ -159,7 +168,7 @@ Không có trang tra cứu phòng/giường trống cho sinh viên — sơ đồ
 | Trang | Route | Use case phủ |
 |---|---|---|
 | Tổng quan hệ thống | `/admin/dashboard` | Sức khỏe hệ thống, tích hợp, kỳ học đang chạy |
-| Kỳ học | `/admin/semesters` | Configure Academic Terms (mốc mở/đóng cửa sổ đăng ký, hạn cọc, thời hạn giữ chỗ, khung check-in — đầu vào cho actor System) |
+| Semesters & timeline | `/admin/semesters` | Configure Academic Terms: **chu trình 16 tuần trực quan** (biểu đồ Gantt, vạch Today, chỉnh tuần từng giai đoạn, khóa ngày — BUSINESS_FLOWS F8), danh sách học kỳ (cửa sổ đăng ký, khung check-in, giữ chỗ — đầu vào cho actor System) |
 | Luật điều kiện | `/admin/rules` | Configure Eligibility Rules (năm học, ngành, khoảng cách) |
 | Loại phòng & giá | `/admin/pricing` | Configure Room & Bed Pricing |
 | Engine xếp phòng | `/admin/allocation-engine` | Configure Assignment Rules & Priorities, Monitor Assignment Engine (lịch sử chạy, xung đột) |

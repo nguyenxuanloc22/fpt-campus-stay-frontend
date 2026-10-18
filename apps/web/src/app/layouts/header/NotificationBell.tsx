@@ -6,6 +6,7 @@ import { useAuthStore } from '@features/auth';
 import { PERSONAL_NOTIFICATIONS } from '@features/notifications/personalNotifications';
 import { APP_ROUTES } from '@campusstay/constants';
 import { useDismiss } from './useDismiss';
+import { t } from '@shared-ui';
 
 /** Chuông thông báo cá nhân (kết quả xếp phòng, lời mời đổi phòng, hóa đơn sắp đến hạn…). */
 export function NotificationBell() {
@@ -28,7 +29,7 @@ export function NotificationBell() {
     <div className="relative" ref={ref}>
       <button
         type="button"
-        aria-label={`Thông báo cá nhân${unread ? `, ${unread} chưa đọc` : ''}`}
+        aria-label={t('Personal notifications{0}', { 0: unread ? t(', {0} unread', { 0: unread }) : '' })}
         aria-expanded={open}
         aria-haspopup="true"
         onClick={() => setOpen((v) => !v)}
@@ -36,7 +37,7 @@ export function NotificationBell() {
       >
         <Bell className="w-5 h-5" aria-hidden="true" />
         {unread > 0 && (
-          <span className="absolute top-2 right-2 min-w-4 h-4 px-1 rounded-full bg-brand-ink text-white text-label leading-4 font-semibold" aria-hidden="true">
+          <span className="absolute top-2 right-2 min-w-4 h-4 px-1 rounded-full bg-brand-fill text-white text-label leading-4 font-semibold" aria-hidden="true">
             {unread}
           </span>
         )}
@@ -44,14 +45,14 @@ export function NotificationBell() {
       {open && (
         <div className="absolute right-0 top-full mt-2 w-[min(22rem,calc(100vw-2rem))] bg-surface rounded-card border border-line shadow-overlay overflow-hidden z-40">
           <div className="px-4 py-2 border-b border-line flex items-center justify-between gap-2">
-            <h2 className="text-body font-semibold text-ink">Thông báo của bạn</h2>
+            <h2 className="text-body font-semibold text-ink">{t('Your notifications')}</h2>
             {unread > 0 && (
               <button
                 type="button"
                 onClick={() => setItems((all) => all.map((i) => ({ ...i, unread: false })))}
                 className="min-h-touch px-2 rounded-control text-label font-semibold text-brand-ink hover:bg-brand-soft"
               >
-                Đánh dấu đã đọc
+                {t('Mark all as read')}
               </button>
             )}
           </div>
@@ -62,7 +63,7 @@ export function NotificationBell() {
                   <span className={clsx('mt-2 w-2 h-2 rounded-full shrink-0', n.unread ? 'bg-brand' : 'bg-transparent')} aria-hidden="true" />
                   <span className="min-w-0">
                     <span className={clsx('block text-body text-ink', n.unread ? 'font-semibold' : 'font-normal')}>
-                      {n.unread && <span className="sr-only">Chưa đọc: </span>}
+                      {n.unread && <span className="sr-only">{t('Unread:')} </span>}
                       {n.title}
                     </span>
                     <span className="block text-label text-ink-muted mt-1">{n.body}</span>
@@ -71,7 +72,7 @@ export function NotificationBell() {
                 </button>
               </li>
             ))}
-            {items.length === 0 && <li className="px-4 py-8 text-center text-body text-ink-muted">Bạn chưa có thông báo mới.</li>}
+            {items.length === 0 && <li className="px-4 py-8 text-center text-body text-ink-muted">{t('You have no new notifications.')}</li>}
           </ul>
           <button
             type="button"
@@ -81,7 +82,7 @@ export function NotificationBell() {
             }}
             className="w-full min-h-touch px-4 text-body font-semibold text-ink-muted hover:bg-surface-muted hover:text-ink border-t border-line"
           >
-            Xem thông báo chung
+            {t('View announcements')}
           </button>
         </div>
       )}

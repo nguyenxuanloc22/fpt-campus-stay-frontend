@@ -1,4 +1,5 @@
-// ──────────────────────────────────────────────────────────────
+
+import { t } from '@shared-ui';// ──────────────────────────────────────────────────────────────
 //  managerMockData.ts — Manager Governance & Approvals Mock Data
 //  Strongly-typed data structures for all 5 core governance use cases:
 //  1. Approve/Reject Dormitory Applications
@@ -36,7 +37,7 @@ export interface ManagerBatchAssignment {
 
 export interface ManagerRoomChange {
   id: string;
-  kind: 'HOÁN ĐỔI PHÒNG' | 'CHUYỂN PHÒNG ĐƠN';
+  kind: 'ROOM SWAP' | 'SINGLE TRANSFER';
   studentA: {
     name: string;
     studentId: string;
@@ -68,7 +69,7 @@ export interface ManagerMaintenanceSchedule {
 export interface ManagerBuildingKpi {
   code: string;
   name: string;
-  gender: 'Nam' | 'Nữ';
+  gender: 'Male' | 'Female';
   totalBeds: number;
   occupiedBeds: number;
   maintenanceBeds: number;
@@ -96,11 +97,11 @@ export const MANAGER_APPLICATIONS: ManagerAppApproval[] = [
     code: 'APP-SP27-004809',
     studentName: 'Đỗ Minh Quân',
     studentId: 'SE190455',
-    major: 'Kỹ thuật phần mềm',
-    roomType: '4 giường máy lạnh',
-    flagDescription: 'Hồ sơ đào tạo cập nhật sinh viên học lại — Quyết định 1123/QĐ-FPTU hợp lệ',
-    staffRecommendation: 'Hồ sơ đầy đủ tính pháp lý, đã kiểm tra nhân thân. Đề xuất chấp thuận nhập phòng.',
-    reviewedByStaff: 'Trần Văn Cường (Cán bộ KTX)',
+    major: t('Software Engineering'),
+    roomType: t('4-bed air-conditioned'),
+    flagDescription: t('Academic record updated for a repeating student — Decision 1123/QĐ-FPTU is valid'),
+    staffRecommendation: t('Records complete and legally valid, identity checked. Recommend approving admission.'),
+    reviewedByStaff: t('Trần Văn Cường (Dormitory staff)'),
     documents: ['quyet-dinh-hoc-lai.pdf', 'xac-nhan-tai-chinh.pdf'],
     decision: 'PENDING',
   },
@@ -109,10 +110,10 @@ export const MANAGER_APPLICATIONS: ManagerAppApproval[] = [
     studentName: 'Mai Khánh Vy',
     studentId: 'SS190234',
     major: 'Digital Marketing',
-    roomType: '4 giường máy lạnh (Tầng thấp)',
-    flagDescription: 'Đề nghị phân bổ tầng 1 có chỉ định điều trị y khoa đính kèm',
-    staffRecommendation: 'Đã đối chiếu chứng nhận y tế từ bệnh viện đa khoa, đủ điều kiện ưu tiên phòng A102.',
-    reviewedByStaff: 'Lê Minh Khoa (Cán bộ KTX)',
+    roomType: t('4-bed air-conditioned (lower floor)'),
+    flagDescription: t('Requests a floor-1 placement with an attached medical referral'),
+    staffRecommendation: t('Medical certificate from the general hospital verified; eligible for priority room A102.'),
+    reviewedByStaff: t('Lê Minh Khoa (Dormitory staff)'),
     documents: ['chi-dinh-bac-si.pdf'],
     decision: 'PENDING',
   },
@@ -120,11 +121,11 @@ export const MANAGER_APPLICATIONS: ManagerAppApproval[] = [
     code: 'APP-SP27-004760',
     studentName: 'Trương Gia Bảo',
     studentId: 'AI180990',
-    major: 'Trí tuệ nhân tạo',
-    roomType: '2 giường tiêu chuẩn',
-    flagDescription: 'Biên bản đối soát điện nước kỳ trước đã lập, chênh lệch do công tơ đo kiểm',
-    staffRecommendation: 'Tổ kỹ thuật đã lập biên bản hiệu chỉnh công nợ thực tế. Đề xuất phê duyệt giữ phòng.',
-    reviewedByStaff: 'Trần Văn Cường (Cán bộ KTX)',
+    major: t('Artificial Intelligence'),
+    roomType: t('2-bed standard'),
+    flagDescription: t('Utility reconciliation record for last term prepared; the difference came from meter testing'),
+    staffRecommendation: t('The maintenance team adjusted the actual balance. Recommend approving room retention.'),
+    reviewedByStaff: t('Trần Văn Cường (Dormitory staff)'),
     documents: ['bien-ban-kiem-tra-cong-to.pdf'],
     decision: 'PENDING',
   },
@@ -134,7 +135,7 @@ export const MANAGER_APPLICATIONS: ManagerAppApproval[] = [
 export const MANAGER_ASSIGNMENT_PROPOSALS: ManagerBatchAssignment[] = [
   {
     batchCode: 'BR-SP27-02',
-    title: 'Đề xuất phân bổ phòng KTX Học kỳ Spring 2027 (Đợt 1)',
+    title: t('Spring 2027 dormitory allocation proposal (Round 1)'),
     semester: 'Spring 2027',
     reviewedByStaff: 'Trần Văn Cường & Nguyễn Thu Hà',
     totalAllocations: 342,
@@ -143,9 +144,9 @@ export const MANAGER_ASSIGNMENT_PROPOSALS: ManagerBatchAssignment[] = [
     remainingExceptions: 0,
     decision: 'PENDING',
     highlights: [
-      'Phân bổ 342 sinh viên đạt 98.2% đúng nguyện vọng tòa nhà & loại phòng',
-      'Đã giải quyết toàn bộ 6 xung đột phân phòng đặc thù',
-      'Khi phê duyệt: Hệ thống tự động phát hành hợp đồng điện tử & mở cổng thanh toán đợt 2',
+      t('342 students allocated, 98.2% matching building & room type preference'),
+      t('All 6 special allocation conflicts resolved'),
+      t('On approval: the system issues electronic contracts & opens the installment 2 payment portal'),
     ],
   },
 ];
@@ -154,22 +155,22 @@ export const MANAGER_ASSIGNMENT_PROPOSALS: ManagerBatchAssignment[] = [
 export const MANAGER_ROOM_CHANGES: ManagerRoomChange[] = [
   {
     id: 'RC-2026-0231',
-    kind: 'HOÁN ĐỔI PHÒNG',
+    kind: 'ROOM SWAP',
     studentA: { name: 'Nguyễn Thị Mai Anh', studentId: 'SE171234', room: 'A204-G1' },
     studentB: { name: 'Võ Thị Bảo Ngọc', studentId: 'SS180112', room: 'A310-G2' },
-    reason: 'Hai sinh viên thỏa thuận đổi phòng để tiện sinh hoạt học nhóm cùng chuyên ngành.',
-    staffVerificationNote: 'Đã kiểm tra xác nhận điện tử từ cả hai phía, không phát sinh chênh lệch đơn giá phòng.',
+    reason: t('The two students agreed to swap rooms to study together in the same major.'),
+    staffVerificationNote: t('Electronic confirmations from both sides verified; no room price difference.'),
     warnings: [],
     decision: 'PENDING',
   },
   {
     id: 'RC-2026-0229',
-    kind: 'HOÁN ĐỔI PHÒNG',
+    kind: 'ROOM SWAP',
     studentA: { name: 'Đỗ Minh Quân', studentId: 'SE190455', room: 'B210-G4' },
     studentB: { name: 'Lý Gia Huy', studentId: 'SE180421', room: 'B105-G1' },
-    reason: 'Đổi phòng về tầng 1 tiện chăm sóc sức khỏe.',
-    staffVerificationNote: 'Sinh viên Lý Gia Huy đã thanh toán dứt điểm hóa đơn tiện ích kỳ trước.',
-    warnings: ['Đã xác minh hoàn tất thanh toán nợ cũ'],
+    reason: t('Move to floor 1 for health care convenience.'),
+    staffVerificationNote: t('Student Lý Gia Huy has fully paid last term\'s utility bill.'),
+    warnings: [t('Payment of previous debt verified')],
     decision: 'PENDING',
   },
 ];
@@ -178,22 +179,22 @@ export const MANAGER_ROOM_CHANGES: ManagerRoomChange[] = [
 export const MANAGER_MAINTENANCE_SCHEDULES: ManagerMaintenanceSchedule[] = [
   {
     id: 'PMS-2026-11',
-    title: 'Bảo dưỡng định kỳ toàn bộ hệ thống điều hòa nhiệt độ Tòa C',
-    scope: 'Tòa C · 80 phòng lưu trú & khu vực sinh hoạt chung',
-    executionWindow: '04/11 – 08/11/2026 · Khung giờ 08:30 – 11:30',
-    recurrence: 'Định kỳ học kỳ',
-    studentImpactNotice: 'Kỹ thuật viên vào phòng theo ca 30 phút/phòng, thông báo trước 48h cho sinh viên',
-    proposer: 'Lê Văn Tài (Phó ban Kỹ thuật KTX)',
+    title: t('Periodic maintenance of the entire air-conditioning system, Building C'),
+    scope: t('Building C · 80 residential rooms & common areas'),
+    executionWindow: t('04/11 – 08/11/2026 · 08:30 – 11:30'),
+    recurrence: t('Every semester'),
+    studentImpactNotice: t('Technicians enter rooms in 30-minute slots; students notified 48 hours in advance'),
+    proposer: t('Lê Văn Tài (Deputy head of dormitory maintenance)'),
     decision: 'PENDING',
   },
   {
     id: 'PMS-2026-12',
-    title: 'Kiểm định an toàn hệ thống bình nước nóng trung tâm Tòa B & Tòa D',
-    scope: 'Tòa B (64 phòng) & Tòa D (90 phòng)',
-    executionWindow: '15/11/2026 · Khung giờ 13:30 – 16:30',
-    recurrence: 'Định kỳ hằng quý',
-    studentImpactNotice: 'Tạm ngắt hệ thống nước nóng trong 60 phút, nước sinh hoạt vẫn vận hành bình thường',
-    proposer: 'Nguyễn Thành Đạt (Tổ trưởng Vận hành Thiết bị)',
+    title: t('Safety inspection of the central water heater system, Buildings B & D'),
+    scope: t('Building B (64 rooms) & Building D (90 rooms)'),
+    executionWindow: t('15/11/2026 · 13:30 – 16:30'),
+    recurrence: t('Every quarter'),
+    studentImpactNotice: t('Hot water off for 60 minutes; regular water supply unaffected'),
+    proposer: t('Nguyễn Thành Đạt (Equipment operations team lead)'),
     decision: 'PENDING',
   },
 ];
@@ -211,9 +212,9 @@ export const MANAGER_GOVERNANCE_DATA: ManagerGovernanceDashboard = {
     slaComplianceRate: 96.4,
   },
   buildings: [
-    { code: 'A', name: 'Tòa A', gender: 'Nữ', totalBeds: 288, occupiedBeds: 271, maintenanceBeds: 4, occupancyRate: 94.1, revenueMillionVnd: 4120 },
-    { code: 'B', name: 'Tòa B', gender: 'Nam', totalBeds: 312, occupiedBeds: 298, maintenanceBeds: 6, occupancyRate: 95.5, revenueMillionVnd: 4470 },
-    { code: 'C', name: 'Tòa C', gender: 'Nữ', totalBeds: 320, occupiedBeds: 276, maintenanceBeds: 2, occupancyRate: 86.3, revenueMillionVnd: 4380 },
-    { code: 'D', name: 'Tòa D', gender: 'Nam', totalBeds: 280, occupiedBeds: 230, maintenanceBeds: 3, occupancyRate: 82.1, revenueMillionVnd: 4260 },
+    { code: 'A', name: t('Building A'), gender: 'Female', totalBeds: 288, occupiedBeds: 271, maintenanceBeds: 4, occupancyRate: 94.1, revenueMillionVnd: 4120 },
+    { code: 'B', name: t('Building B'), gender: 'Male', totalBeds: 312, occupiedBeds: 298, maintenanceBeds: 6, occupancyRate: 95.5, revenueMillionVnd: 4470 },
+    { code: 'C', name: t('Building C'), gender: 'Female', totalBeds: 320, occupiedBeds: 276, maintenanceBeds: 2, occupancyRate: 86.3, revenueMillionVnd: 4380 },
+    { code: 'D', name: t('Building D'), gender: 'Male', totalBeds: 280, occupiedBeds: 230, maintenanceBeds: 3, occupancyRate: 82.1, revenueMillionVnd: 4260 },
   ],
 };

@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { ChevronRight } from 'lucide-react';
-import { DataState, ListSkeleton, Modal, AppButton, STATUS_TONE_CLASS, type DataStatus } from '@shared-ui';
+import { DataState, ListSkeleton, Modal, AppButton, STATUS_TONE_CLASS, type DataStatus, t } from '@shared-ui';
 import { ANNOUNCEMENTS, ANNOUNCEMENT_CATEGORY_LABEL, type Announcement } from '@features/notifications/systemAnnouncements';
 import clsx from 'clsx';
 
 const levelOf = (a: Announcement) =>
-  a.important ? { label: 'Quan trọng', className: STATUS_TONE_CLASS.danger } : { label: ANNOUNCEMENT_CATEGORY_LABEL[a.category], className: STATUS_TONE_CLASS.neutral };
+  a.important ? { label: t('Important'), className: STATUS_TONE_CLASS.danger } : { label: ANNOUNCEMENT_CATEGORY_LABEL[a.category], className: STATUS_TONE_CLASS.neutral };
 
 interface NoticeListProps {
   limit?: number;
@@ -25,7 +25,7 @@ export function NoticeList({ limit = 3, status, onViewAll }: NoticeListProps) {
         status={status}
         isEmpty={items.length === 0}
         skeleton={<ListSkeleton rows={limit} />}
-        empty={{ title: 'Chưa có thông báo', description: 'Thông báo mới từ Ban quản lý KTX sẽ hiện ở đây.' }}
+        empty={{ title: t('No announcements yet'), description: t('New announcements from the Dormitory Management Board will appear here.') }}
       >
         <ul className="divide-y divide-line">
           {items.map((n) => {
@@ -61,7 +61,7 @@ export function NoticeList({ limit = 3, status, onViewAll }: NoticeListProps) {
               onViewAll();
             }}
           >
-            Xem tất cả thông báo
+            {t('View all announcements')}
           </AppButton>
         }
       >

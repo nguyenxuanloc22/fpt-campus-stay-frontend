@@ -12,10 +12,10 @@ export interface AppButtonProps extends React.ButtonHTMLAttributes<HTMLButtonEle
 
 /** Màu theo token; trạng thái hover / pressed / disabled bằng CSS, focus dùng outline toàn cục (index.css). */
 const VARIANTS = {
-  primary: 'bg-brand-ink text-white hover:bg-brand-ink-hover active:bg-brand-ink-hover',
+  primary: 'bg-brand-fill text-white hover:bg-brand-fill-hover active:bg-brand-fill-hover',
   secondary: 'bg-ink text-surface hover:bg-ink-hover active:bg-ink-hover',
   outline: 'border border-line-control bg-surface text-ink hover:bg-surface-muted active:bg-surface-sunken',
-  danger: 'bg-danger text-white hover:opacity-90 active:opacity-80',
+  danger: 'bg-danger-fill text-white hover:opacity-90 active:opacity-80',
   ghost: 'bg-transparent text-ink-muted hover:bg-surface-sunken hover:text-ink active:bg-line',
 };
 

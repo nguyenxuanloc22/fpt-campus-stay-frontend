@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import clsx from 'clsx';
 import { useAuthStore } from '@features/auth';
 import { ROLE_LABELS, APP_ROUTES } from '@campusstay/constants';
-import { Modal, AppButton, useToast } from '@shared-ui';
+import { Modal, AppButton, useToast, t } from '@shared-ui';
 import { useDismiss } from './useDismiss';
 
 const initialsOf = (name: string) =>
@@ -17,9 +17,9 @@ const initialsOf = (name: string) =>
     .toUpperCase();
 
 const PASSWORD_FIELDS = [
-  ['current', 'Mật khẩu hiện tại'],
-  ['next', 'Mật khẩu mới (tối thiểu 6 ký tự)'],
-  ['confirm', 'Nhập lại mật khẩu mới'],
+  ['current', t('Current password')],
+  ['next', t('New password (at least 6 characters)')],
+  ['confirm', t('Confirm new password')],
 ] as const;
 
 const MENU_ITEM = 'w-full min-h-touch px-4 flex items-center gap-3 text-body text-ink hover:bg-surface-muted';
@@ -35,7 +35,7 @@ export function UserMenu() {
   const ref = useDismiss<HTMLDivElement>(open, () => setOpen(false));
 
   if (!user) return null;
-  const subtitle = `${user.studentId ? `${user.studentId} · ` : ''}${ROLE_LABELS[user.role]}`;
+  const subtitle = `${user.studentId ? `${user.studentId} · ` : ''}${t(ROLE_LABELS[user.role])}`;
   const initials = initialsOf(user.name);
   const pwValid = pw.current.length > 0 && pw.next.length >= 6 && pw.next === pw.confirm;
 
@@ -73,13 +73,13 @@ export function UserMenu() {
           </div>
           <div className="py-1">
             <button type="button" onClick={() => go(APP_ROUTES.COMMON.PROFILE)} className={MENU_ITEM}>
-              <UserIcon className="w-5 h-5 text-ink-muted" aria-hidden="true" /> Hồ sơ cá nhân
+              <UserIcon className="w-5 h-5 text-ink-muted" aria-hidden="true" /> {t('Profile')}
             </button>
             <button type="button" onClick={() => { setOpen(false); setPwOpen(true); }} className={MENU_ITEM}>
-              <Lock className="w-5 h-5 text-ink-muted" aria-hidden="true" /> Đổi mật khẩu
+              <Lock className="w-5 h-5 text-ink-muted" aria-hidden="true" /> {t('Change password')}
             </button>
             <button type="button" onClick={() => go(`${APP_ROUTES.COMMON.PROFILE}?tab=settings`)} className={MENU_ITEM}>
-              <Settings className="w-5 h-5 text-ink-muted" aria-hidden="true" /> Cài đặt
+              <Settings className="w-5 h-5 text-ink-muted" aria-hidden="true" /> {t('Settings')}
             </button>
           </div>
           <div className="border-t border-line py-1">
@@ -91,7 +91,7 @@ export function UserMenu() {
               }}
               className="w-full min-h-touch px-4 flex items-center gap-3 text-body font-semibold text-danger hover:bg-danger-soft"
             >
-              <LogOut className="w-5 h-5" aria-hidden="true" /> Đăng xuất
+              <LogOut className="w-5 h-5" aria-hidden="true" /> {t('Sign out')}
             </button>
           </div>
         </div>
@@ -101,25 +101,25 @@ export function UserMenu() {
         open={pwOpen}
         onClose={() => setPwOpen(false)}
         size="sm"
-        title="Đổi mật khẩu"
+        title={t('Change password')}
         footer={
           <>
-            <AppButton variant="outline" onClick={() => setPwOpen(false)}>Hủy</AppButton>
+            <AppButton variant="outline" onClick={() => setPwOpen(false)}>{t('Cancel')}</AppButton>
             <AppButton
               disabled={!pwValid}
               onClick={() => {
                 setPwOpen(false);
                 setPw({ current: '', next: '', confirm: '' });
-                show('Đã đổi mật khẩu');
+                show(t('Password changed'));
               }}
             >
-              Lưu mật khẩu
+              {t('Save password')}
             </AppButton>
           </>
         }
       >
         {user.role === 'STUDENT' ? (
-          <p className="text-body text-ink-muted">Sinh viên đăng nhập bằng Google / FEID. Hãy đổi mật khẩu tại hệ thống tài khoản của FPT University.</p>
+          <p className="text-body text-ink-muted">{t('Students sign in with Google / FEID. Please change your password in the FPT University account system.')}</p>
         ) : (
           <div className="space-y-3">
             {PASSWORD_FIELDS.map(([k, label]) => (
@@ -130,7 +130,7 @@ export function UserMenu() {
             ))}
             {pw.confirm && pw.next !== pw.confirm && (
               <p role="alert" className="text-label text-danger">
-                Mật khẩu nhập lại chưa khớp. Hãy nhập lại giống ô “Mật khẩu mới”.
+                {t('The passwords do not match. Re-enter the same value as “New password”.')}
               </p>
             )}
           </div>

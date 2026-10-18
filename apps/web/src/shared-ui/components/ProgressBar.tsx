@@ -1,4 +1,5 @@
 import clsx from 'clsx';
+import { t } from '../i18n/t';
 
 interface ProgressBarProps {
   value: number;
@@ -11,7 +12,7 @@ interface ProgressBarProps {
 }
 
 const BAR = {
-  orange: 'bg-brand-ink',
+  orange: 'bg-brand-fill',
   navy: 'bg-ink',
   emerald: 'bg-success',
   amber: 'bg-chart-4',
@@ -25,7 +26,7 @@ export function ProgressBar({ value, max = 100, tone = 'orange', size = 'sm', cl
   return (
     <div
       role="progressbar"
-      aria-label={label}
+      aria-label={label ?? t('Progress')}
       aria-valuenow={Math.round(pct)}
       aria-valuemin={0}
       aria-valuemax={100}

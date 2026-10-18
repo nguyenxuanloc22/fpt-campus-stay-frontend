@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { UserCheck, LogOut, Clock, AlertTriangle, Search, CheckCircle2, XCircle, ScanLine, CreditCard, IdCard, Timer, ClipboardCheck } from 'lucide-react';
 import clsx from 'clsx';
-import { PageHeader, StatCard, SectionCard, Tabs, StatusBadge, AppButton, Avatar, Modal, ProgressBar, formatVnd, useToast } from '@shared-ui';
+import { PageHeader, StatCard, SectionCard, Tabs, StatusBadge, AppButton, Avatar, Modal, ProgressBar, formatVnd, useToast, t } from '@shared-ui';
 
 /**
  * Check-in / Check-out (Staff) — docs/BUSINESS_FLOWS.md F3.
@@ -40,10 +40,10 @@ interface CheckoutReport {
 }
 
 const BUILDINGS = [
-  { b: 'Tòa A', done: 262, total: 276 },
-  { b: 'Tòa B', done: 281, total: 298 },
-  { b: 'Tòa C', done: 240, total: 268 },
-  { b: 'Tòa D', done: 201, total: 230 },
+  { b: t('Building A'), done: 262, total: 276 },
+  { b: t('Building B'), done: 281, total: 298 },
+  { b: t('Building C'), done: 240, total: 268 },
+  { b: t('Building D'), done: 201, total: 230 },
 ];
 
 const PENDING: PendingStudent[] = [
@@ -54,15 +54,15 @@ const PENDING: PendingStudent[] = [
 ];
 
 const MANUAL: ManualCase[] = [
-  { id: 'SE190888', name: 'Nguyễn Hoàng Long', bed: 'B118-G3', reason: 'Đến muộn — chuyến xe từ Cà Mau trễ, ngoài khung giờ', arrived: '05/01 20:40', paid: true },
-  { id: 'JP170601', name: 'Lâm Mỹ Duyên', bed: 'C215-G3', reason: 'Điện thoại hỏng, không quét được QR', arrived: '05/01 15:10', paid: false },
-  { id: 'SS190234', name: 'Mai Khánh Vy', bed: 'C108-G1', reason: 'Nằm viện đến 06/01 — có giấy ra viện', arrived: 'Báo trước', paid: true },
+  { id: 'SE190888', name: 'Nguyễn Hoàng Long', bed: 'B118-G3', reason: t('Arriving late — bus from Ca Mau delayed, outside the window'), arrived: '05/01 20:40', paid: true },
+  { id: 'JP170601', name: 'Lâm Mỹ Duyên', bed: 'C215-G3', reason: t('Broken phone, cannot scan the QR code'), arrived: '05/01 15:10', paid: false },
+  { id: 'SS190234', name: 'Mai Khánh Vy', bed: 'C108-G1', reason: t('In hospital until 06/01 — discharge paper provided'), arrived: t('Notified in advance'), paid: true },
 ];
 
 const CHECKOUTS: CheckoutReport[] = [
   { id: 'SE170321', name: 'Hồ Tấn Phát', bed: 'B312-G3', submitted: '31/12/2026 14:20', differences: [], deposit: 500000 },
-  { id: 'AI180990', name: 'Trương Gia Bảo', bed: 'D402-G2', submitted: '31/12/2026 10:05', differences: [{ item: 'Tủ quần áo có khóa', atCheckin: 'Tốt', now: 'Gãy bản lề' }, { item: 'Remote máy lạnh', atCheckin: 'Tốt', now: 'Mất' }], deposit: 500000 },
-  { id: 'BA180123', name: 'Bùi Thanh Tâm', bed: 'B305-G5', submitted: '30/12/2026 17:45', differences: [{ item: 'Rèm cửa sổ', atCheckin: 'Tốt', now: 'Rách nhẹ' }], deposit: 500000 },
+  { id: 'AI180990', name: 'Trương Gia Bảo', bed: 'D402-G2', submitted: '31/12/2026 10:05', differences: [{ item: t('Lockable wardrobe'), atCheckin: t('Good'), now: t('Broken hinge') }, { item: t('Air conditioner remote'), atCheckin: t('Good'), now: t('Missing') }], deposit: 500000 },
+  { id: 'BA180123', name: 'Bùi Thanh Tâm', bed: 'B305-G5', submitted: '30/12/2026 17:45', differences: [{ item: t('Window curtain'), atCheckin: t('Good'), now: t('Slightly torn') }], deposit: 500000 },
 ];
 
 export function StaffCheckinOutPage() {
@@ -81,43 +81,43 @@ export function StaffCheckinOutPage() {
   const total = BUILDINGS.reduce((s, b) => s + b.total, 0);
 
   const MANUAL_STEPS = [
-    { key: 'id', label: 'Đối chiếu CCCD & thẻ sinh viên', icon: IdCard },
-    { key: 'pay', label: 'Xác nhận đã thanh toán phần phí còn lại', icon: CreditCard },
-    { key: 'access', label: 'Kích hoạt thẻ từ, giao chìa khóa tủ', icon: ScanLine },
-    { key: 'report', label: 'Nhắc sinh viên nộp biên bản hiện trạng số', icon: ClipboardCheck },
+    { key: 'id', label: t('Check national ID & student card'), icon: IdCard },
+    { key: 'pay', label: t('Confirm the remaining fee has been paid'), icon: CreditCard },
+    { key: 'access', label: t('Activate the key card, hand over the locker key'), icon: ScanLine },
+    { key: 'report', label: t('Remind the student to submit the digital condition report'), icon: ClipboardCheck },
   ];
 
   const completeManual = () => {
     if (!active) return;
     setManual((all) => all.map((m) => (m.id === active.id ? { ...m, done: true } : m)));
-    show(`Đã check-in thủ công cho ${active.name} (${active.bed})`);
+    show(t('Manual check-in completed for {0} ({1})', { 0: active.name, 1: active.bed }));
     setActive(null);
   };
 
   const verifyCheckout = () => {
     if (!verifying) return;
     setCheckouts((all) => all.map((c) => (c.id === verifying.id ? { ...c, verified: true } : c)));
-    show(`Đã xác minh trả phòng ${verifying.bed} — hoàn cọc ${formatVnd(verifying.deposit - deduction)}`);
+    show(t('Check-out of {0} verified — deposit refund {1}', { 0: verifying.bed, 1: formatVnd(verifying.deposit - deduction) }));
     setVerifying(null);
     setDeduction(0);
   };
 
   return (
     <div className="space-y-6">
-      <PageHeader title="Check-in / Check-out" description="Tuần nhận phòng Spring 2027 · khung tự phục vụ 02/01 08:00 – 05/01/2027 20:00" />
+      <PageHeader title="Check-in / Check-out" description={t('Spring 2027 check-in week · self-service window 02/01 08:00 – 05/01/2027 20:00')} />
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard label="Đã nhận phòng" value={`${done}/${total}`} icon={UserCheck} tone="emerald" hint={`${Math.round((done / total) * 100)}% · 94% qua QR`} />
-        <StatCard label="Sắp no-show" value={pending.length} icon={Timer} tone="rose" hint="Còn 3 giờ đến hạn" />
-        <StatCard label="Chờ check-in thủ công" value={manual.filter((m) => !m.done).length} icon={Clock} tone="amber" />
-        <StatCard label="Trả phòng chờ xác minh" value={checkouts.filter((c) => !c.verified).length} icon={LogOut} tone="blue" />
+        <StatCard label={t('Checked in')} value={`${done}/${total}`} icon={UserCheck} tone="emerald" hint={`${Math.round((done / total) * 100)}% · 94% qua QR`} />
+        <StatCard label={t('About to be no-show')} value={pending.length} icon={Timer} tone="rose" hint={t('3 hours left')} />
+        <StatCard label={t('Waiting for manual check-in')} value={manual.filter((m) => !m.done).length} icon={Clock} tone="amber" />
+        <StatCard label={t('Check-outs awaiting verification')} value={checkouts.filter((c) => !c.verified).length} icon={LogOut} tone="blue" />
       </div>
 
       <Tabs<TabKey>
         items={[
-          { value: 'monitor', label: 'Theo dõi check-in' },
-          { value: 'manual', label: 'Check-in thủ công / trễ', count: manual.filter((m) => !m.done).length },
-          { value: 'checkout', label: 'Xác minh trả phòng', count: checkouts.filter((c) => !c.verified).length },
+          { value: 'monitor', label: t('Check-in tracking') },
+          { value: 'manual', label: t('Manual / late check-in'), count: manual.filter((m) => !m.done).length },
+          { value: 'checkout', label: t('Check-out verification'), count: checkouts.filter((c) => !c.verified).length },
         ]}
         value={tab}
         onChange={setTab}
@@ -125,7 +125,7 @@ export function StaffCheckinOutPage() {
 
       {tab === 'monitor' && (
         <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-          <SectionCard title="Tiến độ theo tòa">
+          <SectionCard title={t('Progress by building')}>
             <ul className="space-y-4 text-xs">
               {BUILDINGS.map((b) => (
                 <li key={b.b}>
@@ -137,8 +137,8 @@ export function StaffCheckinOutPage() {
           </SectionCard>
           <SectionCard
             className="xl:col-span-2"
-            title="Chưa nhận phòng — sắp quá hạn"
-            subtitle="Hết khung giờ, hệ thống tự hủy phân bổ và giữ tiền cọc. Liên hệ trước để tránh mất chỗ."
+            title={t('Not checked in — deadline approaching')}
+            subtitle={t('When the window ends, the system cancels the allocation and keeps the deposit. Contact the students beforehand so they don\'t lose their place.')}
             noPadding
           >
             <ul className="divide-y divide-line">
@@ -147,13 +147,13 @@ export function StaffCheckinOutPage() {
                   <Avatar name={p.name} />
                   <div className="flex-1">
                     <div className="font-semibold text-ink">{p.name} <span className="text-ink-subtle font-normal">{p.id}</span></div>
-                    <div className="text-ink-muted">{p.bed} · còn {p.hoursLeft} giờ</div>
+                    <div className="text-ink-muted">{p.bed} {t('· remaining')} {p.hoursLeft} {t('hours')}</div>
                   </div>
                   {p.contacted ? (
-                    <span className="text-label font-semibold text-emerald-600">Đã liên hệ</span>
+                    <span className="text-label font-semibold text-emerald-600">{t('Contacted')}</span>
                   ) : (
-                    <AppButton size="sm" variant="outline" onClick={() => { setPending((all) => all.map((x) => (x.id === p.id ? { ...x, contacted: true } : x))); show(`Đã gửi nhắc nhở tới ${p.name}`); }}>
-                      Gửi nhắc nhở
+                    <AppButton size="sm" variant="outline" onClick={() => { setPending((all) => all.map((x) => (x.id === p.id ? { ...x, contacted: true } : x))); show(t('Reminder sent to {0}', { 0: p.name })); }}>
+                      {t('Send reminder')}
                     </AppButton>
                   )}
                 </li>
@@ -165,7 +165,7 @@ export function StaffCheckinOutPage() {
 
       {tab === 'manual' && (
         <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-          <SectionCard className="xl:col-span-2" title="Sinh viên cần check-in thủ công / trễ" noPadding>
+          <SectionCard className="xl:col-span-2" title={t('Students needing manual / late check-in')} noPadding>
             <ul className="divide-y divide-line">
               {manual.map((m) => (
                 <li key={m.id} className="px-5 py-3.5 flex flex-col md:flex-row md:items-center gap-3 text-xs">
@@ -173,14 +173,14 @@ export function StaffCheckinOutPage() {
                   <div className="flex-1">
                     <div className="font-semibold text-ink">{m.name} <span className="text-ink-subtle font-normal">{m.id} · {m.bed}</span></div>
                     <div className="text-ink-muted">{m.reason}</div>
-                    <div className="text-label text-ink-subtle">Đến quầy: {m.arrived} · {m.paid ? 'Đã thanh toán' : 'Chưa thanh toán phần còn lại'}</div>
+                    <div className="text-label text-ink-subtle">{t('At the desk:')} {m.arrived} · {m.paid ? t('Paid') : t('Remaining fee unpaid')}</div>
                   </div>
-                  {m.done ? <StatusBadge status="CHECKED_IN" /> : <AppButton size="sm" onClick={() => { setActive(m); setSteps([]); }}>Xử lý</AppButton>}
+                  {m.done ? <StatusBadge status="CHECKED_IN" /> : <AppButton size="sm" onClick={() => { setActive(m); setSteps([]); }}>{t('Handle')}</AppButton>}
                 </li>
               ))}
             </ul>
           </SectionCard>
-          <SectionCard title="Tra cứu sinh viên tại quầy">
+          <SectionCard title={t('Look up a student at the desk')}>
             <div className="flex gap-2">
               <div className="relative flex-1">
                 <Search className="w-4 h-4 text-ink-subtle absolute left-3 top-1/2 -translate-y-1/2" />
@@ -190,32 +190,32 @@ export function StaffCheckinOutPage() {
                 size="sm"
                 disabled={lookup.length < 8}
                 onClick={() => {
-                  setManual((all) => [{ id: lookup, name: `Sinh viên ${lookup}`, bed: 'A220-G4', reason: 'Đến quầy trực tiếp', arrived: 'Vừa xong', paid: false }, ...all]);
+                  setManual((all) => [{ id: lookup, name: t('Student {0}', { 0: lookup }), bed: 'A220-G4', reason: t('Walk-in at the desk'), arrived: t('Just now'), paid: false }, ...all]);
                   setLookup('');
                 }}
               >
-                Thêm
+                {t('More')}
               </AppButton>
             </div>
-            <p className="text-label text-ink-muted mt-3">Chỉ check-in thủ công cho sinh viên đã có phân bổ phòng. Sinh viên đã bị hủy do no-show cần nộp đơn vòng 2.</p>
+            <p className="text-label text-ink-muted mt-3">{t('Only students with a room allocation can be checked in manually. Students cancelled as no-show must apply in round 2.')}</p>
           </SectionCard>
         </div>
       )}
 
       {tab === 'checkout' && (
-        <SectionCard title="Biên bản trả phòng chờ xác minh" subtitle="So sánh với biên bản hiện trạng khi nhận phòng" noPadding>
+        <SectionCard title={t('Check-out reports awaiting verification')} subtitle={t('Compare with the condition report at check-in')} noPadding>
           <ul className="divide-y divide-line">
             {checkouts.map((c) => (
               <li key={c.id} className="px-5 py-3.5 flex flex-col md:flex-row md:items-center gap-3 text-xs">
                 <Avatar name={c.name} />
                 <div className="flex-1">
                   <div className="font-semibold text-ink">{c.name} <span className="text-ink-subtle font-normal">{c.id} · {c.bed}</span></div>
-                  <div className="text-label text-ink-muted">Gửi lúc {c.submitted}</div>
+                  <div className="text-label text-ink-muted">{t('Submitted at')} {c.submitted}</div>
                   <div className={clsx('text-label font-semibold', c.differences.length ? 'text-amber-600' : 'text-emerald-600')}>
-                    {c.differences.length ? `${c.differences.length} hạng mục khác biệt` : 'Không có khác biệt'}
+                    {c.differences.length ? t('{0} items differ', { 0: c.differences.length }) : t('No differences')}
                   </div>
                 </div>
-                {c.verified ? <StatusBadge status="CHECKED_OUT" /> : <AppButton size="sm" variant="outline" onClick={() => { setVerifying(c); setDeduction(c.differences.length * 150000); }}>Xác minh</AppButton>}
+                {c.verified ? <StatusBadge status="CHECKED_OUT" /> : <AppButton size="sm" variant="outline" onClick={() => { setVerifying(c); setDeduction(c.differences.length * 150000); }}>{t('Verify')}</AppButton>}
               </li>
             ))}
           </ul>
@@ -225,12 +225,12 @@ export function StaffCheckinOutPage() {
       <Modal
         open={!!active}
         onClose={() => setActive(null)}
-        title={active ? `Check-in thủ công: ${active.name}` : ''}
+        title={active ? t('Manual check-in: {0}', { 0: active.name }) : ''}
         subtitle={active ? `${active.id} · ${active.bed}` : ''}
         footer={
           <>
-            <AppButton variant="outline" onClick={() => setActive(null)}>Đóng</AppButton>
-            <AppButton disabled={steps.length < MANUAL_STEPS.length} leftIcon={<CheckCircle2 className="w-4 h-4" />} onClick={completeManual}>Hoàn tất check-in</AppButton>
+            <AppButton variant="outline" onClick={() => setActive(null)}>{t('Close')}</AppButton>
+            <AppButton disabled={steps.length < MANUAL_STEPS.length} leftIcon={<CheckCircle2 className="w-4 h-4" />} onClick={completeManual}>{t('Complete check-in')}</AppButton>
           </>
         }
       >
@@ -246,7 +246,7 @@ export function StaffCheckinOutPage() {
                 </button>
               );
             })}
-            {!active.paid && <p className="text-label text-rose-600">Sinh viên chưa thanh toán — hướng dẫn quét VietQR tại quầy trước khi tick bước 2.</p>}
+            {!active.paid && <p className="text-label text-rose-600">{t('The student has not paid — guide them to scan the VietQR code at the desk before ticking step 2.')}</p>}
           </div>
         )}
       </Modal>
@@ -255,22 +255,22 @@ export function StaffCheckinOutPage() {
         open={!!verifying}
         onClose={() => setVerifying(null)}
         size="lg"
-        title={verifying ? `Xác minh trả phòng ${verifying.bed}` : ''}
+        title={verifying ? t('Verify check-out {0}', { 0: verifying.bed }) : ''}
         subtitle={verifying?.name}
         footer={
           <>
-            <AppButton variant="outline" onClick={() => setVerifying(null)}>Hủy</AppButton>
-            <AppButton onClick={verifyCheckout}>Xác nhận trả phòng</AppButton>
+            <AppButton variant="outline" onClick={() => setVerifying(null)}>{t('Cancel')}</AppButton>
+            <AppButton onClick={verifyCheckout}>{t('Confirm check-out')}</AppButton>
           </>
         }
       >
         {verifying && (
           <div className="space-y-4 text-xs">
             {verifying.differences.length === 0 ? (
-              <div className="p-3 rounded-lg bg-emerald-50 text-emerald-800 flex gap-2"><CheckCircle2 className="w-4 h-4" />Hiện trạng khớp biên bản nhận phòng.</div>
+              <div className="p-3 rounded-lg bg-emerald-50 text-emerald-800 flex gap-2"><CheckCircle2 className="w-4 h-4" />{t('Condition matches the check-in report.')}</div>
             ) : (
               <table className="w-full">
-                <thead className="text-ink-muted border-b"><tr><th className="text-left py-2">Hạng mục</th><th className="text-left py-2">Khi nhận</th><th className="text-left py-2">Khi trả</th></tr></thead>
+                <thead className="text-ink-muted border-b"><tr><th className="text-left py-2">{t('Item')}</th><th className="text-left py-2">{t('At check-in')}</th><th className="text-left py-2">{t('At check-out')}</th></tr></thead>
                 <tbody className="divide-y divide-line">
                   {verifying.differences.map((d) => (
                     <tr key={d.item}><td className="py-2 font-semibold">{d.item}</td><td className="py-2 text-emerald-700">{d.atCheckin}</td><td className="py-2 text-rose-600 flex items-center gap-1"><XCircle className="w-3 h-3" />{d.now}</td></tr>
@@ -279,12 +279,12 @@ export function StaffCheckinOutPage() {
               </table>
             )}
             <div className="grid grid-cols-3 gap-2">
-              <div className="p-3 rounded-lg bg-surface-muted"><div className="text-ink-subtle">Tiền cọc</div><div className="font-bold">{formatVnd(verifying.deposit)}</div></div>
+              <div className="p-3 rounded-lg bg-surface-muted"><div className="text-ink-subtle">{t('Deposits')}</div><div className="font-bold">{formatVnd(verifying.deposit)}</div></div>
               <div className="p-3 rounded-lg bg-surface-muted">
-                <div className="text-ink-subtle">Khấu trừ</div>
+                <div className="text-ink-subtle">{t('Deduction')}</div>
                 <input type="number" step={50000} value={deduction} onChange={(e) => setDeduction(Math.min(verifying.deposit, Math.max(0, Number(e.target.value))))} className="w-full mt-1 px-2 py-1 border border-line rounded" />
               </div>
-              <div className="p-3 rounded-lg bg-emerald-50"><div className="text-ink-subtle">Hoàn lại</div><div className="font-bold text-emerald-700">{formatVnd(verifying.deposit - deduction)}</div></div>
+              <div className="p-3 rounded-lg bg-emerald-50"><div className="text-ink-subtle">{t('Refund')}</div><div className="font-bold text-emerald-700">{formatVnd(verifying.deposit - deduction)}</div></div>
             </div>
           </div>
         )}

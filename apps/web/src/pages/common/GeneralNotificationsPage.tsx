@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Search, Pin, ChevronDown, CheckCheck } from 'lucide-react';
 import clsx from 'clsx';
-import { PageHeader, SectionCard, Tabs, EmptyState, useToast } from '@shared-ui';
+import { PageHeader, SectionCard, Tabs, EmptyState, useToast, t } from '@shared-ui';
 import {
   ANNOUNCEMENTS,
   ANNOUNCEMENT_CATEGORY_LABEL as CATEGORY_LABEL,
@@ -40,15 +40,15 @@ export function GeneralNotificationsPage() {
   return (
     <div className="space-y-6 max-w-4xl">
       <PageHeader
-        title="Thông báo chung"
-        description={`Thông báo từ Ban Quản lý KTX và hệ thống · ${unread} chưa đọc`}
+        title={t('Announcements')}
+        description={t('Announcements from the Dormitory Management Board and the system · {0} unread', { 0: unread })}
         actions={
           <button
             type="button"
-            onClick={() => { setRead(NOTICES.map((n) => n.id)); show('Đã đánh dấu tất cả là đã đọc'); }}
-            className="px-3 py-2 rounded-lg border border-line bg-white text-xs font-semibold text-ink flex items-center gap-1.5 hover:bg-surface-muted"
+            onClick={() => { setRead(NOTICES.map((n) => n.id)); show(t('All marked as read')); }}
+            className="px-3 py-2 rounded-lg border border-line bg-surface text-xs font-semibold text-ink flex items-center gap-1.5 hover:bg-surface-muted"
           >
-            <CheckCheck className="w-4 h-4" /> Đánh dấu đã đọc
+            <CheckCheck className="w-4 h-4" /> {t('Mark all as read')}
           </button>
         }
       />
@@ -56,7 +56,7 @@ export function GeneralNotificationsPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <Tabs<Category>
           items={[
-            { value: 'ALL', label: 'Tất cả', count: NOTICES.length },
+            { value: 'ALL', label: t('All'), count: NOTICES.length },
             ...CATEGORIES.map((c) => ({ value: c, label: CATEGORY_LABEL[c], count: count(c) })),
           ]}
           value={category}
@@ -64,12 +64,12 @@ export function GeneralNotificationsPage() {
         />
         <div className="relative sm:w-64">
           <Search className="w-4 h-4 text-ink-subtle absolute left-3 top-1/2 -translate-y-1/2" />
-          <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Tìm thông báo…" className="w-full pl-9 pr-3 py-2 text-xs rounded-lg border border-line bg-white" />
+          <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder={t('Search announcements…')} className="w-full pl-9 pr-3 py-2 text-xs rounded-lg border border-line bg-surface" />
         </div>
       </div>
 
       {list.length === 0 ? (
-        <EmptyState title="Không tìm thấy thông báo" description="Thử từ khóa khác hoặc chọn danh mục khác." />
+        <EmptyState title={t('No announcements found')} description={t('Try another keyword or category.')} />
       ) : (
         <SectionCard noPadding>
           <ul className="divide-y divide-line">
@@ -79,10 +79,10 @@ export function GeneralNotificationsPage() {
               return (
                 <li key={n.id}>
                   <button type="button" onClick={() => toggle(n.id)} aria-expanded={isOpen} className="w-full px-5 py-4 text-left hover:bg-surface-muted flex gap-3">
-                    <span className={clsx('mt-1.5 w-2 h-2 rounded-full shrink-0', isUnread ? 'bg-brand-ink' : 'bg-transparent')} />
+                    <span className={clsx('mt-1.5 w-2 h-2 rounded-full shrink-0', isUnread ? 'bg-brand-fill' : 'bg-transparent')} />
                     <div className="flex-1 min-w-0">
                       <div className="flex flex-wrap items-center gap-2 text-label text-ink-muted mb-1">
-                        {n.important && <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-rose-100 text-rose-700 font-bold"><Pin className="w-3 h-3" />Quan trọng</span>}
+                        {n.important && <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-rose-100 text-rose-700 font-bold"><Pin className="w-3 h-3" />{t('Important')}</span>}
                         <span className={clsx('px-2 py-0.5 rounded-full font-semibold', ANNOUNCEMENT_CATEGORY_TONE[n.category])}>{CATEGORY_LABEL[n.category]}</span>
                         <span>·</span>
                         <span>{n.source}</span>

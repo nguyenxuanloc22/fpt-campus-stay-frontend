@@ -3,7 +3,9 @@ import { ChevronRight, MapPin, Menu } from 'lucide-react';
 import { useLocation } from 'react-router-dom';
 import clsx from 'clsx';
 import { useAuthStore } from '@features/auth';
+import { t } from '@shared-ui';
 import { breadcrumbOf } from './navigation';
+import { LanguageSwitcher, ThemeToggle } from './header/PreferenceControls';
 import { NotificationBell } from './header/NotificationBell';
 import { UserMenu } from './header/UserMenu';
 
@@ -22,7 +24,7 @@ export function Header({ onToggleSidebar }: { onToggleSidebar: () => void }) {
         <button
           type="button"
           onClick={onToggleSidebar}
-          aria-label="Mở menu điều hướng"
+          aria-label={t('Open navigation menu')}
           // Sinh viên trên mobile dùng thanh tab dưới đáy (tab “Thêm”)
           className={clsx(
             'w-touch h-touch -ml-2 rounded-control items-center justify-center text-ink-muted hover:bg-surface-sunken hover:text-ink lg:hidden',
@@ -50,9 +52,11 @@ export function Header({ onToggleSidebar }: { onToggleSidebar: () => void }) {
         </nav>
       </div>
       <div className="flex items-center gap-1 sm:gap-2 shrink-0">
-        <span className="hidden lg:inline-flex items-center gap-1 text-label text-ink-muted">
-          <MapPin className="w-4 h-4" aria-hidden="true" /> Cơ sở Tân Uyên
+        <span className="hidden xl:inline-flex items-center gap-1 text-label text-ink-muted">
+          <MapPin className="w-4 h-4" aria-hidden="true" /> {t('Tan Uyen campus')}
         </span>
+        <LanguageSwitcher />
+        <ThemeToggle />
         <NotificationBell />
         <UserMenu />
       </div>

@@ -7,9 +7,10 @@ export const ROLES = {
 
 export type Role = (typeof ROLES)[keyof typeof ROLES];
 
+/** Nhãn tiếng Anh; ứng dụng web hiển thị qua t(ROLE_LABELS[role]) để có bản tiếng Việt. */
 export const ROLE_LABELS: Record<Role, string> = {
-  [ROLES.STUDENT]: 'Sinh viên',
-  [ROLES.STAFF]: 'Cán bộ KTX',
-  [ROLES.MANAGER]: 'Trưởng ban KTX',
-  [ROLES.ADMIN]: 'Quản trị viên',
+  [ROLES.STUDENT]: 'Student',
+  [ROLES.STAFF]: 'Dormitory staff',
+  [ROLES.MANAGER]: 'Dormitory manager',
+  [ROLES.ADMIN]: 'Administrator',
 };

@@ -30,7 +30,7 @@ export function BarChart({ data, height = 180, formatValue = (v) => String(v), p
             </div>
             <div className="w-full flex items-end justify-center gap-0.5 h-full">
               <div
-                className="w-full max-w-7 bg-brand-ink rounded-t-md transition-opacity group-hover:opacity-80"
+                className="w-full max-w-7 bg-brand-fill rounded-t-md transition-opacity group-hover:opacity-80"
                 style={{ height: `${(d.value / max) * 100}%` }}
               />
               {d.secondary !== undefined && (
@@ -53,7 +53,7 @@ export function BarChart({ data, height = 180, formatValue = (v) => String(v), p
       {hasSecondary && (primaryLabel || secondaryLabel) && (
         <div className="flex items-center justify-center gap-4 mt-3 text-label text-ink-muted">
           <span className="flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 rounded-sm bg-brand-ink" />
+            <span className="w-2.5 h-2.5 rounded-sm bg-brand-fill" />
             {primaryLabel}
           </span>
           <span className="flex items-center gap-1.5">

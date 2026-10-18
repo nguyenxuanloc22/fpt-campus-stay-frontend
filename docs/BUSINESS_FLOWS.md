@@ -216,6 +216,51 @@ Loại hóa đơn `INVOICE_TYPE` = `DEPOSIT · ROOM_FEE · UTILITY`. Trạng th�
 
 ---
 
+## F8. Chu trình vận hành KTX 16 tuần (System Timeline)
+
+Mỗi học kỳ (16 tuần) chạy một chu trình chuẩn bị cho học kỳ kế tiếp. Quản trị viên cấu hình tại **Admin › Semesters & timeline** (`/admin/semesters`):
+chọn **ngày bắt đầu tuần 1**, chỉnh **tuần bắt đầu / kết thúc** từng giai đoạn, rồi **Khóa** để cố định ngày (mở khóa mới sửa được; “Reset” về kế hoạch mặc định).
+Các mốc này là đầu vào cho tác vụ tự động của actor System (mở/đóng cửa sổ, nhắc hạn, xếp phòng, gửi email check-out / check-in).
+Mã nguồn: `apps/web/src/features/semesters/timeline.ts` (dữ liệu mặc định + tính ngày), giao diện biểu đồ Gantt `SemesterTimelineChart`.
+
+| # | Giai đoạn | Tuần (mặc định) | Phụ trách | Nội dung |
+|---|---|---|---|---|
+| 1 | Enrollment verification — Xác thực sinh viên | 1 – 2 | System | Tích hợp FPT SIS để xác thực tình trạng học tập |
+| 2 | Requests & extensions — Đơn từ & gia hạn | 2 – 6 | Student | Mở hệ thống cho sinh viên gửi đơn (đổi phòng, bảo trì…); thông báo sinh viên hết hạn gia hạn |
+| 3 | Fees & request handling — Thu phí & xử lý đơn | 6 – 10 | Staff | Sinh viên đóng phí phòng kỳ tới; cán bộ xử lý đơn đổi phòng, bảo trì |
+| 4 | Dormitory assignment — round 1 | 10 – 11 | Student | Mở cổng đăng ký KTX cho học kỳ tới |
+| 5 | Round 1 resolution — Xử lý vòng 1 | 11 – 12 | Staff | Xử lý đơn vòng 1, xếp phòng trống, gửi thông báo check-in; tổng hợp sinh viên gặp vấn đề |
+| 6 | Dormitory assignment — round 2 | 12 – 13 | Student | Vòng đăng ký thứ hai cho sinh viên gặp vấn đề ở vòng 1; nhận yêu cầu hoàn tiền |
+| 7 | Round 2 resolution — Xử lý vòng 2 | 13 – 14 | Staff | Xử lý tồn đọng, lấp phòng thiếu người, hoàn tiền |
+| 8 | Check-out | 14 – 15 | Student | Sinh viên trả phòng trong vòng 1 tuần kể từ khi nhận email |
+| 9 | Check-in | 15 – 16 | Student | Nhận phòng sớm nhất 1 tuần trước khi học kỳ mới bắt đầu |
+
+Ví dụ với chu trình Fall 2026 → Spring 2027 (tuần 1 bắt đầu 01/09/2026):
+
+```mermaid
+gantt
+    title Chu trình KTX 16 tuần — Fall 2026 → Spring 2027
+    dateFormat YYYY-MM-DD
+    axisFormat %d/%m
+    section System
+    Xác thực sinh viên (T1–2)        :done, s1, 2026-09-01, 14d
+    section Sinh viên
+    Đơn từ & gia hạn (T2–6)          :done, s2, 2026-09-08, 35d
+    Đăng ký xếp phòng vòng 1 (T10–11) :s4, 2026-11-03, 14d
+    Đăng ký xếp phòng vòng 2 (T12–13) :s6, 2026-11-17, 14d
+    Check-out (T14–15)               :s8, 2026-12-01, 14d
+    Check-in (T15–16)                :s9, 2026-12-08, 14d
+    section Cán bộ KTX
+    Thu phí & xử lý đơn (T6–10)      :active, s3, 2026-10-06, 35d
+    Xử lý vòng 1 (T11–12)            :s5, 2026-11-10, 14d
+    Xử lý vòng 2 (T13–14)            :s7, 2026-11-24, 14d
+```
+
+Quy ước hiển thị trên biểu đồ: màu theo người phụ trách (System xanh dương, Sinh viên cam, Cán bộ xanh lá — luôn kèm chú thích chữ), giai đoạn đã xong làm mờ, giai đoạn đang diễn ra có viền, vạch đỏ “Today”.
+Tổng quan Admin hiển thị tuần hiện tại và các giai đoạn sắp tới; trang học kỳ có 4 thẻ: học kỳ hiện tại (tuần x/16), giai đoạn hiện tại, giai đoạn tiếp theo (còn n ngày), kỳ đang mở đăng ký.
+
+---
+
 ## TÁC VỤ TỰ ĐỘNG CỦA ACTOR SYSTEM
 
 | Use case System | Kích hoạt | Kết quả | Flow |

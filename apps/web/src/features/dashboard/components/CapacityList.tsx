@@ -1,5 +1,5 @@
 import clsx from 'clsx';
-import { ProgressBar, STATUS_TONE_CLASS, type StatusTone } from '@shared-ui';
+import { ProgressBar, STATUS_TONE_CLASS, type StatusTone, t } from '@shared-ui';
 
 export interface CapacityRow {
   name: string;
@@ -13,7 +13,7 @@ export interface CapacityRow {
 
 /** Ngưỡng công suất: >= 95% gần đầy (đỏ), >= 85% cao (vàng), còn lại còn chỗ (xanh). */
 const level = (pct: number): { label: string; tone: StatusTone; bar: 'rose' | 'amber' | 'emerald' } =>
-  pct >= 95 ? { label: 'Gần đầy', tone: 'danger', bar: 'rose' } : pct >= 85 ? { label: 'Cao', tone: 'pending', bar: 'amber' } : { label: 'Còn chỗ', tone: 'success', bar: 'emerald' };
+  pct >= 95 ? { label: t('Nearly full'), tone: 'danger', bar: 'rose' } : pct >= 85 ? { label: 'Cao', tone: 'pending', bar: 'amber' } : { label: t('Available'), tone: 'success', bar: 'emerald' };
 
 /** Công suất / giường trống theo tòa — thanh tiến độ màu theo ngưỡng, luôn kèm chữ. */
 export function CapacityList({ rows, showFree = false, className = 'space-y-4' }: { rows: CapacityRow[]; showFree?: boolean; className?: string }) {
@@ -32,13 +32,13 @@ export function CapacityList({ rows, showFree = false, className = 'space-y-4' }
               <span className="flex items-center gap-2">
                 <span className={clsx('px-2 py-0.5 rounded-full text-label font-semibold', STATUS_TONE_CLASS[lv.tone])}>{lv.label}</span>
                 <span className="text-body font-semibold text-ink tabular-nums">
-                  {showFree ? `${r.total - r.used} trống` : `${pct.toFixed(1)}%`}
+                  {showFree ? t('{0} free', { 0: r.total - r.used }) : `${pct.toFixed(1)}%`}
                 </span>
               </span>
             </div>
-            <ProgressBar value={pct} tone={lv.bar} label={`${r.name}: lấp đầy ${pct.toFixed(1)}%`} />
+            <ProgressBar value={pct} tone={lv.bar} label={t('{0}: {1}% occupied', { 0: r.name, 1: pct.toFixed(1) })} />
             <div className="text-label text-ink-muted mt-1">
-              {r.used}/{r.total} giường đã dùng{r.detail && ` · ${r.detail}`}
+              {r.used}/{r.total} {t('beds in use')}{r.detail && ` · ${r.detail}`}
             </div>
           </li>
         );

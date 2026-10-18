@@ -1,4 +1,5 @@
-export function HomeHero() {
+
+import { t } from '@shared-ui';export function HomeHero() {
   return (
     <section className="relative overflow-hidden min-h-[580px] flex items-center justify-center py-20 sm:py-28 text-white">
       {/* Full Background Image: /assets/campus-building.png */}
@@ -14,20 +15,19 @@ export function HomeHero() {
           {/* Opening Badge */}
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-xs font-semibold text-orange-400 mb-6 shadow-sm">
             <span className="w-2 h-2 rounded-full bg-[#F26522] animate-pulse" />
-            <span>Khai trương Q3/2026 • FPT Campus Tân Uyên</span>
+            <span>{t('Opening Q3/2026 • FPT Campus Tan Uyen')}</span>
           </div>
 
           {/* Main Title */}
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight leading-[1.15] mb-6 drop-shadow-md">
-            Ký túc xá thông minh cho{' '}
-            <span className="text-[#F26522]">4.000 sinh viên</span>{' '}
-            FPT Tân Uyên
+            {t('A smart dormitory for')}{' '}
+            <span className="text-[#F26522]">{t('4,000 students')}</span>{' '}
+            {t('FPT Tan Uyen')}
           </h1>
 
           {/* Subtitle */}
           <p className="text-base sm:text-lg text-slate-200 font-normal leading-relaxed max-w-2xl drop-shadow-sm">
-            Đăng ký online • Chọn loại phòng &amp; ghép roommate • Thanh toán VietQR.
-            Không cần xếp hàng. Không cần giấy tờ.
+            {t('Register online • Choose a room type & match roommates • Pay with VietQR. No queues. No paperwork.')}
           </p>
         </div>
 
@@ -35,19 +35,19 @@ export function HomeHero() {
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 p-6 sm:p-8 rounded-2xl bg-white/95 backdrop-blur-md border border-white/20 shadow-2xl text-slate-900">
           <div className="border-r border-slate-200/80 last:border-0 pr-4">
             <div className="text-2xl sm:text-3xl font-black text-[#1A365D]">4.000+</div>
-            <div className="text-xs sm:text-sm text-slate-600 mt-1 font-medium">Sức chứa</div>
+            <div className="text-xs sm:text-sm text-slate-600 mt-1 font-medium">{t('Capacity')}</div>
           </div>
           <div className="border-r border-slate-200/80 last:border-0 pr-4 pl-2 sm:pl-4">
             <div className="text-2xl sm:text-3xl font-black text-[#1A365D]">Q3/2026</div>
-            <div className="text-xs sm:text-sm text-slate-600 mt-1 font-medium">Khai trương</div>
+            <div className="text-xs sm:text-sm text-slate-600 mt-1 font-medium">{t('Opening')}</div>
           </div>
           <div className="border-r border-slate-200/80 last:border-0 pr-4 pl-2 sm:pl-4">
             <div className="text-2xl sm:text-3xl font-black text-[#1A365D]">84.000 m²</div>
-            <div className="text-xs sm:text-sm text-slate-600 mt-1 font-medium">Diện tích campus</div>
+            <div className="text-xs sm:text-sm text-slate-600 mt-1 font-medium">{t('Campus area')}</div>
           </div>
           <div className="pl-2 sm:pl-4">
             <div className="text-2xl sm:text-3xl font-black text-[#F26522]">100%</div>
-            <div className="text-xs sm:text-sm text-slate-600 mt-1 font-medium">Số hoá quy trình</div>
+            <div className="text-xs sm:text-sm text-slate-600 mt-1 font-medium">{t('Digitized process')}</div>
           </div>
         </div>
       </div>

@@ -1,3 +1,4 @@
+import { t } from '../i18n/t';
 import React from 'react';
 import { AlertTriangle, RotateCw } from 'lucide-react';
 import { AppButton } from './AppButton';
@@ -11,8 +12,8 @@ interface ErrorStateProps {
 
 /** Trạng thái lỗi: nói chuyện gì xảy ra và bước tiếp theo. */
 export function ErrorState({
-  title = 'Không tải được dữ liệu',
-  description = 'Kết nối tới máy chủ bị gián đoạn. Kiểm tra mạng rồi thử lại.',
+  title = t('Couldn\'t load data'),
+  description = t('The connection to the server was interrupted. Check your network and try again.'),
   onRetry,
 }: ErrorStateProps) {
   return (
@@ -22,7 +23,7 @@ export function ErrorState({
       <p className="text-body text-ink-muted max-w-sm">{description}</p>
       {onRetry && (
         <AppButton className="mt-4" variant="outline" leftIcon={<RotateCw className="w-4 h-4" />} onClick={onRetry}>
-          Thử lại
+          {t('Try again')}
         </AppButton>
       )}
     </div>

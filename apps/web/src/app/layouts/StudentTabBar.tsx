@@ -2,6 +2,7 @@ import { NavLink } from 'react-router-dom';
 import { MoreHorizontal } from 'lucide-react';
 import clsx from 'clsx';
 import { STUDENT_TABS } from './navigation';
+import { t } from '@shared-ui';
 
 const TAB = 'flex-1 min-h-touch flex flex-col items-center justify-center gap-1 text-label transition-colors';
 
@@ -9,7 +10,7 @@ const TAB = 'flex-1 min-h-touch flex flex-col items-center justify-center gap-1 
 export function StudentTabBar({ onMore }: { onMore: () => void }) {
   return (
     <nav
-      aria-label="Điều hướng nhanh"
+      aria-label={t('Quick navigation')}
       className="sm:hidden fixed inset-x-0 bottom-0 z-30 bg-surface border-t border-line pb-[env(safe-area-inset-bottom)]"
     >
       <ul className="flex h-tabbar">
@@ -28,7 +29,7 @@ export function StudentTabBar({ onMore }: { onMore: () => void }) {
         <li className="flex-1 flex">
           <button type="button" onClick={onMore} className={clsx(TAB, 'text-ink-muted hover:text-ink')} aria-haspopup="dialog">
             <MoreHorizontal className="w-5 h-5" aria-hidden="true" />
-            Thêm
+            {t('More')}
           </button>
         </li>
       </ul>

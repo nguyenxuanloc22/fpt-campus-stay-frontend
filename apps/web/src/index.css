@@ -29,6 +29,10 @@
   --color-brand-ink: #c2410c;
   --color-brand-ink-hover: #9a3412;
   --color-brand-soft: #fff4ed;
+  /* Nền nút chính (chữ trắng 5.2:1) — giữ nguyên ở cả chế độ tối */
+  --color-brand-fill: #c2410c;
+  --color-brand-fill-hover: #9a3412;
+  --color-danger-fill: #b91c1c;
 
   /* Trạng thái cố định: vàng = chờ, xanh dương = đang xử lý, xanh lá = xong, đỏ = quá hạn / bị chặn */
   --color-pending: #92400e;
@@ -77,6 +81,165 @@
 
   /* Chuyển động */
   --default-transition-duration: 150ms;
+}
+
+
+/*
+ * Chế độ tối — chỉ khai báo lại token (component không cần sửa). AppLayout gắn data-theme lên <html>.
+ * Bảng màu Tailwind sắc nhạt (vd. emerald-50 / emerald-700 ở các trang cũ) cũng được đổi sang tông tối tương ứng.
+ */
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --color-page: #0f0d0c;
+  --color-surface: #1c1917;
+  --color-surface-muted: #211d1b;
+  --color-surface-sunken: #292524;
+  --color-line: #3b3633;
+  --color-line-strong: #57534e;
+  --color-line-control: #8c857f;
+  --color-ink: #f5f5f4;
+  --color-ink-hover: #e7e5e4;
+  --color-ink-muted: #d6d3d1;
+  --color-ink-subtle: #a8a29e;
+  --color-brand-ink: #fb923c;
+  --color-brand-ink-hover: #fdba74;
+  --color-brand-soft: #3b2216;
+  --color-pending: #fcd34d;
+  --color-pending-soft: #3d2e0f;
+  --color-info: #93c5fd;
+  --color-info-soft: #1e2a4a;
+  --color-success: #86efac;
+  --color-success-soft: #14301f;
+  --color-danger: #fca5a5;
+  --color-danger-soft: #3f1a1a;
+  --color-chart-1: #fb923c;
+  --color-chart-2: #60a5fa;
+  --color-chart-3: #4ade80;
+  --color-chart-4: #fbbf24;
+  --color-chart-5: #f87171;
+  --color-chart-6: #a8a29e;
+  --color-chart-track: #292524;
+  --shadow-card: none;
+  --shadow-overlay: 0 8px 24px -8px rgb(0 0 0 / 0.6);
+  --color-amber-50: color-mix(in srgb, #f59e0b 12%, #1c1917);
+  --color-amber-100: color-mix(in srgb, #f59e0b 18%, #1c1917);
+  --color-amber-200: color-mix(in srgb, #f59e0b 32%, #1c1917);
+  --color-amber-600: #fbbf24;
+  --color-amber-700: #fcd34d;
+  --color-amber-800: #fcd34d;
+  --color-amber-900: #fcd34d;
+  --color-emerald-50: color-mix(in srgb, #10b981 12%, #1c1917);
+  --color-emerald-100: color-mix(in srgb, #10b981 18%, #1c1917);
+  --color-emerald-200: color-mix(in srgb, #10b981 32%, #1c1917);
+  --color-emerald-600: #34d399;
+  --color-emerald-700: #6ee7b7;
+  --color-emerald-800: #6ee7b7;
+  --color-emerald-900: #6ee7b7;
+  --color-rose-50: color-mix(in srgb, #f43f5e 12%, #1c1917);
+  --color-rose-100: color-mix(in srgb, #f43f5e 18%, #1c1917);
+  --color-rose-200: color-mix(in srgb, #f43f5e 32%, #1c1917);
+  --color-rose-600: #fb7185;
+  --color-rose-700: #fda4af;
+  --color-rose-800: #fda4af;
+  --color-rose-900: #fda4af;
+  --color-sky-50: color-mix(in srgb, #0ea5e9 12%, #1c1917);
+  --color-sky-100: color-mix(in srgb, #0ea5e9 18%, #1c1917);
+  --color-sky-200: color-mix(in srgb, #0ea5e9 32%, #1c1917);
+  --color-sky-600: #38bdf8;
+  --color-sky-700: #7dd3fc;
+  --color-sky-800: #7dd3fc;
+  --color-sky-900: #7dd3fc;
+  --color-blue-50: color-mix(in srgb, #3b82f6 12%, #1c1917);
+  --color-blue-100: color-mix(in srgb, #3b82f6 18%, #1c1917);
+  --color-blue-200: color-mix(in srgb, #3b82f6 32%, #1c1917);
+  --color-blue-600: #60a5fa;
+  --color-blue-700: #93c5fd;
+  --color-blue-800: #93c5fd;
+  --color-blue-900: #93c5fd;
+  --color-violet-50: color-mix(in srgb, #8b5cf6 12%, #1c1917);
+  --color-violet-100: color-mix(in srgb, #8b5cf6 18%, #1c1917);
+  --color-violet-200: color-mix(in srgb, #8b5cf6 32%, #1c1917);
+  --color-violet-600: #a78bfa;
+  --color-violet-700: #c4b5fd;
+  --color-violet-800: #c4b5fd;
+  --color-violet-900: #c4b5fd;
+  --color-purple-50: color-mix(in srgb, #a855f7 12%, #1c1917);
+  --color-purple-100: color-mix(in srgb, #a855f7 18%, #1c1917);
+  --color-purple-200: color-mix(in srgb, #a855f7 32%, #1c1917);
+  --color-purple-600: #c084fc;
+  --color-purple-700: #d8b4fe;
+  --color-purple-800: #d8b4fe;
+  --color-purple-900: #d8b4fe;
+  --color-orange-50: color-mix(in srgb, #f97316 12%, #1c1917);
+  --color-orange-100: color-mix(in srgb, #f97316 18%, #1c1917);
+  --color-orange-200: color-mix(in srgb, #f97316 32%, #1c1917);
+  --color-orange-600: #fb923c;
+  --color-orange-700: #fdba74;
+  --color-orange-800: #fdba74;
+  --color-orange-900: #fdba74;
+  --color-teal-50: color-mix(in srgb, #14b8a6 12%, #1c1917);
+  --color-teal-100: color-mix(in srgb, #14b8a6 18%, #1c1917);
+  --color-teal-200: color-mix(in srgb, #14b8a6 32%, #1c1917);
+  --color-teal-600: #2dd4bf;
+  --color-teal-700: #5eead4;
+  --color-teal-800: #5eead4;
+  --color-teal-900: #5eead4;
+  --color-indigo-50: color-mix(in srgb, #6366f1 12%, #1c1917);
+  --color-indigo-100: color-mix(in srgb, #6366f1 18%, #1c1917);
+  --color-indigo-200: color-mix(in srgb, #6366f1 32%, #1c1917);
+  --color-indigo-600: #818cf8;
+  --color-indigo-700: #a5b4fc;
+  --color-indigo-800: #a5b4fc;
+  --color-indigo-900: #a5b4fc;
+  --color-lime-50: color-mix(in srgb, #84cc16 12%, #1c1917);
+  --color-lime-100: color-mix(in srgb, #84cc16 18%, #1c1917);
+  --color-lime-200: color-mix(in srgb, #84cc16 32%, #1c1917);
+  --color-lime-600: #a3e635;
+  --color-lime-700: #bef264;
+  --color-lime-800: #bef264;
+  --color-lime-900: #bef264;
+  --color-red-50: color-mix(in srgb, #ef4444 12%, #1c1917);
+  --color-red-100: color-mix(in srgb, #ef4444 18%, #1c1917);
+  --color-red-200: color-mix(in srgb, #ef4444 32%, #1c1917);
+  --color-red-600: #f87171;
+  --color-red-700: #fca5a5;
+  --color-red-800: #fca5a5;
+  --color-red-900: #fca5a5;
+  --color-green-50: color-mix(in srgb, #22c55e 12%, #1c1917);
+  --color-green-100: color-mix(in srgb, #22c55e 18%, #1c1917);
+  --color-green-200: color-mix(in srgb, #22c55e 32%, #1c1917);
+  --color-green-600: #4ade80;
+  --color-green-700: #86efac;
+  --color-green-800: #86efac;
+  --color-green-900: #86efac;
+  --color-yellow-50: color-mix(in srgb, #eab308 12%, #1c1917);
+  --color-yellow-100: color-mix(in srgb, #eab308 18%, #1c1917);
+  --color-yellow-200: color-mix(in srgb, #eab308 32%, #1c1917);
+  --color-yellow-600: #facc15;
+  --color-yellow-700: #fde047;
+  --color-yellow-800: #fde047;
+  --color-yellow-900: #fde047;
+  --color-cyan-50: color-mix(in srgb, #06b6d4 12%, #1c1917);
+  --color-cyan-100: color-mix(in srgb, #06b6d4 18%, #1c1917);
+  --color-cyan-200: color-mix(in srgb, #06b6d4 32%, #1c1917);
+  --color-cyan-600: #22d3ee;
+  --color-cyan-700: #67e8f9;
+  --color-cyan-800: #67e8f9;
+  --color-cyan-900: #67e8f9;
+  --color-fuchsia-50: color-mix(in srgb, #d946ef 12%, #1c1917);
+  --color-fuchsia-100: color-mix(in srgb, #d946ef 18%, #1c1917);
+  --color-fuchsia-200: color-mix(in srgb, #d946ef 32%, #1c1917);
+  --color-fuchsia-600: #e879f9;
+  --color-fuchsia-700: #f0abfc;
+  --color-fuchsia-800: #f0abfc;
+  --color-fuchsia-900: #f0abfc;
+  --color-pink-50: color-mix(in srgb, #ec4899 12%, #1c1917);
+  --color-pink-100: color-mix(in srgb, #ec4899 18%, #1c1917);
+  --color-pink-200: color-mix(in srgb, #ec4899 32%, #1c1917);
+  --color-pink-600: #f472b6;
+  --color-pink-700: #f9a8d4;
+  --color-pink-800: #f9a8d4;
+  --color-pink-900: #f9a8d4;
 }
 
 /* Ô nhập dùng chung: viền đạt 3:1, focus rõ */

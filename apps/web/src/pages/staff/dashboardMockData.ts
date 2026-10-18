@@ -5,13 +5,14 @@
 
 import { APP_ROUTES } from '@campusstay/constants';
 
+import { t } from '@shared-ui';
 /* ────────── Type definitions ────────── */
 
 export type TaskPriority = 'URGENT' | 'HIGH' | 'MEDIUM';
 
 export interface Building {
   code: string;
-  gender: 'Nữ' | 'Nam';
+  gender: 'Female' | 'Male';
   beds: number;
   used: number;
   maintenance: number;
@@ -52,17 +53,17 @@ export interface StaffProfile {
 export const STAFF_PROFILE: StaffProfile = {
   name: 'Trần Văn Cường',
   roleBadge: 'Residence Life Staff',
-  campus: 'FPT University HCMC / Tân Uyên',
+  campus: t('FPT University HCMC / Tan Uyen'),
   shift: '07:30 – 17:00',
 };
 
 /* ────────── Buildings ────────── */
 
 export const BUILDINGS: Building[] = [
-  { code: 'A', gender: 'Nữ', beds: 288, used: 271, maintenance: 4 },
-  { code: 'B', gender: 'Nam', beds: 312, used: 298, maintenance: 6 },
-  { code: 'C', gender: 'Nữ', beds: 320, used: 276, maintenance: 2 },
-  { code: 'D', gender: 'Nam', beds: 280, used: 230, maintenance: 3 },
+  { code: 'A', gender: 'Female', beds: 288, used: 271, maintenance: 4 },
+  { code: 'B', gender: 'Male', beds: 312, used: 298, maintenance: 6 },
+  { code: 'C', gender: 'Female', beds: 320, used: 276, maintenance: 2 },
+  { code: 'D', gender: 'Male', beds: 280, used: 230, maintenance: 3 },
 ];
 
 /* ────────── Dynamic Stats (derived) ────────── */
@@ -82,43 +83,43 @@ export const todayCheckOut = 4;
 export const ACTION_ITEMS: ActionItem[] = [
   {
     id: 'act-001',
-    title: 'Ticket TK-10499: Mất điện tầng 3 Tòa D',
-    subtitle: 'Đã vượt SLA 0.9 giờ — Cần xử lý ngay lập tức',
+    title: t('TK-10499: power outage on floor 3, Building D'),
+    subtitle: t('0.9 hours past SLA — handle immediately'),
     priority: 'URGENT',
     route: APP_ROUTES.STAFF.MAINTENANCE,
-    ctaLabel: 'Xử lý',
+    ctaLabel: t('Handle'),
   },
   {
     id: 'act-002',
-    title: 'Đề xuất xếp phòng BR-SP27-02 có 6 xung đột',
-    subtitle: 'Rà soát & điều chỉnh trước khi gửi Manager',
+    title: t('Allocation proposal BR-SP27-02 has 6 conflicts'),
+    subtitle: t('Review & adjust before sending to the manager'),
     priority: 'HIGH',
     route: APP_ROUTES.STAFF.ASSIGNMENT,
-    ctaLabel: 'Điều chỉnh',
+    ctaLabel: t('Adjust'),
   },
   {
     id: 'act-003',
-    title: '4 đơn đăng ký bị gắn cờ cần rà soát',
-    subtitle: 'Hồ sơ đào tạo cần đối soát / lý do đặc biệt',
+    title: t('4 flagged applications need review'),
+    subtitle: t('Academic records to reconcile / special reasons'),
     priority: 'HIGH',
     route: APP_ROUTES.STAFF.APPLICATIONS,
-    ctaLabel: 'Rà soát',
+    ctaLabel: t('Review'),
   },
   {
     id: 'act-004',
-    title: '3 biên bản trả phòng chờ xác minh',
-    subtitle: 'Đối chiếu với biên bản nhận phòng',
+    title: t('3 check-out reports awaiting verification'),
+    subtitle: t('Compare with the check-in reports'),
     priority: 'MEDIUM',
     route: APP_ROUTES.STAFF.CHECKIN_OUT,
-    ctaLabel: 'Xác minh',
+    ctaLabel: t('Verify'),
   },
   {
     id: 'act-005',
-    title: '5 ticket bảo trì đã duyệt chờ lên lịch kiểm tra',
-    subtitle: 'Cần xếp lịch kiểm tra phòng trong tuần',
+    title: t('5 approved maintenance requests waiting for inspection scheduling'),
+    subtitle: t('Room inspections need to be scheduled this week'),
     priority: 'MEDIUM',
     route: APP_ROUTES.STAFF.MAINTENANCE,
-    ctaLabel: 'Lên lịch',
+    ctaLabel: t('Schedule'),
   },
 ];
 
@@ -135,8 +136,8 @@ export const RECENT_CHECKINS: CheckinRecord[] = [
 /* ────────── Recent Activity ────────── */
 
 export const RECENT_ACTIVITY: ActivityEntry[] = [
-  { who: 'Nguyễn Thu Hà', action: 'đã duyệt đơn APP-SP27-004801', timestamp: '5 phút trước' },
-  { who: 'Lê Văn Tài', action: 'cập nhật ticket TK-10482 sang "Đang xử lý"', timestamp: '18 phút trước' },
-  { who: 'Hệ thống', action: 'ghi nhận thanh toán VietQR 285.000 ₫ từ SE171234', timestamp: '32 phút trước' },
-  { who: 'Trần Văn Cường', action: 'hoàn tất check-in cho SE190087 (A115)', timestamp: '1 giờ trước' },
+  { who: 'Nguyễn Thu Hà', action: t('approved application APP-SP27-004801'), timestamp: t('5 minutes ago') },
+  { who: 'Lê Văn Tài', action: t('updated maintenance request TK-10482 to "Processing"'), timestamp: t('18 minutes ago') },
+  { who: t('System'), action: t('recorded a VietQR payment of 285.000 ₫ from SE171234'), timestamp: t('32 minutes ago') },
+  { who: 'Trần Văn Cường', action: t('completed check-in for SE190087 (A115)'), timestamp: t('1 hour ago') },
 ];

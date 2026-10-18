@@ -26,8 +26,7 @@ import {
   Tabs,
   Avatar,
   ProgressBar,
-  useToast,
-} from '@shared-ui';
+  useToast, t } from '@shared-ui';
 
 type RoomStatus = 'AVAILABLE' | 'OCCUPIED' | 'MAINTENANCE' | 'LOCKED';
 
@@ -63,7 +62,7 @@ function buildRooms(): InvRoom[] {
           building: b,
           floor: f,
           number: `${b}${f}${String(n).padStart(2, '0')}`,
-          type: capacity === 2 ? '2 giường VIP' : capacity === 6 ? '6 giường tiêu chuẩn' : '4 giường máy lạnh',
+          type: capacity === 2 ? t('2-bed VIP') : capacity === 6 ? t('6-bed standard') : t('4-bed air-conditioned'),
           capacity,
           occupants: Array.from({ length: occCount }).map(
             (_, i) => `${FIRST[(seed + i) % FIRST.length]} ${MIDDLE[(seed + i * 3) % MIDDLE.length]} ${LAST[(seed * 2 + i) % LAST.length]}`
@@ -80,13 +79,13 @@ function buildRooms(): InvRoom[] {
 }
 
 const ASSETS = [
-  { name: 'Giường tầng sắt', qty: 4, ok: 4 },
-  { name: 'Nệm cao su 1m2', qty: 4, ok: 4 },
-  { name: 'Bàn học + ghế', qty: 4, ok: 3 },
-  { name: 'Tủ quần áo có khóa', qty: 4, ok: 4 },
-  { name: 'Máy lạnh Panasonic 1.5HP', qty: 1, ok: 1 },
-  { name: 'Bình nóng lạnh Ariston 30L', qty: 1, ok: 1 },
-  { name: 'Đèn LED tuýp', qty: 4, ok: 3 },
+  { name: t('Steel bunk bed'), qty: 4, ok: 4 },
+  { name: t('1.2 m rubber mattress'), qty: 4, ok: 4 },
+  { name: t('Desk + chair'), qty: 4, ok: 3 },
+  { name: t('Lockable wardrobe'), qty: 4, ok: 4 },
+  { name: t('Panasonic 1.5HP air conditioner'), qty: 1, ok: 1 },
+  { name: t('Ariston 30L water heater'), qty: 1, ok: 1 },
+  { name: t('LED tube light'), qty: 4, ok: 3 },
 ];
 
 export function StaffInventoryPage() {
@@ -120,47 +119,47 @@ export function StaffInventoryPage() {
 
   const bulkSet = (s: RoomStatus) => {
     setRooms((all) => all.map((r) => (selected.includes(r.id) ? { ...r, status: s, occupants: s === 'MAINTENANCE' || s === 'LOCKED' ? [] : r.occupants } : r)));
-    show(`Đã cập nhật ${selected.length} phòng sang trạng thái "${s === 'MAINTENANCE' ? 'Bảo trì' : s === 'LOCKED' ? 'Đã khóa' : 'Còn trống'}"`);
+    show(t('Updated {0} rooms to "{1}"', { 0: selected.length, 1: s === 'MAINTENANCE' ? t('Maintenance') : s === 'LOCKED' ? t('Locked') : t('Available') }));
     setSelected([]);
   };
 
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Quản Lý Tồn Kho Phòng"
-        description="Theo dõi trạng thái phòng, giường, người ở và tài sản của 4 tòa nhà KTX"
+        title={t('Room inventory')}
+        description={t('Track the status of rooms, beds, occupants and assets across the 4 dormitory buildings')}
         actions={
           <>
-            <AppButton size="sm" variant="outline" leftIcon={<Upload className="w-4 h-4" />} onClick={() => show('Mở hộp thoại nhập Excel', 'info')}>
-              Nhập Excel
+            <AppButton size="sm" variant="outline" leftIcon={<Upload className="w-4 h-4" />} onClick={() => show(t('Open the Excel import dialog'), 'info')}>
+              {t('Import Excel')}
             </AppButton>
-            <AppButton size="sm" variant="outline" leftIcon={<Download className="w-4 h-4" />} onClick={() => show(`Đã xuất ${filtered.length} phòng ra Excel`)}>
-              Xuất Excel
+            <AppButton size="sm" variant="outline" leftIcon={<Download className="w-4 h-4" />} onClick={() => show(t('Exported {0} rooms to Excel', { 0: filtered.length }))}>
+              {t('Export Excel')}
             </AppButton>
-            <AppButton size="sm" leftIcon={<Plus className="w-4 h-4" />} onClick={() => show('Mở biểu mẫu thêm phòng mới', 'info')}>
-              Thêm phòng
+            <AppButton size="sm" leftIcon={<Plus className="w-4 h-4" />} onClick={() => show(t('Open the new room form'), 'info')}>
+              {t('Add room')}
             </AppButton>
           </>
         }
       />
 
       <div className="grid grid-cols-2 xl:grid-cols-5 gap-4">
-        <StatCard label="Tổng số phòng" value={rooms.length} icon={Building2} tone="navy" />
-        <StatCard label="Giường đã dùng" value={`${usedBeds}/${totalBeds}`} icon={BedDouble} tone="orange" hint={`${((usedBeds / totalBeds) * 100).toFixed(1)}%`} />
-        <StatCard label="Phòng còn chỗ" value={count('AVAILABLE')} icon={CheckCircle2} tone="emerald" />
-        <StatCard label="Đang bảo trì" value={count('MAINTENANCE')} icon={Wrench} tone="amber" />
-        <StatCard label="Đã khóa" value={count('LOCKED')} icon={Lock} tone="rose" />
+        <StatCard label={t('Total rooms')} value={rooms.length} icon={Building2} tone="navy" />
+        <StatCard label={t('Beds in use')} value={`${usedBeds}/${totalBeds}`} icon={BedDouble} tone="orange" hint={`${((usedBeds / totalBeds) * 100).toFixed(1)}%`} />
+        <StatCard label={t('Rooms with space')} value={count('AVAILABLE')} icon={CheckCircle2} tone="emerald" />
+        <StatCard label={t('Under maintenance')} value={count('MAINTENANCE')} icon={Wrench} tone="amber" />
+        <StatCard label={t('Locked')} value={count('LOCKED')} icon={Lock} tone="rose" />
       </div>
 
       <SectionCard noPadding>
         <div className="p-4 border-b border-line space-y-3">
           <Tabs
             items={[
-              { value: 'ALL' as const, label: 'Tất cả', count: rooms.length },
-              { value: 'AVAILABLE' as const, label: 'Còn trống', count: count('AVAILABLE') },
-              { value: 'OCCUPIED' as const, label: 'Đã đầy', count: count('OCCUPIED') },
-              { value: 'MAINTENANCE' as const, label: 'Bảo trì', count: count('MAINTENANCE') },
-              { value: 'LOCKED' as const, label: 'Đã khóa', count: count('LOCKED') },
+              { value: 'ALL' as const, label: t('All'), count: rooms.length },
+              { value: 'AVAILABLE' as const, label: t('Available'), count: count('AVAILABLE') },
+              { value: 'OCCUPIED' as const, label: t('Full'), count: count('OCCUPIED') },
+              { value: 'MAINTENANCE' as const, label: t('Maintenance'), count: count('MAINTENANCE') },
+              { value: 'LOCKED' as const, label: t('Locked'), count: count('LOCKED') },
             ]}
             value={status}
             onChange={(v) => {
@@ -177,30 +176,30 @@ export function StaffInventoryPage() {
                   setQuery(e.target.value);
                   setPage(1);
                 }}
-                placeholder="Tìm theo số phòng hoặc tên sinh viên..."
+                placeholder={t('Search by room number or student name...')}
                 className="w-full pl-9 pr-3 py-2 text-xs rounded-lg border border-line"
               />
             </div>
-            <select value={building} onChange={(e) => { setBuilding(e.target.value); setPage(1); }} className="px-3 py-2 text-xs rounded-lg border border-line bg-white">
-              <option value="ALL">Tất cả tòa</option>
+            <select aria-label={t('Building')} value={building} onChange={(e) => { setBuilding(e.target.value); setPage(1); }} className="px-3 py-2 text-xs rounded-lg border border-line bg-surface">
+              <option value="ALL">{t('All buildings')}</option>
               {['A', 'B', 'C', 'D'].map((b) => (
-                <option key={b} value={b}>Tòa {b}</option>
+                <option key={b} value={b}>{t('Building')} {b}</option>
               ))}
             </select>
-            <select value={floor} onChange={(e) => { setFloor(e.target.value); setPage(1); }} className="px-3 py-2 text-xs rounded-lg border border-line bg-white">
-              <option value="ALL">Mọi tầng</option>
+            <select aria-label={t('Floor')} value={floor} onChange={(e) => { setFloor(e.target.value); setPage(1); }} className="px-3 py-2 text-xs rounded-lg border border-line bg-surface">
+              <option value="ALL">{t('All floors')}</option>
               {[1, 2, 3, 4, 5].map((f) => (
-                <option key={f} value={f}>Tầng {f}</option>
+                <option key={f} value={f}>{t('Floor')} {f}</option>
               ))}
             </select>
           </div>
           {selected.length > 0 && (
             <div className="flex flex-wrap items-center gap-2 p-2.5 rounded-lg bg-surface-sunken text-xs">
-              <span className="font-semibold text-ink">Đã chọn {selected.length} phòng</span>
+              <span className="font-semibold text-ink">{t('Selected')} {selected.length} {t('rooms')}</span>
               <span className="flex-1" />
-              <AppButton size="sm" variant="outline" onClick={() => bulkSet('AVAILABLE')}>Mở lại</AppButton>
-              <AppButton size="sm" variant="outline" leftIcon={<Wrench className="w-3.5 h-3.5" />} onClick={() => bulkSet('MAINTENANCE')}>Chuyển bảo trì</AppButton>
-              <AppButton size="sm" variant="danger" leftIcon={<Lock className="w-3.5 h-3.5" />} onClick={() => bulkSet('LOCKED')}>Khóa phòng</AppButton>
+              <AppButton size="sm" variant="outline" onClick={() => bulkSet('AVAILABLE')}>{t('Reopen')}</AppButton>
+              <AppButton size="sm" variant="outline" leftIcon={<Wrench className="w-3.5 h-3.5" />} onClick={() => bulkSet('MAINTENANCE')}>{t('Set to maintenance')}</AppButton>
+              <AppButton size="sm" variant="danger" leftIcon={<Lock className="w-3.5 h-3.5" />} onClick={() => bulkSet('LOCKED')}>{t('Lock room')}</AppButton>
             </div>
           )}
         </div>
@@ -212,6 +211,7 @@ export function StaffInventoryPage() {
                 <th className="px-4 py-3 w-8">
                   <input
                     type="checkbox"
+                    aria-label={t('Select all rooms on this page')}
                     checked={allVisibleSelected}
                     onChange={() =>
                       setSelected((all) => (allVisibleSelected ? all.filter((id) => !visible.some((r) => r.id === id)) : [...new Set([...all, ...visible.map((r) => r.id)])]))
@@ -219,12 +219,12 @@ export function StaffInventoryPage() {
                     className="accent-brand-ink"
                   />
                 </th>
-                <th className="text-left font-semibold px-4 py-3">Phòng</th>
-                <th className="text-left font-semibold px-4 py-3">Loại</th>
-                <th className="text-left font-semibold px-4 py-3">Lấp đầy</th>
-                <th className="text-left font-semibold px-4 py-3">Người ở</th>
-                <th className="text-left font-semibold px-4 py-3">Kiểm tra gần nhất</th>
-                <th className="text-left font-semibold px-4 py-3">Trạng thái</th>
+                <th className="text-left font-semibold px-4 py-3">{t('Room')}</th>
+                <th className="text-left font-semibold px-4 py-3">{t('Type')}</th>
+                <th className="text-left font-semibold px-4 py-3">{t('Occupancy')}</th>
+                <th className="text-left font-semibold px-4 py-3">{t('Occupants')}</th>
+                <th className="text-left font-semibold px-4 py-3">{t('Last inspection')}</th>
+                <th className="text-left font-semibold px-4 py-3">{t('Status')}</th>
                 <th className="px-4 py-3" />
               </tr>
             </thead>
@@ -232,11 +232,11 @@ export function StaffInventoryPage() {
               {visible.map((r) => (
                 <tr key={r.id} className={clsx('hover:bg-surface-muted', selected.includes(r.id) && 'bg-orange-50/40')}>
                   <td className="px-4 py-3">
-                    <input type="checkbox" checked={selected.includes(r.id)} onChange={() => toggleSelect(r.id)} className="accent-brand-ink" />
+                    <input type="checkbox" aria-label={t('Select room {0}', { 0: r.id })} checked={selected.includes(r.id)} onChange={() => toggleSelect(r.id)} className="accent-brand-ink" />
                   </td>
                   <td className="px-4 py-3">
                     <div className="font-bold text-ink">{r.number}</div>
-                    <div className="text-label text-ink-subtle">Tòa {r.building} • Tầng {r.floor}</div>
+                    <div className="text-label text-ink-subtle">{t('Building')} {r.building} {t('• Floor')} {r.floor}</div>
                   </td>
                   <td className="px-4 py-3">
                     <span className="flex items-center gap-1.5 text-ink-muted">
@@ -273,7 +273,7 @@ export function StaffInventoryPage() {
                   </td>
                   <td className="px-4 py-3 text-right">
                     <button type="button" onClick={() => setDetail(r)} className="text-brand-ink font-semibold hover:underline">
-                      Chi tiết
+                      {t('Details')}
                     </button>
                   </td>
                 </tr>
@@ -284,7 +284,7 @@ export function StaffInventoryPage() {
 
         <div className="px-4 py-3 border-t border-line flex items-center justify-between text-xs text-ink-muted">
           <span>
-            Hiển thị {(page - 1) * PAGE_SIZE + 1}–{Math.min(page * PAGE_SIZE, filtered.length)} / {filtered.length} phòng
+            {t('Showing')} {(page - 1) * PAGE_SIZE + 1}–{Math.min(page * PAGE_SIZE, filtered.length)} / {filtered.length} {t('rooms')}
           </span>
           <div className="flex items-center gap-1">
             <button type="button" disabled={page === 1} onClick={() => setPage(page - 1)} className="px-2.5 py-1 rounded-md border border-line disabled:opacity-40">
@@ -295,7 +295,7 @@ export function StaffInventoryPage() {
                 key={i}
                 type="button"
                 onClick={() => setPage(i + 1)}
-                className={clsx('px-2.5 py-1 rounded-md border', page === i + 1 ? 'bg-brand-ink text-white border-brand' : 'border-line')}
+                className={clsx('px-2.5 py-1 rounded-md border', page === i + 1 ? 'bg-brand-fill text-white border-brand' : 'border-line')}
               >
                 {i + 1}
               </button>
@@ -311,27 +311,27 @@ export function StaffInventoryPage() {
         open={!!detail}
         onClose={() => setDetail(null)}
         size="lg"
-        title={detail ? `Phòng ${detail.number}` : ''}
-        subtitle={detail ? `Tòa ${detail.building} • Tầng ${detail.floor} • ${detail.type}` : ''}
+        title={detail ? t('Room {0}', { 0: detail.number }) : ''}
+        subtitle={detail ? t('Building {0} • Floor {1} • {2}', { 0: detail.building, 1: detail.floor, 2: detail.type }) : ''}
         footer={
           <>
-            <AppButton variant="outline" leftIcon={<Wrench className="w-4 h-4" />} onClick={() => { show(`Đã tạo ticket bảo trì cho ${detail?.number}`); setDetail(null); }}>
-              Tạo ticket bảo trì
+            <AppButton variant="outline" leftIcon={<Wrench className="w-4 h-4" />} onClick={() => { show(t('Maintenance request created for {0}', { 0: detail?.number })); setDetail(null); }}>
+              {t('Create maintenance request')}
             </AppButton>
-            <AppButton onClick={() => setDetail(null)}>Đóng</AppButton>
+            <AppButton onClick={() => setDetail(null)}>{t('Close')}</AppButton>
           </>
         }
       >
         {detail && (
           <div className="space-y-5">
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
-              <div className="p-3 rounded-lg bg-surface-muted"><div className="text-ink-subtle">Trạng thái</div><div className="mt-1"><StatusBadge status={detail.status} /></div></div>
-              <div className="p-3 rounded-lg bg-surface-muted"><div className="text-ink-subtle">Sức chứa</div><div className="font-bold mt-1">{detail.capacity} giường</div></div>
-              <div className="p-3 rounded-lg bg-surface-muted"><div className="text-ink-subtle">Đang ở</div><div className="font-bold mt-1">{detail.occupants.length} SV</div></div>
-              <div className="p-3 rounded-lg bg-surface-muted"><div className="text-ink-subtle">Kiểm tra</div><div className="font-bold mt-1">{detail.lastInspection}</div></div>
+              <div className="p-3 rounded-lg bg-surface-muted"><div className="text-ink-subtle">{t('Status')}</div><div className="mt-1"><StatusBadge status={detail.status} /></div></div>
+              <div className="p-3 rounded-lg bg-surface-muted"><div className="text-ink-subtle">{t('Capacity')}</div><div className="font-bold mt-1">{detail.capacity} {t('beds')}</div></div>
+              <div className="p-3 rounded-lg bg-surface-muted"><div className="text-ink-subtle">{t('Occupied')}</div><div className="font-bold mt-1">{detail.occupants.length} SV</div></div>
+              <div className="p-3 rounded-lg bg-surface-muted"><div className="text-ink-subtle">{t('Inspect')}</div><div className="font-bold mt-1">{detail.lastInspection}</div></div>
             </div>
             <div>
-              <div className="text-xs font-bold text-ink mb-2 flex items-center gap-1.5"><Users className="w-4 h-4" /> Danh sách giường</div>
+              <div className="text-xs font-bold text-ink mb-2 flex items-center gap-1.5"><Users className="w-4 h-4" /> {t('Beds')}</div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 {Array.from({ length: detail.capacity }).map((_, i) => {
                   const o = detail.occupants[i];
@@ -344,7 +344,7 @@ export function StaffInventoryPage() {
                           <span className="font-semibold text-ink">{o}</span>
                         </>
                       ) : (
-                        <span className="text-emerald-700 font-semibold">Giường trống</span>
+                        <span className="text-emerald-700 font-semibold">{t('Free beds')}</span>
                       )}
                     </div>
                   );
@@ -352,7 +352,7 @@ export function StaffInventoryPage() {
               </div>
             </div>
             <div>
-              <div className="text-xs font-bold text-ink mb-2 flex items-center gap-1.5"><Package className="w-4 h-4" /> Tài sản trong phòng</div>
+              <div className="text-xs font-bold text-ink mb-2 flex items-center gap-1.5"><Package className="w-4 h-4" /> {t('Room assets')}</div>
               <table className="w-full text-xs">
                 <tbody className="divide-y divide-line">
                   {ASSETS.map((a) => (
@@ -361,9 +361,9 @@ export function StaffInventoryPage() {
                       <td className="py-2 text-right text-ink-muted">{a.ok}/{a.qty}</td>
                       <td className="py-2 text-right w-28">
                         {a.ok === a.qty ? (
-                          <span className="text-emerald-600 font-semibold">Tốt</span>
+                          <span className="text-emerald-600 font-semibold">{t('Good')}</span>
                         ) : (
-                          <span className="text-amber-600 font-semibold">{a.qty - a.ok} hư hỏng</span>
+                          <span className="text-amber-600 font-semibold">{a.qty - a.ok} {t('damaged')}</span>
                         )}
                       </td>
                     </tr>

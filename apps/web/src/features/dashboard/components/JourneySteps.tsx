@@ -1,5 +1,6 @@
 import { Check } from 'lucide-react';
 import clsx from 'clsx';
+import { t } from '@shared-ui';
 
 export interface JourneyStep {
   label: string;
@@ -7,7 +8,7 @@ export interface JourneyStep {
   state: 'done' | 'current' | 'todo';
 }
 
-const STATE_TEXT = { done: 'Đã xong', current: 'Bước hiện tại', todo: 'Chưa tới' };
+const STATE_TEXT = { done: t('Done'), current: t('Current step'), todo: t('Not started') };
 
 /** Thanh hành trình: dọc trên mobile, ngang từ 640px. Bước hiện tại có aria-current="step". */
 export function JourneySteps({ steps }: { steps: JourneyStep[] }) {
@@ -19,7 +20,7 @@ export function JourneySteps({ steps }: { steps: JourneyStep[] }) {
             <span
               className={clsx(
                 'w-8 h-8 rounded-full flex items-center justify-center shrink-0 text-label font-semibold border-2',
-                s.state === 'done' && 'bg-success border-success text-white',
+                s.state === 'done' && 'bg-success border-success text-surface',
                 s.state === 'current' && 'bg-surface border-ink text-ink',
                 s.state === 'todo' && 'bg-surface border-line-strong text-ink-muted'
               )}
@@ -35,7 +36,7 @@ export function JourneySteps({ steps }: { steps: JourneyStep[] }) {
             <div className={clsx('text-body', s.state === 'current' ? 'font-semibold text-ink' : 'text-ink')}>{s.label}</div>
             <div className="text-label text-ink-muted">
               <span className="sr-only">{STATE_TEXT[s.state]}. </span>
-              {s.state === 'current' ? <span className="font-semibold text-pending">Đang chờ bạn</span> : s.date}
+              {s.state === 'current' ? <span className="font-semibold text-pending">{t('Waiting for you')}</span> : s.date}
             </div>
           </div>
         </li>

@@ -4,7 +4,7 @@ import { BellRing, ChevronLeft, ChevronRight, ExternalLink, Pin, X } from 'lucid
 import { useAuthStore } from '@features/auth';
 import { ANNOUNCEMENTS, ANNOUNCEMENT_CATEGORY_LABEL } from '@features/notifications/systemAnnouncements';
 import { APP_ROUTES } from '@campusstay/constants';
-import { AppButton } from '@shared-ui';
+import { AppButton, t } from '@shared-ui';
 
 const NAV_BTN = 'w-touch h-touch sm:w-10 sm:h-10 inline-flex items-center justify-center rounded-control border border-line-control bg-surface text-ink hover:bg-surface-muted disabled:opacity-40';
 
@@ -65,16 +65,16 @@ export function ImportantAnnouncementsModal() {
         <div className="flex items-start gap-3 px-4 sm:px-6 py-4 border-b border-line">
           <BellRing className="w-5 h-5 mt-1 text-brand shrink-0" aria-hidden="true" />
           <div className="flex-1 min-w-0">
-            <h2 id="important-title" className="text-section font-semibold text-ink">Thông báo quan trọng</h2>
+            <h2 id="important-title" className="text-section font-semibold text-ink">{t('Important announcements')}</h2>
             <p className="text-label text-ink-muted flex items-center gap-1">
-              <Pin className="w-3 h-3" aria-hidden="true" /> {pinned.length} thông báo đã ghim
+              <Pin className="w-3 h-3" aria-hidden="true" /> {pinned.length} {t('pinned announcements')}
             </p>
           </div>
           <button
             type="button"
             onClick={close}
             className="-mr-2 w-touch h-touch shrink-0 inline-flex items-center justify-center rounded-control text-ink-muted hover:bg-surface-sunken hover:text-ink"
-            aria-label="Đóng thông báo"
+            aria-label={t('Close announcement')}
           >
             <X className="w-5 h-5" aria-hidden="true" />
           </button>
@@ -82,7 +82,7 @@ export function ImportantAnnouncementsModal() {
 
         <div className="px-4 sm:px-6 py-4 overflow-y-auto">
           <div className="flex flex-wrap items-center gap-2 mb-3 text-label">
-            <span className="px-2 py-0.5 rounded-full bg-danger-soft text-danger font-semibold">Quan trọng</span>
+            <span className="px-2 py-0.5 rounded-full bg-danger-soft text-danger font-semibold">{t('Important')}</span>
             <span className="px-2 py-0.5 rounded-full bg-surface-sunken text-ink-muted font-semibold">{ANNOUNCEMENT_CATEGORY_LABEL[current.category]}</span>
             <span className="text-ink-muted">{current.source} · {current.date}</span>
           </div>
@@ -96,29 +96,29 @@ export function ImportantAnnouncementsModal() {
             }}
             className="mt-3 min-h-touch inline-flex items-center gap-1 text-body font-semibold text-brand-ink hover:underline"
           >
-            Xem chi tiết <ExternalLink className="w-4 h-4" aria-hidden="true" />
+            {t('View details')} <ExternalLink className="w-4 h-4" aria-hidden="true" />
           </button>
         </div>
 
         <div className="flex flex-wrap items-center gap-3 px-4 sm:px-6 py-4 pb-[max(1rem,env(safe-area-inset-bottom))] border-t border-line">
           <label className="flex items-center gap-2 min-h-touch text-body text-ink-muted cursor-pointer select-none">
             <input type="checkbox" checked={dontShow} onChange={(e) => setDontShow(e.target.checked)} className="w-5 h-5 accent-brand-ink" />
-            Không hiện lại trong phiên đăng nhập này
+            {t('Don\'t show again during this session')}
           </label>
           <div className="w-full sm:w-auto sm:ml-auto flex items-center gap-2">
             {pinned.length > 1 && (
               <>
-                <button type="button" disabled={index === 0} onClick={() => setIndex((i) => i - 1)} className={NAV_BTN} aria-label="Thông báo trước">
+                <button type="button" disabled={index === 0} onClick={() => setIndex((i) => i - 1)} className={NAV_BTN} aria-label={t('Previous announcement')}>
                   <ChevronLeft className="w-4 h-4" aria-hidden="true" />
                 </button>
                 <span className="text-label text-ink-muted tabular-nums">{index + 1}/{pinned.length}</span>
-                <button type="button" disabled={index === pinned.length - 1} onClick={() => setIndex((i) => i + 1)} className={NAV_BTN} aria-label="Thông báo sau">
+                <button type="button" disabled={index === pinned.length - 1} onClick={() => setIndex((i) => i + 1)} className={NAV_BTN} aria-label={t('Next announcement')}>
                   <ChevronRight className="w-4 h-4" aria-hidden="true" />
                 </button>
               </>
             )}
             <AppButton className="flex-1 sm:flex-none" onClick={close}>
-              Đã hiểu
+              {t('Got it')}
             </AppButton>
           </div>
         </div>

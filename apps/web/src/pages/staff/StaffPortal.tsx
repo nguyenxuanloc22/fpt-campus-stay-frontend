@@ -33,6 +33,7 @@ import {
   type MaintenanceInspectionItem,
 } from './staffMockData';
 import { StaffCheckinTab } from './StaffCheckinTab';
+import { t } from '@shared-ui';
 
 type StaffTab = 'applications' | 'rooms' | 'assignment' | 'maintenance' | 'checkin';
 
@@ -55,14 +56,14 @@ export function StaffPortal() {
     setApplications((prev) =>
       prev.map((app) => (app.code === code ? { ...app, status: 'VERIFIED' } : app))
     );
-    showToast(`Đã xác nhận hợp lệ hồ sơ ${code}. Đơn đủ điều kiện vào vòng phân bổ.`);
+    showToast(t('Application {0} confirmed as valid. It is eligible for the allocation round.', { 0: code }));
   };
 
   const handleEscalateApplication = (code: string) => {
     setApplications((prev) =>
       prev.map((app) => (app.code === code ? { ...app, status: 'ESCALATED' } : app))
     );
-    showToast(`Đã chuyển hồ sơ ${code} lên Manager xem xét phê duyệt.`);
+    showToast(t('Application {0} escalated to the manager for approval.', { 0: code }));
   };
 
   const handleToggleBedMaintenance = (roomNum: string, bedId: string) => {
@@ -79,7 +80,7 @@ export function StaffPortal() {
         };
       })
     );
-    showToast(`Đã cập nhật trạng thái giường tại phòng ${roomNum}.`);
+    showToast(t('Bed status updated in room {0}.', { 0: roomNum }));
   };
 
   const handleResolveConflict = (conflictId: string) => {
@@ -89,12 +90,12 @@ export function StaffPortal() {
         c.id === conflictId ? { ...c, isResolved: true } : c
       ),
     }));
-    showToast('Đã ghi nhận phương án điều chỉnh xung đột xếp phòng.');
+    showToast(t('Allocation conflict resolution recorded.'));
   };
 
   const handleForwardProposalToManager = () => {
     setAssignment((prev) => ({ ...prev, status: 'SUBMITTED_TO_MANAGER' }));
-    showToast('Đã gửi toàn bộ đề xuất xếp phòng BR-SP27-02 sang Manager để phê duyệt.');
+    showToast(t('The full allocation proposal BR-SP27-02 has been sent to the manager for approval.'));
   };
 
   const handleProgressMaintenance = (id: string) => {
@@ -105,20 +106,20 @@ export function StaffPortal() {
         return { ...m, status: nextStatus };
       })
     );
-    showToast('Đã cập nhật tiến độ xử lý ticket bảo trì.');
+    showToast(t('Maintenance request progress updated.'));
   };
 
   const handleCompleteCheckin = (id: string) => {
     setCheckins((prev) =>
       prev.map((c) => (c.id === id ? { ...c, status: 'COMPLETED' } : c))
     );
-    showToast('Đã hoàn tất xác thực tình trạng phòng và bàn giao chìa khóa/thẻ từ cho sinh viên.');
+    showToast(t('Room condition verified and keys/key card handed over to the student.'));
   };
 
   return (
     <div className="space-y-6">
       {/* ── Operational Header & Profile ── */}
-      <div className="bg-white rounded-2xl border border-line/80 p-5 shadow-xs">
+      <div className="bg-surface rounded-2xl border border-line/80 p-5 shadow-xs">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex items-center gap-3.5">
             <div className="w-12 h-12 rounded-xl bg-orange-100 text-brand-ink font-bold text-base flex items-center justify-center shrink-0">
@@ -129,18 +130,18 @@ export function StaffPortal() {
                 <h1 className="text-xl font-bold text-ink">Trần Văn Cường</h1>
                 <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 text-xs font-semibold border border-emerald-200">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                  Cán bộ Vận hành KTX
+                  {t('Dormitory operations staff')}
                 </span>
               </div>
               <div className="flex items-center gap-4 text-xs text-ink-muted mt-1 flex-wrap">
                 <span className="flex items-center gap-1">
                   <MapPin className="w-3.5 h-3.5 text-ink-subtle" />
-                  FPT University HCMC / Tân Uyên
+                  {t('FPT University HCMC / Tan Uyen')}
                 </span>
                 <span className="text-ink-subtle">|</span>
                 <span className="flex items-center gap-1">
                   <Clock className="w-3.5 h-3.5 text-ink-subtle" />
-                  Ca trực: 07:30 – 17:00
+                  {t('Shift: 07:30 – 17:00')}
                 </span>
                 <span className="text-ink-subtle">|</span>
                 <span className="capitalize">{new Date().toLocaleDateString('vi-VN', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}</span>
@@ -150,7 +151,7 @@ export function StaffPortal() {
 
           <div className="flex items-center gap-2">
             <div className="px-3 py-1.5 rounded-lg bg-surface-muted border border-line text-xs text-ink-muted font-medium">
-              Chế độ tác nghiệp: <strong className="text-ink">Operational Staff</strong>
+              {t('Work mode:')} <strong className="text-ink">Operational Staff</strong>
             </div>
           </div>
         </div>
@@ -159,11 +160,11 @@ export function StaffPortal() {
       {/* ── 5 Core Operational Navigation Tabs ── */}
       <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
         {[
-          { key: 'applications' as StaffTab, label: 'Thẩm định hồ sơ', icon: FileText, count: applications.filter((a) => a.status === 'PENDING_REVIEW').length },
-          { key: 'rooms' as StaffTab, label: 'Trạng thái phòng & giường', icon: Bed, count: rooms.length },
-          { key: 'assignment' as StaffTab, label: 'Rà soát phân bổ phòng', icon: Layers, count: assignment.conflicts.filter((c) => !c.isResolved).length },
-          { key: 'maintenance' as StaffTab, label: 'Bảo trì & Kiểm tra', icon: Wrench, count: maintenanceTasks.filter((m) => m.status !== 'VERIFIED_DONE').length },
-          { key: 'checkin' as StaffTab, label: 'Check-in & Bàn giao', icon: UserCheck, count: checkins.filter((c) => c.status !== 'COMPLETED').length },
+          { key: 'applications' as StaffTab, label: t('Application review'), icon: FileText, count: applications.filter((a) => a.status === 'PENDING_REVIEW').length },
+          { key: 'rooms' as StaffTab, label: t('Room & bed status'), icon: Bed, count: rooms.length },
+          { key: 'assignment' as StaffTab, label: t('Allocation review'), icon: Layers, count: assignment.conflicts.filter((c) => !c.isResolved).length },
+          { key: 'maintenance' as StaffTab, label: t('Maintenance & inspection'), icon: Wrench, count: maintenanceTasks.filter((m) => m.status !== 'VERIFIED_DONE').length },
+          { key: 'checkin' as StaffTab, label: t('Check-in & handover'), icon: UserCheck, count: checkins.filter((c) => c.status !== 'COMPLETED').length },
         ].map((tab) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.key;
@@ -176,7 +177,7 @@ export function StaffPortal() {
                 'flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all whitespace-nowrap shrink-0 border',
                 isActive
                   ? 'bg-ink text-white border-ink shadow-xs'
-                  : 'bg-white text-ink-muted border-line/80 hover:bg-surface-muted hover:text-ink'
+                  : 'bg-surface text-ink-muted border-line/80 hover:bg-surface-muted hover:text-ink'
               )}
             >
               <Icon className={clsx('w-4 h-4', isActive ? 'text-orange-400' : 'text-ink-subtle')} />
@@ -185,7 +186,7 @@ export function StaffPortal() {
                 <span
                   className={clsx(
                     'px-2 py-0.5 rounded-full text-label font-bold',
-                    isActive ? 'bg-brand-ink text-white' : 'bg-surface-sunken text-ink'
+                    isActive ? 'bg-brand-fill text-white' : 'bg-surface-sunken text-ink'
                   )}
                 >
                   {tab.count}
@@ -203,9 +204,9 @@ export function StaffPortal() {
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-base font-bold text-ink">Hồ Sơ Đăng Ký Chờ Thẩm Định</h2>
+              <h2 className="text-base font-bold text-ink">{t('Applications awaiting review')}</h2>
               <p className="text-xs text-ink-muted mt-0.5">
-                Rà soát các hồ sơ có ghi chú hoặc đề nghị ưu tiên đặc thù trước khi chuyển vào xếp phòng
+                {t('Review applications with notes or special priority requests before allocation')}
               </p>
             </div>
           </div>
@@ -214,7 +215,7 @@ export function StaffPortal() {
             {applications.map((app) => (
               <div
                 key={app.code}
-                className="bg-white rounded-2xl border border-line/80 p-5 shadow-xs hover:border-line-strong transition-all space-y-4"
+                className="bg-surface rounded-2xl border border-line/80 p-5 shadow-xs hover:border-line-strong transition-all space-y-4"
               >
                 <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
                   <div>
@@ -228,7 +229,7 @@ export function StaffPortal() {
                       <span className="text-xs text-ink-muted">{app.major}</span>
                     </div>
                     <div className="text-xs text-ink-muted mt-1">
-                      Loại phòng đăng ký: <strong className="text-ink">{app.roomTypeRequested}</strong> • Nộp lúc: {app.submittedAt}
+                      {t('Requested room type:')} <strong className="text-ink">{app.roomTypeRequested}</strong> {t('• Submitted:')} {app.submittedAt}
                     </div>
                   </div>
 
@@ -243,16 +244,16 @@ export function StaffPortal() {
                     )}
                   >
                     {app.status === 'VERIFIED'
-                      ? 'Đã thẩm định hợp lệ'
+                      ? t('Verified as valid')
                       : app.status === 'ESCALATED'
-                      ? 'Đã chuyển Manager'
-                      : 'Cần thẩm định'}
+                      ? t('Escalated to manager')
+                      : t('Needs review')}
                   </span>
                 </div>
 
                 {app.flagReason && (
                   <div className="p-3 rounded-xl bg-amber-50 border border-amber-200/70 text-xs text-amber-900 leading-relaxed">
-                    <strong>Nội dung cần thẩm định:</strong> {app.flagReason}
+                    <strong>{t('Points to review:')}</strong> {app.flagReason}
                   </div>
                 )}
 
@@ -272,7 +273,7 @@ export function StaffPortal() {
                 {/* Documents & Action Buttons */}
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-3 border-t border-line">
                   <div className="flex items-center gap-2 flex-wrap">
-                    <span className="text-xs text-ink-subtle font-medium">Tài liệu minh chứng:</span>
+                    <span className="text-xs text-ink-subtle font-medium">{t('Supporting documents:')}</span>
                     {app.documents.map((doc, idx) => (
                       <span
                         key={idx}
@@ -290,29 +291,29 @@ export function StaffPortal() {
                         <button
                           type="button"
                           onClick={() => handleEscalateApplication(app.code)}
-                          className="border border-line bg-white hover:bg-surface-muted hover:border-line-strong text-ink px-4 py-2 rounded-lg font-medium text-xs sm:text-sm transition-colors inline-flex items-center justify-center gap-1.5"
+                          className="border border-line bg-surface hover:bg-surface-muted hover:border-line-strong text-ink px-4 py-2 rounded-lg font-medium text-xs sm:text-sm transition-colors inline-flex items-center justify-center gap-1.5"
                         >
                           <Send className="w-3.5 h-3.5 text-purple-600" />
-                          Chuyển Manager
+                          {t('Escalate to manager')}
                         </button>
                         <button
                           type="button"
                           onClick={() => handleVerifyApplication(app.code)}
-                          className="bg-brand-ink hover:bg-brand-ink-hover text-white px-4 py-2 rounded-lg font-medium text-xs sm:text-sm transition-colors inline-flex items-center justify-center gap-1.5 shadow-sm"
+                          className="bg-brand-fill hover:bg-brand-fill-hover text-white px-4 py-2 rounded-lg font-medium text-xs sm:text-sm transition-colors inline-flex items-center justify-center gap-1.5 shadow-sm"
                         >
                           <CheckCircle2 className="w-4 h-4" />
-                          Xác nhận hợp lệ
+                          {t('Confirm as valid')}
                         </button>
                       </>
                     )}
                     {app.status === 'VERIFIED' && (
                       <span className="text-xs text-emerald-700 font-semibold flex items-center gap-1">
-                        <CheckCircle2 className="w-4 h-4" /> Sẵn sàng cho đợt xếp phòng
+                        <CheckCircle2 className="w-4 h-4" /> {t('Ready for the allocation round')}
                       </span>
                     )}
                     {app.status === 'ESCALATED' && (
                       <span className="text-xs text-purple-700 font-semibold flex items-center gap-1">
-                        <Clock className="w-4 h-4" /> Đang chờ quyết định từ Trưởng ban
+                        <Clock className="w-4 h-4" /> {t('Waiting for the manager\'s decision')}
                       </span>
                     )}
                   </div>
@@ -328,9 +329,9 @@ export function StaffPortal() {
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-base font-bold text-ink">Quản Lý Trạng Thái Phòng & Giường</h2>
+              <h2 className="text-base font-bold text-ink">{t('Room & bed status management')}</h2>
               <p className="text-xs text-ink-muted mt-0.5">
-                Cập nhật nhanh tình trạng sử dụng, khóa giường bảo trì hoặc giải phóng giường sẵn sàng đón sinh viên
+                {t('Quickly update usage, lock beds for maintenance or release beds ready for students')}
               </p>
             </div>
           </div>
@@ -339,7 +340,7 @@ export function StaffPortal() {
             {rooms.map((room) => (
               <div
                 key={room.roomNumber}
-                className="bg-white rounded-2xl border border-line/80 p-5 shadow-xs space-y-4"
+                className="bg-surface rounded-2xl border border-line/80 p-5 shadow-xs space-y-4"
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2.5">
@@ -347,12 +348,12 @@ export function StaffPortal() {
                       {room.roomNumber}
                     </div>
                     <div>
-                      <h3 className="text-sm font-bold text-ink">{room.building} • Tầng {room.floor}</h3>
-                      <p className="text-xs text-ink-muted">{room.roomType} • Khu {room.gender}</p>
+                      <h3 className="text-sm font-bold text-ink">{room.building} {t('• Floor')} {room.floor}</h3>
+                      <p className="text-xs text-ink-muted">{room.roomType} • {t('{0} zone', { 0: t(room.gender) })}</p>
                     </div>
                   </div>
                   <span className="text-xs font-semibold px-2 py-0.5 rounded bg-surface-sunken text-ink">
-                    {room.beds.filter((b) => b.status === 'AVAILABLE').length}/{room.beds.length} trống
+                    {room.beds.filter((b) => b.status === 'AVAILABLE').length}/{room.beds.length} {t('free')}
                   </span>
                 </div>
 
@@ -387,12 +388,12 @@ export function StaffPortal() {
                             )}
                           >
                             {bed.status === 'AVAILABLE'
-                              ? 'Còn trống'
+                              ? t('Available')
                               : bed.status === 'OCCUPIED'
-                              ? 'Đang ở'
+                              ? t('Occupied')
                               : bed.status === 'MAINTENANCE'
-                              ? 'Bảo trì'
-                              : 'Đang giữ chỗ'}
+                              ? t('Maintenance')
+                              : t('On hold')}
                           </span>
                         </div>
                         {bed.occupant && (
@@ -401,7 +402,7 @@ export function StaffPortal() {
                           </p>
                         )}
                         {bed.status === 'AVAILABLE' && (
-                          <p className="text-emerald-700 mt-0.5 font-medium">Sẵn sàng tiếp nhận sinh viên</p>
+                          <p className="text-emerald-700 mt-0.5 font-medium">{t('Ready for a student')}</p>
                         )}
                       </div>
 
@@ -413,11 +414,11 @@ export function StaffPortal() {
                             className={clsx(
                               'px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors',
                               bed.status === 'MAINTENANCE'
-                                ? 'border-emerald-300 bg-white text-emerald-700 hover:bg-emerald-50'
-                                : 'border-rose-200 bg-white text-rose-700 hover:bg-rose-50'
+                                ? 'border-emerald-300 bg-surface text-emerald-700 hover:bg-emerald-50'
+                                : 'border-rose-200 bg-surface text-rose-700 hover:bg-rose-50'
                             )}
                           >
-                            {bed.status === 'MAINTENANCE' ? 'Mở lại giường' : 'Khóa bảo trì'}
+                            {bed.status === 'MAINTENANCE' ? t('Reopen bed') : t('Lock for maintenance')}
                           </button>
                         )}
                       </div>
@@ -433,7 +434,7 @@ export function StaffPortal() {
       {/* 3. Review/Adjust Room Assignment Proposal */}
       {activeTab === 'assignment' && (
         <div className="space-y-4">
-          <div className="bg-white rounded-2xl border border-line/80 p-5 shadow-xs">
+          <div className="bg-surface rounded-2xl border border-line/80 p-5 shadow-xs">
             <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
               <div>
                 <div className="flex items-center gap-2">
@@ -443,23 +444,23 @@ export function StaffPortal() {
                   <h2 className="text-base font-bold text-ink">{assignment.title}</h2>
                 </div>
                 <p className="text-xs text-ink-muted mt-1">
-                  Đã phân bổ <strong>{assignment.totalAllocations}</strong> chỗ ở • Tỷ lệ đáp ứng nguyện vọng: <strong>{assignment.matchRate}%</strong>
+                  {t('Allocated')} <strong>{assignment.totalAllocations}</strong> {t('places • Preference match rate:')} <strong>{assignment.matchRate}%</strong>
                 </p>
               </div>
 
               <div className="flex items-center gap-3">
                 {assignment.status === 'SUBMITTED_TO_MANAGER' ? (
                   <span className="px-3 py-2 rounded-lg bg-purple-50 text-purple-700 text-xs font-semibold border border-purple-200 flex items-center gap-1.5">
-                    <Clock className="w-4 h-4" /> Đã gửi Manager phê duyệt
+                    <Clock className="w-4 h-4" /> {t('Sent to the manager for approval')}
                   </span>
                 ) : (
                   <button
                     type="button"
                     onClick={handleForwardProposalToManager}
-                    className="bg-brand-ink hover:bg-brand-ink-hover text-white px-4 py-2 rounded-lg font-medium text-xs sm:text-sm transition-colors inline-flex items-center justify-center gap-1.5 shadow-sm"
+                    className="bg-brand-fill hover:bg-brand-fill-hover text-white px-4 py-2 rounded-lg font-medium text-xs sm:text-sm transition-colors inline-flex items-center justify-center gap-1.5 shadow-sm"
                   >
                     <Send className="w-4 h-4" />
-                    Chuyển Manager phê duyệt
+                    {t('Send to the manager for approval')}
                   </button>
                 )}
               </div>
@@ -467,12 +468,12 @@ export function StaffPortal() {
           </div>
 
           <div className="space-y-3">
-            <h3 className="text-sm font-bold text-ink">Danh sách xung đột cần cán bộ điều chỉnh</h3>
+            <h3 className="text-sm font-bold text-ink">{t('Conflicts needing staff adjustment')}</h3>
             {assignment.conflicts.map((conf) => (
               <div
                 key={conf.id}
                 className={clsx(
-                  'bg-white rounded-2xl border p-5 shadow-xs transition-all space-y-3',
+                  'bg-surface rounded-2xl border p-5 shadow-xs transition-all space-y-3',
                   conf.isResolved ? 'border-emerald-200 bg-emerald-50/20' : 'border-amber-200'
                 )}
               >
@@ -480,7 +481,7 @@ export function StaffPortal() {
                   <div>
                     <h4 className="text-sm font-bold text-ink">{conf.studentName}</h4>
                     <p className="text-xs text-amber-800 mt-1 font-medium">
-                      <strong>Vấn đề:</strong> {conf.issue}
+                      <strong>{t('Issue:')}</strong> {conf.issue}
                     </p>
                   </div>
                   <span
@@ -489,23 +490,23 @@ export function StaffPortal() {
                       conf.isResolved ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'
                     )}
                   >
-                    {conf.isResolved ? 'Đã giải quyết' : 'Cần xử lý'}
+                    {conf.isResolved ? t('Resolved') : t('Needs action')}
                   </span>
                 </div>
 
                 <div className="p-3 rounded-xl bg-surface-muted border border-line text-xs text-ink flex items-center justify-between gap-3">
                   <div>
-                    <span className="font-semibold text-ink">Phương án điều chỉnh đề xuất: </span>
+                    <span className="font-semibold text-ink">{t('Proposed adjustment:')} </span>
                     {conf.proposedResolution}
                   </div>
                   {!conf.isResolved && (
                     <button
                       type="button"
                       onClick={() => handleResolveConflict(conf.id)}
-                      className="border border-line bg-white hover:bg-surface-muted hover:border-line-strong text-ink px-4 py-2 rounded-lg font-medium text-xs sm:text-sm transition-colors inline-flex items-center justify-center gap-1.5 shrink-0"
+                      className="border border-line bg-surface hover:bg-surface-muted hover:border-line-strong text-ink px-4 py-2 rounded-lg font-medium text-xs sm:text-sm transition-colors inline-flex items-center justify-center gap-1.5 shrink-0"
                     >
                       <CheckSquare className="w-4 h-4 text-brand-ink" />
-                      Áp dụng điều chỉnh
+                      {t('Apply adjustment')}
                     </button>
                   )}
                 </div>
@@ -520,9 +521,9 @@ export function StaffPortal() {
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-base font-bold text-ink">Hàng Đợi Xử Lý Bảo Trì & Kiểm Tra Kỹ Thuật</h2>
+              <h2 className="text-base font-bold text-ink">{t('Maintenance & technical inspection queue')}</h2>
               <p className="text-xs text-ink-muted mt-0.5">
-                Điều phối kỹ thuật viên, theo dõi thời hạn cam kết SLA và nghiệm thu phòng
+                {t('Dispatch technicians, track SLA deadlines and accept completed rooms')}
               </p>
             </div>
           </div>
@@ -532,7 +533,7 @@ export function StaffPortal() {
               <div
                 key={task.id}
                 className={clsx(
-                  'bg-white rounded-2xl border p-5 shadow-xs space-y-3 transition-all',
+                  'bg-surface rounded-2xl border p-5 shadow-xs space-y-3 transition-all',
                   task.urgency === 'URGENT' ? 'border-rose-200 border-l-4 border-l-rose-500' : 'border-line/80'
                 )}
               >
@@ -543,15 +544,15 @@ export function StaffPortal() {
                         {task.ticketCode}
                       </span>
                       <span className="font-bold text-sm text-ink">
-                        {task.building} • Phòng {task.room}
+                        {task.building} {t('• Room')} {task.room}
                       </span>
                       <span className="text-xs px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 font-semibold">
-                        {task.category}
+                        {t(task.category)}
                       </span>
                     </div>
                     <p className="text-xs text-ink font-medium mt-1.5">{task.description}</p>
                     <div className="text-label text-ink-subtle mt-1">
-                      Báo bởi: {task.reportedBy} • Thời điểm: {task.reportedAt}
+                      {t('Reported by:')} {task.reportedBy} {t('• Time:')} {task.reportedAt}
                     </div>
                   </div>
 
@@ -566,7 +567,7 @@ export function StaffPortal() {
                           : 'bg-surface-sunken text-ink'
                       )}
                     >
-                      {task.urgency === 'URGENT' ? 'Khẩn cấp' : task.urgency === 'HIGH' ? 'Ưu tiên cao' : 'Tiêu chuẩn'}
+                      {task.urgency === 'URGENT' ? t('Urgent') : task.urgency === 'HIGH' ? t('High priority') : t('Standard')}
                     </span>
                     <span className="text-label text-ink-muted font-medium">SLA: {task.slaRemaining}</span>
                   </div>
@@ -575,7 +576,7 @@ export function StaffPortal() {
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-3 border-t border-line text-xs">
                   <div className="flex items-center gap-2 text-ink-muted">
                     <Wrench className="w-3.5 h-3.5 text-ink-subtle" />
-                    Kỹ thuật viên phụ trách: <strong className="text-ink">{task.assignedTech}</strong>
+                    {t('Assigned technician:')} <strong className="text-ink">{task.assignedTech}</strong>
                   </div>
 
                   <div className="flex items-center gap-2">
@@ -583,9 +584,9 @@ export function StaffPortal() {
                       <button
                         type="button"
                         onClick={() => handleProgressMaintenance(task.id)}
-                        className="bg-brand-ink hover:bg-brand-ink-hover text-white px-4 py-2 rounded-lg font-medium text-xs sm:text-sm transition-colors inline-flex items-center justify-center gap-1.5 shadow-sm"
+                        className="bg-brand-fill hover:bg-brand-fill-hover text-white px-4 py-2 rounded-lg font-medium text-xs sm:text-sm transition-colors inline-flex items-center justify-center gap-1.5 shadow-sm"
                       >
-                        Tiếp nhận & Lên lịch
+                        {t('Receive & schedule')}
                       </button>
                     )}
                     {task.status === 'IN_PROGRESS' && (
@@ -595,12 +596,12 @@ export function StaffPortal() {
                         className="bg-ink hover:bg-ink-hover text-white px-4 py-2 rounded-lg font-medium text-xs sm:text-sm transition-colors inline-flex items-center justify-center gap-1.5 shadow-sm"
                       >
                         <ShieldCheck className="w-4 h-4" />
-                        Nghiệm thu hoàn thành
+                        {t('Accept completion')}
                       </button>
                     )}
                     {task.status === 'VERIFIED_DONE' && (
                       <span className="text-xs text-emerald-700 font-semibold flex items-center gap-1">
-                        <CheckCircle2 className="w-4 h-4" /> Đã nghiệm thu & đóng ticket
+                        <CheckCircle2 className="w-4 h-4" /> {t('Accepted & closed')}
                       </span>
                     )}
                   </div>

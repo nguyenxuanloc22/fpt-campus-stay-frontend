@@ -1,20 +1,21 @@
 import { Wifi, ShieldCheck, Shirt, BookOpen, Coffee, Dumbbell } from 'lucide-react';
 
+import { t } from '@shared-ui';
 export function HomeFeaturesSection() {
   const steps = [
-    { num: '01', title: 'Đăng ký trực tuyến', desc: 'Chọn học kỳ và loại phòng ưu tiên trong 2 phút.' },
-    { num: '02', title: 'Ghép Roommate mã PIN', desc: 'Chia sẻ mã PIN 6 số để cùng bạn bè xếp chung 1 phòng.' },
-    { num: '03', title: 'Ký E-Sign & VietQR', desc: 'Ký hợp đồng số và thanh toán học phí qua mã QR NapAS 247.' },
-    { num: '04', title: 'Nhận phòng & Thẻ từ', desc: 'Check-in bằng Gate Pass QR, kiểm tra tài sản số hóa.' },
+    { num: '01', title: t('Online registration'), desc: t('Choose your semester and preferred room type in 2 minutes.') },
+    { num: '02', title: t('Roommate matching by PIN'), desc: t('Share a 6-digit PIN to be placed in the same room as your friends.') },
+    { num: '03', title: t('E-sign & VietQR'), desc: t('Sign your digital contract and pay fees with a NAPAS 247 QR code.') },
+    { num: '04', title: t('Check-in & key card'), desc: t('Check in with a Gate Pass QR and a digital asset inspection.') },
   ];
 
   const amenities = [
-    { icon: Wifi, title: 'Wifi FPT tốc độ cao', desc: 'Phủ sóng toàn bộ phòng ở và khuôn viên KTX' },
-    { icon: ShieldCheck, title: 'An ninh 24/7 & FaceID', desc: 'Kiểm soát ra vào thông minh, an toàn tuyệt đối' },
-    { icon: Shirt, title: 'Phòng giặt sấy thông minh', desc: 'Thanh toán tự động qua app, tiện lợi nhanh chóng' },
-    { icon: BookOpen, title: 'Không gian tự học 24h', desc: 'Yên tĩnh, trang bị máy lạnh, đèn bảo vệ thị lực' },
-    { icon: Dumbbell, title: 'Khu thể thao đa năng', desc: 'Sân bóng rổ, cầu lông, bàn bóng bàn tiêu chuẩn' },
-    { icon: Coffee, title: 'Căn tin & Cửa hàng tiện lợi', desc: 'Phục vụ ăn uống và đồ dùng thiết yếu ngay tầng 1' },
+    { icon: Wifi, title: t('High-speed FPT Wi-Fi'), desc: t('Coverage in every room and across the dormitory grounds') },
+    { icon: ShieldCheck, title: 'An ninh 24/7 & FaceID', desc: t('Smart access control, fully secure') },
+    { icon: Shirt, title: t('Smart laundry room'), desc: t('Automatic payment via the app, fast and convenient') },
+    { icon: BookOpen, title: t('24h self-study space'), desc: t('Quiet, air-conditioned, with eye-friendly lighting') },
+    { icon: Dumbbell, title: t('Multi-sport area'), desc: t('Basketball, badminton and standard table tennis') },
+    { icon: Coffee, title: t('Canteen & convenience store'), desc: t('Food and essentials right on the ground floor') },
   ];
 
   return (
@@ -23,8 +24,8 @@ export function HomeFeaturesSection() {
         {/* Process */}
         <div id="process" className="mb-24">
           <div className="text-center max-w-2xl mx-auto mb-16">
-            <h2 className="text-3xl sm:text-4xl font-bold text-[#1A365D] mb-4">Quy trình 4 bước số hóa 100%</h2>
-            <p className="text-slate-600 text-sm">Không cần nộp giấy tờ, không cần xếp hàng bốc thăm phòng.</p>
+            <h2 className="text-3xl sm:text-4xl font-bold text-[#1A365D] mb-4">{t('A 100% digital 4-step process')}</h2>
+            <p className="text-slate-600 text-sm">{t('No paperwork, no queuing for a room lottery.')}</p>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {steps.map((s, idx) => (
@@ -43,8 +44,8 @@ export function HomeFeaturesSection() {
         {/* Amenities */}
         <div>
           <div className="text-center max-w-2xl mx-auto mb-16">
-            <h2 className="text-3xl sm:text-4xl font-bold text-[#1A365D] mb-4">Tiện ích khuôn viên chuẩn quốc tế</h2>
-            <p className="text-slate-600 text-sm">Không gian sống hiện đại hỗ trợ tối đa cho sinh viên FPT University.</p>
+            <h2 className="text-3xl sm:text-4xl font-bold text-[#1A365D] mb-4">{t('International-standard campus amenities')}</h2>
+            <p className="text-slate-600 text-sm">{t('A modern living space supporting FPT University students.')}</p>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {amenities.map((a, idx) => (

@@ -17,24 +17,24 @@ import {
   AlertTriangle,
 } from 'lucide-react';
 import clsx from 'clsx';
-import { PageHeader, StatCard, SectionCard, StatusBadge, AppButton, Tabs, ProgressBar, useToast } from '@shared-ui';
+import { PageHeader, StatCard, SectionCard, StatusBadge, AppButton, Tabs, ProgressBar, useToast, t } from '@shared-ui';
 
 type Audience = 'ALL' | 'BUILDING' | 'FLOOR' | 'ROOM' | 'DEBT';
 type Channel = 'INAPP' | 'EMAIL' | 'SMS' | 'PUSH';
 
 const TEMPLATES = [
-  { id: 'water', name: 'Cắt nước bảo trì', category: 'MAINTENANCE', title: 'Thông báo tạm ngưng cấp nước Tòa {tòa}', body: 'Ban Quản lý KTX thông báo tạm ngưng cấp nước Tòa {tòa} từ {giờ bắt đầu} đến {giờ kết thúc} ngày {ngày} để bảo trì hệ thống. Sinh viên vui lòng chủ động dự trữ nước. Xin cảm ơn!' },
-  { id: 'inspection', name: 'Lịch kiểm tra phòng', category: 'KTX', title: 'Lịch kiểm tra phòng định kỳ ngày {ngày}', body: 'Đoàn kiểm tra sẽ kiểm tra vệ sinh, an toàn PCCC tại các phòng thuộc Tòa {tòa} vào {giờ}. Đề nghị sinh viên dọn dẹp phòng ở và có mặt (nếu có thể).' },
-  { id: 'debt', name: 'Nhắc nợ phí', category: 'FINANCE', title: 'Nhắc nhở thanh toán phí KTX', body: 'Hệ thống ghi nhận bạn còn khoản phí chưa thanh toán. Vui lòng thanh toán qua VietQR trước {hạn} để tránh bị tạm khóa thẻ ra vào.' },
-  { id: 'fire', name: 'Diễn tập PCCC', category: 'SAFETY', title: 'Diễn tập phòng cháy chữa cháy toàn KTX', body: 'Vào lúc {giờ} ngày {ngày}, KTX tổ chức diễn tập PCCC. Khi nghe chuông báo động, sinh viên di chuyển theo lối thoát hiểm tới sân tập trung.' },
+  { id: 'water', name: t('Water outage for maintenance'), category: 'MAINTENANCE', title: t('Water supply suspended in Building {building}'), body: t('The Dormitory Management Board announces that water supply in Building {building} will be suspended from {start time} to {end time} on {date} for system maintenance. Please store water in advance. Thank you!') },
+  { id: 'inspection', name: t('Room inspection schedule'), category: 'KTX', title: t('Periodic room inspection on {date}'), body: t('The inspection team will check cleanliness and fire safety in Building {building} rooms at {time}. Please tidy your room and be present if possible.') },
+  { id: 'debt', name: t('Fee reminder'), category: 'FINANCE', title: t('Dormitory fee payment reminder'), body: t('Our records show an unpaid fee on your account. Please pay via VietQR before {deadline} to avoid having your access card suspended.') },
+  { id: 'fire', name: t('Fire drill'), category: 'SAFETY', title: t('Dormitory-wide fire drill'), body: t('At {time} on {date}, the dormitory will hold a fire drill. When the alarm sounds, follow the emergency exits to the assembly yard.') },
 ];
 
 const HISTORY = [
-  { title: 'Lịch cắt nước bảo trì bồn chứa Tòa A ngày 19/10', audience: 'Tòa A (288 SV)', channels: ['INAPP', 'PUSH', 'EMAIL'], sent: '16/10/2026 14:00', by: 'Lê Minh Khoa', read: 82, status: 'COMPLETED' },
-  { title: 'Kiểm tra phòng định kỳ tháng 10/2026', audience: 'Toàn KTX (1.075 SV)', channels: ['INAPP', 'EMAIL'], sent: '15/10/2026 08:00', by: 'Nguyễn Thu Hà', read: 91, status: 'COMPLETED' },
-  { title: 'Nâng cấp hệ thống Wi-Fi 6', audience: 'Toàn KTX (1.075 SV)', channels: ['INAPP', 'PUSH'], sent: '12/10/2026 10:00', by: 'Trần Văn Cường', read: 76, status: 'COMPLETED' },
-  { title: 'Diễn tập PCCC ngày 02/11', audience: 'Toàn KTX (1.075 SV)', channels: ['INAPP', 'PUSH', 'SMS'], sent: 'Hẹn 30/10/2026 07:00', by: 'Trần Văn Cường', read: 0, status: 'SCHEDULED' },
-  { title: 'Nhắc nợ phí điện nước tháng 9', audience: 'SV còn nợ (37 SV)', channels: ['EMAIL', 'SMS'], sent: '10/10/2026 09:00', by: 'Hệ thống', read: 64, status: 'COMPLETED' },
+  { title: t('Water outage for tank maintenance, Building A, 19/10'), audience: t('Building A (288 students)'), channels: ['INAPP', 'PUSH', 'EMAIL'], sent: '16/10/2026 14:00', by: 'Lê Minh Khoa', read: 82, status: 'COMPLETED' },
+  { title: t('Periodic room inspection, October 2026'), audience: t('Whole dormitory (1.075 students)'), channels: ['INAPP', 'EMAIL'], sent: '15/10/2026 08:00', by: 'Nguyễn Thu Hà', read: 91, status: 'COMPLETED' },
+  { title: t('Wi-Fi 6 system upgrade'), audience: t('Whole dormitory (1.075 students)'), channels: ['INAPP', 'PUSH'], sent: '12/10/2026 10:00', by: 'Trần Văn Cường', read: 76, status: 'COMPLETED' },
+  { title: t('Fire drill on 02/11'), audience: t('Whole dormitory (1.075 students)'), channels: ['INAPP', 'PUSH', 'SMS'], sent: t('Scheduled 30/10/2026 07:00'), by: 'Trần Văn Cường', read: 0, status: 'SCHEDULED' },
+  { title: t('September utility fee reminder'), audience: t('Students with debt (37 students)'), channels: ['EMAIL', 'SMS'], sent: '10/10/2026 09:00', by: t('System'), read: 64, status: 'COMPLETED' },
 ];
 
 const CHANNELS: { id: Channel; label: string; icon: typeof Mail; cost?: string }[] = [
@@ -63,17 +63,17 @@ export function StaffBroadcastPage() {
   const toggleChannel = (c: Channel) => setChannels((all) => (all.includes(c) ? all.filter((x) => x !== c) : [...all, c]));
 
   const applyTemplate = (id: string) => {
-    const t = TEMPLATES.find((x) => x.id === id);
-    if (!t) return;
-    setTitle(t.title.replace('{tòa}', building));
-    setBody(t.body.replaceAll('{tòa}', building));
-    setCategory(t.category);
+    const tpl = TEMPLATES.find((x) => x.id === id);
+    if (!tpl) return;
+    setTitle(tpl.title.replace(t('{building}'), building));
+    setBody(tpl.body.replaceAll(t('{building}'), building));
+    setCategory(tpl.category);
   };
 
   const send = () => {
-    const audienceLabel = audience === 'ALL' ? `Toàn KTX (${recipients} SV)` : audience === 'BUILDING' ? `Tòa ${building} (${recipients} SV)` : audience === 'DEBT' ? `SV còn nợ (${recipients} SV)` : `${recipients} SV`;
-    setHistory([{ title, audience: audienceLabel, channels, sent: schedule === 'now' ? 'Vừa xong' : 'Đã hẹn giờ', by: 'Trần Văn Cường', read: 0, status: schedule === 'now' ? 'COMPLETED' : 'SCHEDULED' }, ...history]);
-    show(schedule === 'now' ? `Đã gửi thông báo tới ${recipients} sinh viên` : 'Đã lên lịch gửi thông báo');
+    const audienceLabel = audience === 'ALL' ? t('Whole dormitory ({0} students)', { 0: recipients }) : audience === 'BUILDING' ? t('Building {0} ({1} students)', { 0: building, 1: recipients }) : audience === 'DEBT' ? t('Students with debt ({0} students)', { 0: recipients }) : `${recipients} SV`;
+    setHistory([{ title, audience: audienceLabel, channels, sent: schedule === 'now' ? t('Just now') : t('Scheduled'), by: 'Trần Văn Cường', read: 0, status: schedule === 'now' ? 'COMPLETED' : 'SCHEDULED' }, ...history]);
+    show(schedule === 'now' ? t('Announcement sent to {0} students', { 0: recipients }) : t('Announcement scheduled'));
     setTitle('');
     setBody('');
     setTab('history');
@@ -81,19 +81,19 @@ export function StaffBroadcastPage() {
 
   return (
     <div className="space-y-6">
-      <PageHeader title="Phát Thông Báo" description="Gửi thông báo vận hành, cảnh báo an toàn và nhắc nhở tới sinh viên theo tòa, tầng hoặc phòng" />
+      <PageHeader title={t('Send announcement')} description={t('Send operational notices, safety alerts and reminders to students by building, floor or room')} />
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard label="Đã gửi tháng này" value="24" icon={Megaphone} tone="orange" />
-        <StatCard label="Tỷ lệ đọc TB" value="83%" icon={Eye} tone="emerald" trend={{ value: '+5%', up: true }} />
-        <StatCard label="Đang hẹn giờ" value={history.filter((h) => h.status === 'SCHEDULED').length} icon={Clock} tone="blue" />
-        <StatCard label="SMS còn lại" value="4.250" icon={MessageSquare} tone="navy" hint="Gói tháng 10" />
+        <StatCard label={t('Sent this month')} value="24" icon={Megaphone} tone="orange" />
+        <StatCard label={t('Average read rate')} value="83%" icon={Eye} tone="emerald" trend={{ value: '+5%', up: true }} />
+        <StatCard label={t('Scheduled')} value={history.filter((h) => h.status === 'SCHEDULED').length} icon={Clock} tone="blue" />
+        <StatCard label={t('SMS remaining')} value="4.250" icon={MessageSquare} tone="navy" hint={t('October plan')} />
       </div>
 
       <Tabs
         items={[
-          { value: 'compose' as const, label: 'Soạn thông báo' },
-          { value: 'history' as const, label: 'Lịch sử gửi', count: history.length },
+          { value: 'compose' as const, label: t('Compose') },
+          { value: 'history' as const, label: t('Send history'), count: history.length },
         ]}
         value={tab}
         onChange={setTab}
@@ -102,15 +102,15 @@ export function StaffBroadcastPage() {
       {tab === 'compose' ? (
         <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
           <div className="xl:col-span-2 space-y-6">
-            <SectionCard title="1. Đối tượng nhận">
+            <SectionCard title={t('1. Recipients')}>
               <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
                 {(
                   [
-                    ['ALL', 'Toàn KTX', Users],
-                    ['BUILDING', 'Theo tòa', Building2],
-                    ['FLOOR', 'Theo tầng', Building2],
-                    ['ROOM', 'Theo phòng', Building2],
-                    ['DEBT', 'SV còn nợ', AlertTriangle],
+                    ['ALL', t('Whole dormitory'), Users],
+                    ['BUILDING', t('By building'), Building2],
+                    ['FLOOR', t('By floor'), Building2],
+                    ['ROOM', t('By room'), Building2],
+                    ['DEBT', t('Students with debt'), AlertTriangle],
                   ] as const
                 ).map(([id, label, Icon]) => (
                   <button
@@ -126,15 +126,15 @@ export function StaffBroadcastPage() {
               </div>
               {(audience === 'BUILDING' || audience === 'FLOOR' || audience === 'ROOM') && (
                 <div className="flex flex-wrap gap-2 mt-4">
-                  <select value={building} onChange={(e) => setBuilding(e.target.value)} className="px-3 py-2 text-xs border border-line rounded-lg bg-white">
+                  <select value={building} onChange={(e) => setBuilding(e.target.value)} className="px-3 py-2 text-xs border border-line rounded-lg bg-surface">
                     {['A', 'B', 'C', 'D'].map((b) => (
-                      <option key={b} value={b}>Tòa {b}</option>
+                      <option key={b} value={b}>{t('Building')} {b}</option>
                     ))}
                   </select>
                   {audience !== 'BUILDING' && (
-                    <select className="px-3 py-2 text-xs border border-line rounded-lg bg-white">
+                    <select className="px-3 py-2 text-xs border border-line rounded-lg bg-surface">
                       {[1, 2, 3, 4, 5].map((f) => (
-                        <option key={f}>Tầng {f}</option>
+                        <option key={f}>{t('Floor')} {f}</option>
                       ))}
                     </select>
                   )}
@@ -142,13 +142,13 @@ export function StaffBroadcastPage() {
                 </div>
               )}
               <div className="mt-4 text-xs text-ink-muted">
-                Ước tính <strong className="text-ink">{recipients.toLocaleString('vi-VN')}</strong> sinh viên sẽ nhận thông báo.
+                {t('Estimated')} <strong className="text-ink">{recipients.toLocaleString('vi-VN')}</strong> {t('students will receive the announcement.')}
               </div>
             </SectionCard>
 
-            <SectionCard title="2. Nội dung" actions={
-              <select onChange={(e) => applyTemplate(e.target.value)} defaultValue="" className="px-2.5 py-1.5 text-xs border border-line rounded-lg bg-white">
-                <option value="" disabled>Dùng mẫu có sẵn...</option>
+            <SectionCard title={t('2. Content')} actions={
+              <select onChange={(e) => applyTemplate(e.target.value)} defaultValue="" className="px-2.5 py-1.5 text-xs border border-line rounded-lg bg-surface">
+                <option value="" disabled>{t('Use a template...')}</option>
                 {TEMPLATES.map((t) => (
                   <option key={t.id} value={t.id}>{t.name}</option>
                 ))}
@@ -157,38 +157,38 @@ export function StaffBroadcastPage() {
               <div className="space-y-4 text-xs">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
-                    <label className="block font-semibold text-ink mb-1">Danh mục</label>
-                    <select value={category} onChange={(e) => setCategory(e.target.value)} className="w-full px-3 py-2 border border-line rounded-lg bg-white">
-                      <option value="KTX">Ký túc xá</option>
-                      <option value="MAINTENANCE">Bảo trì</option>
-                      <option value="SAFETY">An toàn</option>
-                      <option value="FINANCE">Tài chính</option>
-                      <option value="EVENT">Sự kiện</option>
+                    <label className="block font-semibold text-ink mb-1">{t('Category')}</label>
+                    <select value={category} onChange={(e) => setCategory(e.target.value)} className="w-full px-3 py-2 border border-line rounded-lg bg-surface">
+                      <option value="KTX">{t('Dormitory')}</option>
+                      <option value="MAINTENANCE">{t('Maintenance')}</option>
+                      <option value="SAFETY">{t('Safety')}</option>
+                      <option value="FINANCE">{t('Finance')}</option>
+                      <option value="EVENT">{t('Event')}</option>
                     </select>
                   </div>
                   <label className="flex items-center gap-2 mt-5 font-semibold text-rose-700">
                     <input type="checkbox" checked={urgent} onChange={(e) => setUrgent(e.target.checked)} className="accent-rose-600" />
-                    Đánh dấu KHẨN CẤP (ghim đầu trang + âm báo)
+                    {t('Mark as URGENT (pinned at the top + sound alert)')}
                   </label>
                 </div>
                 <div>
-                  <label className="block font-semibold text-ink mb-1">Tiêu đề</label>
-                  <input value={title} onChange={(e) => setTitle(e.target.value)} maxLength={120} className="w-full px-3 py-2 border border-line rounded-lg" placeholder="Tiêu đề ngắn gọn, rõ ràng" />
+                  <label className="block font-semibold text-ink mb-1">{t('Title')}</label>
+                  <input value={title} onChange={(e) => setTitle(e.target.value)} maxLength={120} className="w-full px-3 py-2 border border-line rounded-lg" placeholder={t('Short, clear title')} />
                   <div className="text-right text-label text-ink-subtle mt-0.5">{title.length}/120</div>
                 </div>
                 <div>
-                  <label className="block font-semibold text-ink mb-1">Nội dung</label>
-                  <textarea value={body} onChange={(e) => setBody(e.target.value)} rows={6} className="w-full px-3 py-2 border border-line rounded-lg" placeholder="Nội dung chi tiết..." />
+                  <label className="block font-semibold text-ink mb-1">{t('Content')}</label>
+                  <textarea value={body} onChange={(e) => setBody(e.target.value)} rows={6} className="w-full px-3 py-2 border border-line rounded-lg" placeholder={t('Detailed content...')} />
                   <div className="flex justify-between text-label text-ink-subtle mt-0.5">
-                    <span>{channels.includes('SMS') && body.length > 160 ? `SMS sẽ bị chia thành ${Math.ceil(body.length / 160)} tin` : ''}</span>
-                    <span>{body.length} ký tự</span>
+                    <span>{channels.includes('SMS') && body.length > 160 ? t('The SMS will be split into {0} messages', { 0: Math.ceil(body.length / 160) }) : ''}</span>
+                    <span>{body.length} {t('characters')}</span>
                   </div>
                 </div>
-                <button type="button" className="flex items-center gap-1.5 text-ink font-semibold"><Paperclip className="w-3.5 h-3.5" /> Đính kèm tệp (PDF, ảnh)</button>
+                <button type="button" className="flex items-center gap-1.5 text-ink font-semibold"><Paperclip className="w-3.5 h-3.5" /> {t('Attach files (PDF, images)')}</button>
               </div>
             </SectionCard>
 
-            <SectionCard title="3. Kênh gửi & thời gian">
+            <SectionCard title={t('3. Channels & timing')}>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-4">
                 {CHANNELS.map((c) => (
                   <button
@@ -204,35 +204,35 @@ export function StaffBroadcastPage() {
                 ))}
               </div>
               <div className="flex flex-wrap items-center gap-4 text-xs">
-                <label className="flex items-center gap-2"><input type="radio" checked={schedule === 'now'} onChange={() => setSchedule('now')} className="accent-brand-ink" /> Gửi ngay</label>
-                <label className="flex items-center gap-2"><input type="radio" checked={schedule === 'later'} onChange={() => setSchedule('later')} className="accent-brand-ink" /> Hẹn giờ</label>
+                <label className="flex items-center gap-2"><input type="radio" checked={schedule === 'now'} onChange={() => setSchedule('now')} className="accent-brand-ink" /> {t('Send now')}</label>
+                <label className="flex items-center gap-2"><input type="radio" checked={schedule === 'later'} onChange={() => setSchedule('later')} className="accent-brand-ink" /> {t('Schedule')}</label>
                 {schedule === 'later' && <input type="datetime-local" defaultValue="2026-10-18T07:00" className="px-3 py-1.5 border border-line rounded-lg" />}
               </div>
               <div className="flex justify-end gap-2 mt-5 pt-4 border-t">
-                <AppButton variant="outline" onClick={() => show('Đã lưu bản nháp', 'info')}>Lưu nháp</AppButton>
+                <AppButton variant="outline" onClick={() => show(t('Draft saved'), 'info')}>{t('Save draft')}</AppButton>
                 <AppButton disabled={!title || !body || channels.length === 0} leftIcon={<Send className="w-4 h-4" />} onClick={send}>
-                  {schedule === 'now' ? 'Gửi thông báo' : 'Lên lịch gửi'}
+                  {schedule === 'now' ? t('Send announcement') : t('Schedule send')}
                 </AppButton>
               </div>
             </SectionCard>
           </div>
 
           <div className="space-y-6">
-            <SectionCard title={<span className="flex items-center gap-2"><Smartphone className="w-4 h-4" /> Xem trước trên điện thoại</span>}>
+            <SectionCard title={<span className="flex items-center gap-2"><Smartphone className="w-4 h-4" /> {t('Phone preview')}</span>}>
               <div className="mx-auto w-60 rounded-[2rem] border-8 border-slate-800 bg-surface-sunken p-3 min-h-96">
                 <div className="text-center text-label text-ink-muted mb-3">09:41</div>
-                <div className={clsx('rounded-xl bg-white p-3 shadow-sm', urgent && 'ring-2 ring-rose-400')}>
+                <div className={clsx('rounded-xl bg-surface p-3 shadow-sm', urgent && 'ring-2 ring-rose-400')}>
                   <div className="flex items-center gap-2 mb-1.5">
-                    <div className="w-5 h-5 rounded bg-brand-ink text-white text-[9px] font-bold flex items-center justify-center">CS</div>
-                    <span className="text-label font-semibold text-ink-muted">CampusStay • bây giờ</span>
+                    <div className="w-5 h-5 rounded bg-brand-fill text-white text-[9px] font-bold flex items-center justify-center">CS</div>
+                    <span className="text-label font-semibold text-ink-muted">{t('CampusStay • now')}</span>
                   </div>
-                  {urgent && <div className="text-[9px] font-bold text-rose-600 mb-0.5">⚠ KHẨN CẤP</div>}
-                  <div className="text-label font-bold text-ink leading-snug">{title || 'Tiêu đề thông báo'}</div>
-                  <div className="text-label text-ink-muted mt-1 line-clamp-6">{body || 'Nội dung thông báo sẽ hiển thị ở đây...'}</div>
+                  {urgent && <div className="text-[9px] font-bold text-rose-600 mb-0.5">{t('⚠ URGENT')}</div>}
+                  <div className="text-label font-bold text-ink leading-snug">{title || t('Announcement title')}</div>
+                  <div className="text-label text-ink-muted mt-1 line-clamp-6">{body || t('The announcement content will appear here...')}</div>
                 </div>
               </div>
             </SectionCard>
-            <SectionCard title="Mẫu thông báo" noPadding>
+            <SectionCard title={t('Templates')} noPadding>
               <ul className="divide-y divide-line">
                 {TEMPLATES.map((t) => (
                   <li key={t.id}>
@@ -252,11 +252,11 @@ export function StaffBroadcastPage() {
             <table className="w-full text-xs">
               <thead className="bg-surface-muted text-ink-muted">
                 <tr>
-                  <th className="text-left font-semibold px-5 py-3">Thông báo</th>
-                  <th className="text-left font-semibold px-5 py-3">Đối tượng</th>
-                  <th className="text-left font-semibold px-5 py-3">Kênh</th>
-                  <th className="text-left font-semibold px-5 py-3">Tỷ lệ đọc</th>
-                  <th className="text-left font-semibold px-5 py-3">Trạng thái</th>
+                  <th className="text-left font-semibold px-5 py-3">{t('Announcement')}</th>
+                  <th className="text-left font-semibold px-5 py-3">{t('Audience')}</th>
+                  <th className="text-left font-semibold px-5 py-3">{t('Channel')}</th>
+                  <th className="text-left font-semibold px-5 py-3">{t('Read rate')}</th>
+                  <th className="text-left font-semibold px-5 py-3">{t('Status')}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-line">
@@ -283,7 +283,7 @@ export function StaffBroadcastPage() {
                       )}
                     </td>
                     <td className="px-5 py-3">
-                      {h.status === 'COMPLETED' ? <StatusBadge status="COMPLETED" customLabel="Đã gửi" /> : <StatusBadge status="SCHEDULED" />}
+                      {h.status === 'COMPLETED' ? <StatusBadge status="COMPLETED" customLabel={t('Submitted')} /> : <StatusBadge status="SCHEDULED" />}
                     </td>
                   </tr>
                 ))}
@@ -291,7 +291,7 @@ export function StaffBroadcastPage() {
             </table>
           </div>
           <div className="px-5 py-3 border-t text-label text-ink-muted flex items-center gap-1.5">
-            <BarChart3 className="w-3.5 h-3.5" /> Tỷ lệ đọc được tính trên kênh in-app & push. <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 ml-2" /> Email đã gửi thành công 99.2%.
+            <BarChart3 className="w-3.5 h-3.5" /> {t('Read rate is measured on the in-app & push channels.')} <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 ml-2" /> {t('Emails delivered successfully: 99.2%.')}
           </div>
         </SectionCard>
       )}

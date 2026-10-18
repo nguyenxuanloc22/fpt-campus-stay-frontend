@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { LogIn } from 'lucide-react';
 
+import { t } from '@shared-ui';
 export function Header() {
   return (
     <header className="sticky top-0 z-40 backdrop-blur-md bg-white/95 border-b border-slate-100 transition-colors">
@@ -14,7 +15,7 @@ export function Header() {
             <div className="text-[#1A365D] font-bold text-lg leading-tight group-hover:text-[#F26522] transition-colors">
               FPT CampusStay
             </div>
-            <div className="text-slate-500 text-xs">KTX Tân Uyên • Bình Dương</div>
+            <div className="text-slate-500 text-xs">{t('Tan Uyen Dormitory • Binh Duong')}</div>
           </div>
         </Link>
 
@@ -25,7 +26,7 @@ export function Header() {
             className="px-6 py-2.5 rounded-xl bg-[#F26522] hover:bg-[#d95314] text-white text-xs sm:text-sm font-semibold transition-all shadow-sm inline-flex items-center gap-2 cursor-pointer active:scale-95"
           >
             <LogIn className="w-4 h-4" />
-            <span>Đăng nhập</span>
+            <span>{t('Sign in')}</span>
           </Link>
         </div>
       </div>

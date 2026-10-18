@@ -1,67 +1,68 @@
 // Tab “Báo cáo” của ManagerPortal — Monitor Occupancy & Reports.
 import { MANAGER_GOVERNANCE_DATA } from './managerMockData';
+import { t } from '@shared-ui';
 
 export function ManagerReportsTab() {
   return (
     <div className="space-y-5">
       <div>
-        <h2 className="text-base font-bold text-ink">Giám Sát Công Suất Lưu Trú & Báo Cáo Quản Trị</h2>
+        <h2 className="text-base font-bold text-ink">{t('Occupancy monitoring & management reports')}</h2>
         <p className="text-xs text-ink-muted mt-0.5">
-          Chỉ số vận hành toàn diện KTX FPT University Tân Uyên
+          {t('Operational indicators for the FPT University Tan Uyen dormitory')}
         </p>
       </div>
 
       {/* Top Governance KPI Strip */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-white p-5 rounded-2xl border border-line/80 shadow-xs">
-          <div className="text-xs font-semibold text-ink-muted uppercase tracking-wide">Tỷ lệ lấp đầy tổng thể</div>
+        <div className="bg-surface p-5 rounded-2xl border border-line/80 shadow-xs">
+          <div className="text-xs font-semibold text-ink-muted uppercase tracking-wide">{t('Overall occupancy rate')}</div>
           <div className="text-2xl font-bold text-ink mt-1">
             {MANAGER_GOVERNANCE_DATA.overview.occupancyRate}%
           </div>
           <p className="text-label text-emerald-600 mt-1 font-medium">
-            {MANAGER_GOVERNANCE_DATA.overview.occupiedBeds} / {MANAGER_GOVERNANCE_DATA.overview.totalBeds} giường
+            {MANAGER_GOVERNANCE_DATA.overview.occupiedBeds} / {MANAGER_GOVERNANCE_DATA.overview.totalBeds} {t('beds')}
           </p>
         </div>
 
-        <div className="bg-white p-5 rounded-2xl border border-line/80 shadow-xs">
-          <div className="text-xs font-semibold text-ink-muted uppercase tracking-wide">Doanh thu học kỳ</div>
+        <div className="bg-surface p-5 rounded-2xl border border-line/80 shadow-xs">
+          <div className="text-xs font-semibold text-ink-muted uppercase tracking-wide">{t('Semester revenue')}</div>
           <div className="text-2xl font-bold text-brand-ink mt-1">
-            {MANAGER_GOVERNANCE_DATA.overview.revenueSemesterBillion} tỷ ₫
+            {MANAGER_GOVERNANCE_DATA.overview.revenueSemesterBillion} {t('billion ₫')}
           </div>
           <p className="text-label text-emerald-600 mt-1 font-medium">
-            Tỷ lệ thu thực tế: {MANAGER_GOVERNANCE_DATA.overview.collectedPercentage}%
+            {t('Actual collection rate:')} {MANAGER_GOVERNANCE_DATA.overview.collectedPercentage}%
           </p>
         </div>
 
-        <div className="bg-white p-5 rounded-2xl border border-line/80 shadow-xs">
-          <div className="text-xs font-semibold text-ink-muted uppercase tracking-wide">Tuân thủ cam kết SLA</div>
+        <div className="bg-surface p-5 rounded-2xl border border-line/80 shadow-xs">
+          <div className="text-xs font-semibold text-ink-muted uppercase tracking-wide">{t('SLA commitment compliance')}</div>
           <div className="text-2xl font-bold text-ink mt-1">
             {MANAGER_GOVERNANCE_DATA.overview.slaComplianceRate}%
           </div>
           <p className="text-label text-ink-muted mt-1 font-medium">
-            Xử lý sự cố kỹ thuật đúng hẹn
+            {t('Technical incidents resolved on time')}
           </p>
         </div>
 
-        <div className="bg-white p-5 rounded-2xl border border-line/80 shadow-xs">
-          <div className="text-xs font-semibold text-ink-muted uppercase tracking-wide">Hóa đơn quá hạn</div>
+        <div className="bg-surface p-5 rounded-2xl border border-line/80 shadow-xs">
+          <div className="text-xs font-semibold text-ink-muted uppercase tracking-wide">{t('Overdue invoices')}</div>
           <div className="text-2xl font-bold text-rose-600 mt-1">
             {MANAGER_GOVERNANCE_DATA.overview.overdueInvoicesCount} SV
           </div>
           <p className="text-label text-rose-600 mt-1 font-medium">
-            Đã gửi thông báo nhắc nợ đợt 2
+            {t('Installment 2 payment reminders sent')}
           </p>
         </div>
       </div>
 
       {/* Building Cards */}
       <div className="space-y-3">
-        <h3 className="text-sm font-bold text-ink">Công suất theo từng tòa nhà</h3>
+        <h3 className="text-sm font-bold text-ink">{t('Capacity by building')}</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {MANAGER_GOVERNANCE_DATA.buildings.map((b) => (
             <div
               key={b.code}
-              className="bg-white rounded-2xl border border-line/80 p-5 shadow-xs space-y-3"
+              className="bg-surface rounded-2xl border border-line/80 p-5 shadow-xs space-y-3"
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2.5">
@@ -69,29 +70,29 @@ export function ManagerReportsTab() {
                     {b.code}
                   </div>
                   <div>
-                    <h4 className="text-sm font-bold text-ink">{b.name} ({b.gender})</h4>
-                    <p className="text-xs text-ink-muted">Doanh thu dự kiến: {(b.revenueMillionVnd / 1000).toFixed(2)} tỷ ₫</p>
+                    <h4 className="text-sm font-bold text-ink">{b.name} ({t(b.gender)})</h4>
+                    <p className="text-xs text-ink-muted">{t('Expected revenue:')} {(b.revenueMillionVnd / 1000).toFixed(2)} {t('billion ₫')}</p>
                   </div>
                 </div>
 
                 <div className="text-right">
                   <span className="text-base font-bold text-brand-ink">{b.occupancyRate}%</span>
-                  <div className="text-label text-ink-subtle">lấp đầy</div>
+                  <div className="text-label text-ink-subtle">{t('occupied')}</div>
                 </div>
               </div>
 
               {/* Visual Progress bar */}
               <div className="w-full bg-surface-sunken rounded-full h-2 overflow-hidden">
                 <div
-                  className="bg-brand-ink h-full rounded-full transition-all"
+                  className="bg-brand-fill h-full rounded-full transition-all"
                   style={{ width: `${b.occupancyRate}%` }}
                 />
               </div>
 
               <div className="flex items-center justify-between text-xs text-ink-muted pt-1">
-                <span>Đã ở: <strong className="text-ink">{b.occupiedBeds}</strong>/{b.totalBeds} giường</span>
-                <span>Bảo trì: <strong className="text-rose-600">{b.maintenanceBeds}</strong></span>
-                <span>Trống: <strong className="text-emerald-600">{b.totalBeds - b.occupiedBeds}</strong></span>
+                <span>{t('Occupied:')} <strong className="text-ink">{b.occupiedBeds}</strong>/{b.totalBeds} {t('beds')}</span>
+                <span>{t('Maintenance:')} <strong className="text-rose-600">{b.maintenanceBeds}</strong></span>
+                <span>{t('Free:')} <strong className="text-emerald-600">{b.totalBeds - b.occupiedBeds}</strong></span>
               </div>
             </div>
           ))}

@@ -30,8 +30,7 @@ import {
   Avatar,
   StatusBadge,
   ProgressBar,
-  useToast,
-} from '@shared-ui';
+  useToast, t } from '@shared-ui';
 
 type TabKey = 'info' | 'emergency' | 'settings' | 'activity';
 
@@ -54,19 +53,19 @@ function Toggle({ checked, onChange }: { checked: boolean; onChange: (v: boolean
       role="switch"
       aria-checked={checked}
       onClick={() => onChange(!checked)}
-      className={clsx('w-10 h-6 rounded-full p-0.5 transition', checked ? 'bg-brand-ink' : 'bg-slate-300')}
+      className={clsx('w-10 h-6 rounded-full p-0.5 transition', checked ? 'bg-brand-fill' : 'bg-slate-300')}
     >
-      <span className={clsx('block w-5 h-5 rounded-full bg-white shadow transition', checked && 'translate-x-4')} />
+      <span className={clsx('block w-5 h-5 rounded-full bg-surface shadow transition', checked && 'translate-x-4')} />
     </button>
   );
 }
 
 const ACTIVITY = [
-  { time: '17/10/2026 07:58', text: 'Đăng nhập từ Chrome — Windows', ip: '14.161.22.x', icon: LogIn },
-  { time: '16/10/2026 21:12', text: 'Gửi yêu cầu bảo trì TK-10482', ip: '14.161.22.x', icon: RefreshCw },
-  { time: '15/10/2026 20:03', text: 'Đăng nhập từ ứng dụng CampusStay iOS', ip: '27.72.101.x', icon: Smartphone },
-  { time: '12/10/2026 09:40', text: 'Cập nhật số điện thoại liên hệ', ip: '14.161.22.x', icon: Pencil },
-  { time: '05/10/2026 18:25', text: 'Thanh toán hóa đơn INV-2026-0905', ip: '27.72.101.x', icon: RefreshCw },
+  { time: '17/10/2026 07:58', text: t('Signed in from Chrome — Windows'), ip: '14.161.22.x', icon: LogIn },
+  { time: '16/10/2026 21:12', text: t('Submitted maintenance request TK-10482'), ip: '14.161.22.x', icon: RefreshCw },
+  { time: '15/10/2026 20:03', text: t('Signed in from the CampusStay iOS app'), ip: '27.72.101.x', icon: Smartphone },
+  { time: '12/10/2026 09:40', text: t('Updated contact phone number'), ip: '14.161.22.x', icon: Pencil },
+  { time: '05/10/2026 18:25', text: t('Paid invoice INV-2026-0905'), ip: '27.72.101.x', icon: RefreshCw },
 ];
 
 export function StudentProfilePage() {
@@ -79,22 +78,22 @@ export function StudentProfilePage() {
   const [personalEmail, setPersonalEmail] = useState('maianh.nguyen@gmail.com');
   const [emergency, setEmergency] = useState({
     name: 'Nguyễn Văn Hùng',
-    relation: 'Bố',
+    relation: t('Father'),
     phone: '0913 556 778',
-    address: 'Xã Phước Hòa, Huyện Phú Giáo, Tỉnh Bình Dương',
+    address: t('Phuoc Hoa Commune, Phu Giao District, Binh Duong Province'),
   });
   const [notify, setNotify] = useState({ email: true, push: true, sms: false, invoice: true, maintenance: true, events: false });
   const [twoFa, setTwoFa] = useState(true);
 
   return (
     <div className="space-y-6">
-      <PageHeader title="Hồ Sơ Sinh Viên" description="Thông tin cá nhân đồng bộ từ hệ thống FPT SIS • Lần đồng bộ cuối 07:00 hôm nay" />
+      <PageHeader title={t('Student profile')} description={t('Personal information synced from FPT SIS • Last synced at 07:00 today')} />
 
       {/* Header card */}
-      <div className="bg-white rounded-2xl border border-line/80 shadow-xs overflow-hidden">
+      <div className="bg-surface rounded-2xl border border-line/80 shadow-xs overflow-hidden">
         <div className="h-20 bg-surface-sunken" />
         <div className="px-6 pb-6 -mt-10 flex flex-col md:flex-row md:items-end gap-4">
-          <div className="w-20 h-20 rounded-2xl bg-white p-1 shadow">
+          <div className="w-20 h-20 rounded-2xl bg-surface p-1 shadow">
             <div className="w-full h-full rounded-xl bg-brand-soft text-brand-ink flex items-center justify-center font-bold text-3xl">
               {user?.name?.split(' ').pop()?.charAt(0) || 'A'}
             </div>
@@ -102,17 +101,17 @@ export function StudentProfilePage() {
           <div className="flex-1">
             <div className="flex flex-wrap items-center gap-2">
               <h2 className="text-lg font-bold text-ink">{user?.name}</h2>
-              <StatusBadge status="ACTIVE" customLabel="Đang lưu trú" />
+              <StatusBadge status="ACTIVE" customLabel={t('In residence')} />
             </div>
             <div className="text-xs text-ink-muted">
-              MSSV: <strong>{user?.studentId || 'SE171234'}</strong> • {user?.major || 'Kỹ thuật phần mềm (SE)'} • Khóa K17
+              MSSV: <strong>{user?.studentId || 'SE171234'}</strong> • {user?.major || t('Software Engineering (SE)')} {t('• Cohort K17')}
             </div>
           </div>
           <div className="grid grid-cols-3 gap-3 text-center">
             {[
-              ['3', 'Học kỳ ở KTX'],
-              ['96', 'Điểm nội quy'],
-              ['0', 'Vi phạm'],
+              ['3', t('Semesters in dorm')],
+              ['96', t('Conduct score')],
+              ['0', t('Violations')],
             ].map(([v, l]) => (
               <div key={l} className="px-3 py-2 rounded-xl bg-surface-muted">
                 <div className="text-lg font-bold text-ink">{v}</div>
@@ -125,10 +124,10 @@ export function StudentProfilePage() {
 
       <Tabs<TabKey>
         items={[
-          { value: 'info', label: 'Thông tin cá nhân' },
-          { value: 'emergency', label: 'Liên hệ khẩn cấp' },
-          { value: 'settings', label: 'Cài đặt & bảo mật' },
-          { value: 'activity', label: 'Hoạt động gần đây' },
+          { value: 'info', label: t('Personal information') },
+          { value: 'emergency', label: t('Emergency contact') },
+          { value: 'settings', label: t('Settings & security') },
+          { value: 'activity', label: t('Recent activity') },
         ]}
         value={tab}
         onChange={setTab}
@@ -137,22 +136,22 @@ export function StudentProfilePage() {
       {tab === 'info' && (
         <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
           <div className="xl:col-span-2 space-y-6">
-            <SectionCard title="Thông tin học vụ" subtitle="Chỉ đọc — chỉnh sửa tại Phòng Đào tạo">
+            <SectionCard title={t('Academic information')} subtitle={t('Read-only — edit at the Academic Affairs Office')}>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <Field icon={IdCard} label="Mã số sinh viên" value={user?.studentId || 'SE171234'} />
-                <Field icon={GraduationCap} label="Chuyên ngành" value={user?.major || 'Kỹ thuật phần mềm (SE)'} />
-                <Field icon={Calendar} label="Ngày sinh" value="14/03/2005" />
-                <Field icon={Users} label="Giới tính" value={user?.gender === 'FEMALE' ? 'Nữ' : 'Nam'} />
-                <Field icon={Building2} label="Cơ sở đào tạo" value="FPT University Tân Uyên (Bình Dương)" />
-                <Field icon={Award} label="Học kỳ hiện tại" value="Kỳ 5 — GPA tích lũy 8.2" />
-                <Field icon={IdCard} label="Số CCCD" value="074 305 xxx 912" />
-                <Field icon={MapPin} label="Địa chỉ thường trú" value="Xã Phước Hòa, Huyện Phú Giáo, Tỉnh Bình Dương (> 50km)" />
+                <Field icon={IdCard} label={t('Student ID')} value={user?.studentId || 'SE171234'} />
+                <Field icon={GraduationCap} label={t('Major')} value={user?.major || t('Software Engineering (SE)')} />
+                <Field icon={Calendar} label={t('Date of birth')} value="14/03/2005" />
+                <Field icon={Users} label={t('Gender')} value={t(user?.gender === 'FEMALE' ? 'Female' : 'Male')} />
+                <Field icon={Building2} label={t('Campus')} value={t('FPT University Tan Uyen (Binh Duong)')} />
+                <Field icon={Award} label={t('Current semester')} value={t('Term 5 — cumulative GPA 8.2')} />
+                <Field icon={IdCard} label={t('National ID number')} value="074 305 xxx 912" />
+                <Field icon={MapPin} label={t('Permanent address')} value={t('Phuoc Hoa Commune, Phu Giao District, Binh Duong Province (> 50 km)')} />
               </div>
             </SectionCard>
 
             <SectionCard
-              title="Thông tin liên hệ"
-              subtitle="Bạn có thể tự cập nhật"
+              title={t('Contact information')}
+              subtitle={t('You can update this yourself')}
               actions={
                 editing ? (
                   <AppButton
@@ -160,72 +159,72 @@ export function StudentProfilePage() {
                     leftIcon={<Save className="w-3.5 h-3.5" />}
                     onClick={() => {
                       setEditing(false);
-                      show('Đã lưu thông tin liên hệ');
+                      show(t('Contact information saved'));
                     }}
                   >
-                    Lưu
+                    {t('Save')}
                   </AppButton>
                 ) : (
                   <AppButton size="sm" variant="outline" leftIcon={<Pencil className="w-3.5 h-3.5" />} onClick={() => setEditing(true)}>
-                    Chỉnh sửa
+                    {t('Edit')}
                   </AppButton>
                 )
               }
             >
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <Field icon={Mail} label="Email sinh viên" value={user?.email} />
+                <Field icon={Mail} label={t('Student email')} value={user?.email} />
                 {editing ? (
                   <>
                     <div>
-                      <label className="text-label text-ink-muted">Số điện thoại</label>
+                      <label className="text-label text-ink-muted">{t('Phone number')}</label>
                       <input value={phone} onChange={(e) => setPhone(e.target.value)} className="w-full px-3 py-2 text-xs border border-line rounded-lg" />
                     </div>
                     <div>
-                      <label className="text-label text-ink-muted">Email cá nhân</label>
+                      <label className="text-label text-ink-muted">{t('Personal email')}</label>
                       <input value={personalEmail} onChange={(e) => setPersonalEmail(e.target.value)} className="w-full px-3 py-2 text-xs border border-line rounded-lg" />
                     </div>
                   </>
                 ) : (
                   <>
-                    <Field icon={Phone} label="Số điện thoại" value={phone} />
-                    <Field icon={Mail} label="Email cá nhân" value={personalEmail} />
+                    <Field icon={Phone} label={t('Phone number')} value={phone} />
+                    <Field icon={Mail} label={t('Personal email')} value={personalEmail} />
                   </>
                 )}
-                <Field icon={MapPin} label="Địa chỉ hiện tại" value="Phòng A204, Tòa A, KTX FPT Tân Uyên" />
+                <Field icon={MapPin} label={t('Current address')} value={t('Room A204, Building A, FPT Tan Uyen Dormitory')} />
               </div>
             </SectionCard>
           </div>
 
           <div className="space-y-6">
-            <SectionCard title="Mức độ hoàn thiện hồ sơ">
+            <SectionCard title={t('Profile completeness')}>
               <div className="flex items-end justify-between mb-2">
                 <span className="text-2xl font-bold text-ink">85%</span>
-                <span className="text-label text-ink-muted">Còn 2 mục</span>
+                <span className="text-label text-ink-muted">{t('2 items left')}</span>
               </div>
               <ProgressBar value={85} tone="emerald" size="md" />
               <ul className="mt-4 space-y-2 text-xs">
                 {[
-                  ['Thông tin cơ bản', true],
-                  ['Ảnh chân dung', true],
-                  ['Liên hệ khẩn cấp', true],
-                  ['Thông tin y tế', false],
-                  ['Tài khoản ngân hàng hoàn cọc', false],
+                  [t('Basic information'), true],
+                  [t('Portrait photo'), true],
+                  [t('Emergency contact'), true],
+                  [t('Medical information'), false],
+                  [t('Refund bank account'), false],
                 ].map(([l, ok]) => (
                   <li key={String(l)} className="flex items-center justify-between">
                     <span className="text-ink-muted">{l}</span>
-                    <span className={ok ? 'text-emerald-600 font-semibold' : 'text-amber-600 font-semibold'}>{ok ? 'Đã có' : 'Thiếu'}</span>
+                    <span className={ok ? 'text-emerald-600 font-semibold' : 'text-amber-600 font-semibold'}>{ok ? t('Provided') : t('Missing')}</span>
                   </li>
                 ))}
               </ul>
             </SectionCard>
-            <SectionCard title={<span className="flex items-center gap-2"><HeartPulse className="w-4 h-4 text-rose-500" /> Thông tin y tế</span>}>
+            <SectionCard title={<span className="flex items-center gap-2"><HeartPulse className="w-4 h-4 text-rose-500" /> {t('Medical information')}</span>}>
               <div className="space-y-2 text-xs">
-                <div className="flex justify-between"><span className="text-ink-muted">Nhóm máu</span><span className="font-semibold">O+</span></div>
-                <div className="flex justify-between"><span className="text-ink-muted">Dị ứng</span><span className="font-semibold">Phấn hoa</span></div>
+                <div className="flex justify-between"><span className="text-ink-muted">{t('Blood type')}</span><span className="font-semibold">O+</span></div>
+                <div className="flex justify-between"><span className="text-ink-muted">{t('Allergies')}</span><span className="font-semibold">{t('Pollen')}</span></div>
                 <div className="flex justify-between"><span className="text-ink-muted">BHYT</span><span className="font-semibold">SV4 74 xxx 2210</span></div>
               </div>
-              <AppButton size="sm" variant="outline" className="w-full mt-4" onClick={() => show('Đã mở biểu mẫu cập nhật y tế', 'info')}>
-                Cập nhật
+              <AppButton size="sm" variant="outline" className="w-full mt-4" onClick={() => show(t('Medical update form opened'), 'info')}>
+                {t('Update')}
               </AppButton>
             </SectionCard>
           </div>
@@ -233,14 +232,14 @@ export function StudentProfilePage() {
       )}
 
       {tab === 'emergency' && (
-        <SectionCard title="Người liên hệ khi khẩn cấp" subtitle="Ban quản lý KTX chỉ liên hệ trong trường hợp cần thiết">
+        <SectionCard title={t('Emergency contact person')} subtitle={t('The Dormitory Management Board only contacts them when necessary')}>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-3xl">
             {(
               [
-                ['name', 'Họ và tên'],
-                ['relation', 'Quan hệ'],
-                ['phone', 'Số điện thoại'],
-                ['address', 'Địa chỉ'],
+                ['name', t('Full name')],
+                ['relation', t('Relationship')],
+                ['phone', t('Phone number')],
+                ['address', t('Address')],
               ] as const
             ).map(([k, label]) => (
               <div key={k} className={k === 'address' ? 'md:col-span-2' : ''}>
@@ -261,8 +260,8 @@ export function StudentProfilePage() {
                 {emergency.relation} • {emergency.phone}
               </div>
             </div>
-            <AppButton size="sm" onClick={() => show('Đã lưu người liên hệ khẩn cấp')}>
-              Lưu thay đổi
+            <AppButton size="sm" onClick={() => show(t('Emergency contact saved'))}>
+              {t('Save changes')}
             </AppButton>
           </div>
         </SectionCard>
@@ -270,16 +269,16 @@ export function StudentProfilePage() {
 
       {tab === 'settings' && (
         <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-          <SectionCard title={<span className="flex items-center gap-2"><Bell className="w-4 h-4 text-brand-ink" /> Thông báo</span>}>
+          <SectionCard title={<span className="flex items-center gap-2"><Bell className="w-4 h-4 text-brand-ink" /> {t('Announcement')}</span>}>
             <ul className="divide-y divide-line">
               {(
                 [
-                  ['email', 'Nhận thông báo qua email', 'anhntmse171234@fpt.edu.vn'],
-                  ['push', 'Thông báo đẩy trên ứng dụng', 'CampusStay iOS / Android'],
-                  ['sms', 'Tin nhắn SMS', 'Chỉ dùng cho tin khẩn cấp'],
-                  ['invoice', 'Nhắc hạn thanh toán', 'Trước 3 ngày và đúng hạn'],
-                  ['maintenance', 'Cập nhật yêu cầu bảo trì', 'Khi trạng thái thay đổi'],
-                  ['events', 'Sự kiện & hoạt động KTX', 'Đêm nhạc, thể thao, CLB'],
+                  ['email', t('Email notifications'), 'anhntmse171234@fpt.edu.vn'],
+                  ['push', t('In-app push notifications'), 'CampusStay iOS / Android'],
+                  ['sms', t('SMS messages'), t('Only for emergencies')],
+                  ['invoice', t('Payment due reminders'), t('3 days before and on the due date')],
+                  ['maintenance', t('Maintenance request updates'), t('When the status changes')],
+                  ['events', t('Dormitory events & activities'), t('Music nights, sports, clubs')],
                 ] as const
               ).map(([k, label, desc]) => (
                 <li key={k} className="py-3 flex items-center justify-between gap-3">
@@ -293,31 +292,31 @@ export function StudentProfilePage() {
             </ul>
           </SectionCard>
           <div className="space-y-6">
-            <SectionCard title={<span className="flex items-center gap-2"><Shield className="w-4 h-4 text-ink" /> Bảo mật tài khoản</span>}>
+            <SectionCard title={<span className="flex items-center gap-2"><Shield className="w-4 h-4 text-ink" /> {t('Account security')}</span>}>
               <div className="space-y-4">
                 <div className="flex items-center justify-between gap-3">
                   <div>
-                    <div className="text-xs font-semibold text-ink">Xác thực 2 lớp (OTP)</div>
-                    <div className="text-label text-ink-muted">Yêu cầu OTP khi ký hợp đồng & thanh toán</div>
+                    <div className="text-xs font-semibold text-ink">{t('Two-factor authentication (OTP)')}</div>
+                    <div className="text-label text-ink-muted">{t('Require OTP when signing contracts & paying')}</div>
                   </div>
                   <Toggle checked={twoFa} onChange={setTwoFa} />
                 </div>
                 <div className="flex items-center justify-between gap-3">
                   <div>
-                    <div className="text-xs font-semibold text-ink">Đăng nhập bằng FPT SSO</div>
-                    <div className="text-label text-ink-muted">Mật khẩu được quản lý bởi FPT Education</div>
+                    <div className="text-xs font-semibold text-ink">{t('Sign in with FPT SSO')}</div>
+                    <div className="text-label text-ink-muted">{t('Password managed by FPT Education')}</div>
                   </div>
-                  <AppButton size="sm" variant="outline" leftIcon={<Lock className="w-3.5 h-3.5" />} onClick={() => show('Chuyển hướng tới trang đổi mật khẩu FPT SSO', 'info')}>
-                    Đổi mật khẩu
+                  <AppButton size="sm" variant="outline" leftIcon={<Lock className="w-3.5 h-3.5" />} onClick={() => show(t('Redirecting to the FPT SSO password page'), 'info')}>
+                    {t('Change password')}
                   </AppButton>
                 </div>
               </div>
             </SectionCard>
-            <SectionCard title="Thiết bị đang đăng nhập" noPadding>
+            <SectionCard title={t('Signed-in devices')} noPadding>
               <ul className="divide-y divide-line">
                 {[
-                  { d: 'Chrome trên Windows 11', where: 'Bình Dương • Đang hoạt động', current: true },
-                  { d: 'CampusStay iOS — iPhone 15', where: 'Bình Dương • 2 ngày trước', current: false },
+                  { d: t('Chrome on Windows 11'), where: t('Binh Duong • Active now'), current: true },
+                  { d: 'CampusStay iOS — iPhone 15', where: t('Binh Duong • 2 days ago'), current: false },
                 ].map((s) => (
                   <li key={s.d} className="px-5 py-3 flex items-center gap-3">
                     <Smartphone className="w-4 h-4 text-ink-subtle" />
@@ -326,10 +325,10 @@ export function StudentProfilePage() {
                       <div className="text-ink-muted">{s.where}</div>
                     </div>
                     {s.current ? (
-                      <span className="text-label font-semibold text-emerald-600">Thiết bị này</span>
+                      <span className="text-label font-semibold text-emerald-600">{t('This device')}</span>
                     ) : (
-                      <button type="button" onClick={() => show('Đã đăng xuất thiết bị', 'info')} className="text-label font-semibold text-rose-600 hover:underline">
-                        Đăng xuất
+                      <button type="button" onClick={() => show(t('Device signed out'), 'info')} className="text-label font-semibold text-rose-600 hover:underline">
+                        {t('Sign out')}
                       </button>
                     )}
                   </li>
@@ -341,7 +340,7 @@ export function StudentProfilePage() {
       )}
 
       {tab === 'activity' && (
-        <SectionCard title="Nhật ký hoạt động tài khoản" subtitle="30 ngày gần nhất" noPadding>
+        <SectionCard title={t('Account activity log')} subtitle={t('Last 30 days')} noPadding>
           <ul className="divide-y divide-line">
             {ACTIVITY.map((a) => (
               <li key={a.time} className="px-5 py-3 flex items-center gap-3">

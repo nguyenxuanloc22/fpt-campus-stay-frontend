@@ -15,3 +15,5 @@ export * from './components/Charts';
 export * from './components/Toast';
 export * from './components/VietQrCode';
 export * from './utils/format';
+export * from './preferences/preferences.store';
+export * from './i18n/t';

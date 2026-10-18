@@ -1,3 +1,4 @@
+import { t } from '../i18n/t';
 import { useMemo } from 'react';
 
 interface VietQrCodeProps {
@@ -38,7 +39,7 @@ export function VietQrCode({ value, size = 192 }: VietQrCodeProps) {
       height={size}
       shapeRendering="crispEdges"
       role="img"
-      aria-label="Mã VietQR"
+      aria-label={t('VietQR code')}
     >
       <rect width={GRID} height={GRID} fill="#fff" />
       {cells.map((on, i) => {

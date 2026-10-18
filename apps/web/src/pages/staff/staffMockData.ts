@@ -1,4 +1,5 @@
-// ──────────────────────────────────────────────────────────────
+
+import { t } from '@shared-ui';// ──────────────────────────────────────────────────────────────
 //  staffMockData.ts — Staff Operational Portal Mock Data
 //  Strongly-typed data structures for all 5 core operational use cases:
 //  1. Review Dormitory Applications
@@ -39,7 +40,7 @@ export interface RoomInventoryCard {
   roomNumber: string;
   building: string;
   floor: number;
-  gender: 'Nam' | 'Nữ';
+  gender: 'Male' | 'Female';
   roomType: string;
   beds: BedDetail[];
 }
@@ -69,7 +70,7 @@ export interface MaintenanceInspectionItem {
   ticketCode: string;
   room: string;
   building: string;
-  category: 'Máy lạnh' | 'Điện' | 'Cấp thoát nước' | 'Nội thất';
+  category: 'Air conditioning' | 'Electrical' | 'Plumbing' | 'Furniture';
   description: string;
   reportedBy: string;
   reportedAt: string;
@@ -85,7 +86,7 @@ export interface ManualCheckinItem {
   studentId: string;
   assignedRoom: string;
   bedCode: string;
-  checkinType: 'Thủ công tại quầy' | 'Check-in muộn';
+  checkinType: 'Walk-in at the desk' | 'Late check-in';
   scheduledTime: string;
   status: 'WAITING' | 'CONDITION_VERIFIED' | 'COMPLETED';
   inventoryItems: {
@@ -101,16 +102,16 @@ export const STAFF_APPLICATIONS: ApplicationReviewItem[] = [
     code: 'APP-SP27-004809',
     studentName: 'Đỗ Minh Quân',
     studentId: 'SE190455',
-    major: 'Kỹ thuật phần mềm',
-    roomTypeRequested: '4 giường máy lạnh',
+    major: t('Software Engineering'),
+    roomTypeRequested: t('4-bed air-conditioned'),
     submittedAt: '16/10/2026 18:02',
     status: 'PENDING_REVIEW',
-    flagReason: 'Hồ sơ đào tạo cập nhật học lại — Đã đối chiếu quyết định số 1123/QĐ-FPTU hợp lệ',
+    flagReason: t('Academic record updated for repeat study — Decision 1123/QĐ-FPTU verified as valid'),
     verificationChecks: [
-      { label: 'Tư cách sinh viên chính quy xác thực', passed: true },
-      { label: 'Không tồn đọng nghĩa vụ tài chính', passed: true },
-      { label: 'Đã hoàn tất thanh toán giữ chỗ', passed: true },
-      { label: 'Cam kết tuân thủ nội quy KTX', passed: true },
+      { label: t('Full-time student status verified'), passed: true },
+      { label: t('No outstanding financial obligations'), passed: true },
+      { label: t('Holding payment completed'), passed: true },
+      { label: t('Committed to the dormitory rules'), passed: true },
     ],
     documents: ['quyet-dinh-hoc-lai.pdf', 'xac-nhan-tai-chinh.pdf'],
   },
@@ -120,15 +121,15 @@ export const STAFF_APPLICATIONS: ApplicationReviewItem[] = [
     studentName: 'Mai Khánh Vy',
     studentId: 'SS190234',
     major: 'Digital Marketing',
-    roomTypeRequested: '4 giường máy lạnh',
+    roomTypeRequested: t('4-bed air-conditioned'),
     submittedAt: '14/10/2026 21:47',
     status: 'PENDING_REVIEW',
-    flagReason: 'Đề nghị ưu tiên tầng thấp có chứng nhận y tế chuyên khoa đính kèm',
+    flagReason: t('Requests a lower floor with an attached specialist medical certificate'),
     verificationChecks: [
-      { label: 'Tư cách sinh viên chính quy xác thực', passed: true },
-      { label: 'Chứng nhận y tế hợp lệ từ bệnh viện công', passed: true },
-      { label: 'Không tồn đọng nghĩa vụ tài chính', passed: true },
-      { label: 'Đã hoàn tất thanh toán giữ chỗ', passed: true },
+      { label: t('Full-time student status verified'), passed: true },
+      { label: t('Valid medical certificate from a public hospital'), passed: true },
+      { label: t('No outstanding financial obligations'), passed: true },
+      { label: t('Holding payment completed'), passed: true },
     ],
     documents: ['giay-kham-benh-benh-vien.pdf'],
   },
@@ -137,15 +138,15 @@ export const STAFF_APPLICATIONS: ApplicationReviewItem[] = [
     code: 'APP-SP27-004760',
     studentName: 'Trương Gia Bảo',
     studentId: 'AI180990',
-    major: 'Trí tuệ nhân tạo',
-    roomTypeRequested: '2 giường tiêu chuẩn',
+    major: t('Artificial Intelligence'),
+    roomTypeRequested: t('2-bed standard'),
     submittedAt: '14/10/2026 10:12',
     status: 'ESCALATED',
-    flagReason: 'Chênh lệch chỉ số công tơ điện kỳ trước đang xác minh với tổ kỹ thuật',
+    flagReason: t('Last term\'s electricity meter discrepancy under verification with the maintenance team'),
     verificationChecks: [
-      { label: 'Tư cách sinh viên chính quy xác thực', passed: true },
-      { label: 'Biên bản đối soát điện nước kỹ thuật đã lập', passed: true },
-      { label: 'Đã hoàn tất thanh toán giữ chỗ', passed: true },
+      { label: t('Full-time student status verified'), passed: true },
+      { label: t('Utility reconciliation record prepared by the maintenance team'), passed: true },
+      { label: t('Holding payment completed'), passed: true },
     ],
     documents: ['bien-ban-kiem-tra-cong-to.pdf'],
   },
@@ -155,10 +156,10 @@ export const STAFF_APPLICATIONS: ApplicationReviewItem[] = [
 export const STAFF_ROOMS: RoomInventoryCard[] = [
   {
     roomNumber: 'A102',
-    building: 'Tòa A',
+    building: t('Building A'),
     floor: 1,
-    gender: 'Nữ',
-    roomType: '4 giường máy lạnh',
+    gender: 'Female',
+    roomType: t('4-bed air-conditioned'),
     beds: [
       { bedId: 'b-01', bedCode: 'A102-G1', status: 'OCCUPIED', occupant: { name: 'Lê Thị Thu Thảo', studentId: 'SE180123' } },
       { bedId: 'b-02', bedCode: 'A102-G2', status: 'OCCUPIED', occupant: { name: 'Nguyễn Thảo My', studentId: 'SS190201' } },
@@ -168,10 +169,10 @@ export const STAFF_ROOMS: RoomInventoryCard[] = [
   },
   {
     roomNumber: 'B205',
-    building: 'Tòa B',
+    building: t('Building B'),
     floor: 2,
-    gender: 'Nam',
-    roomType: '4 giường quạt',
+    gender: 'Male',
+    roomType: t('4-bed with fan'),
     beds: [
       { bedId: 'b-05', bedCode: 'B205-G1', status: 'OCCUPIED', occupant: { name: 'Trần Minh Hoàng', studentId: 'SE190882' } },
       { bedId: 'b-06', bedCode: 'B205-G2', status: 'AVAILABLE' },
@@ -181,10 +182,10 @@ export const STAFF_ROOMS: RoomInventoryCard[] = [
   },
   {
     roomNumber: 'C304',
-    building: 'Tòa C',
+    building: t('Building C'),
     floor: 3,
-    gender: 'Nữ',
-    roomType: '2 giường dịch vụ',
+    gender: 'Female',
+    roomType: t('2-bed service room'),
     beds: [
       { bedId: 'b-09', bedCode: 'C304-G1', status: 'OCCUPIED', occupant: { name: 'Phan Thùy Dung', studentId: 'GD190087' } },
       { bedId: 'b-10', bedCode: 'C304-G2', status: 'AVAILABLE' },
@@ -196,7 +197,7 @@ export const STAFF_ROOMS: RoomInventoryCard[] = [
 export const STAFF_ASSIGNMENT_PROPOSAL: AssignmentProposalBatch = {
   id: 'batch-sp27-02',
   batchCode: 'BR-SP27-02',
-  title: 'Đề xuất phân bổ phòng KTX Học kỳ Spring 2027 (Đợt 1)',
+  title: t('Spring 2027 dormitory allocation proposal (Round 1)'),
   semester: 'Spring 2027',
   totalAllocations: 342,
   matchRate: 98.2,
@@ -206,24 +207,24 @@ export const STAFF_ASSIGNMENT_PROPOSAL: AssignmentProposalBatch = {
       id: 'conf-1',
       studentName: 'Mai Khánh Vy (SS190234)',
       studentId: 'SS190234',
-      issue: 'Hệ thống tự động xếp tầng 4 (C402) trong khi sinh viên có chỉ định y tế tầng thấp',
-      proposedResolution: 'Chuyển sang giường A102-G3 (Tầng 1 Tòa A nữ)',
+      issue: t('The system placed the student on floor 4 (C402) although they have a medical referral for a lower floor'),
+      proposedResolution: t('Move to bed A102-G3 (floor 1, Building A, female)'),
       isResolved: false,
     },
     {
       id: 'conf-2',
       studentName: 'Hồ Tấn Phát (SE170321) & Bùi Văn Hùng (SE170440)',
       studentId: 'SE170321',
-      issue: 'Nguyện vọng cùng phòng hợp lệ nhưng bị chia tách sang 2 phòng khác nhau',
-      proposedResolution: 'Đổi giường trống B205-G2 để ghép cùng B205-G1',
+      issue: t('Valid roommate request, but the pair was split into 2 different rooms'),
+      proposedResolution: t('Swap to free bed B205-G2 to join B205-G1'),
       isResolved: false,
     },
     {
       id: 'conf-3',
       studentName: 'Lê Hoàng Khang (AI190012)',
       studentId: 'AI190012',
-      issue: 'Phòng B310 có 1 giường báo hỏng điều hòa đang chờ phụ tùng thay thế',
-      proposedResolution: 'Tạm khóa giường B310-G4 và phân bổ sang B208-G2',
+      issue: t('Room B310 has 1 bed with a broken air conditioner waiting for spare parts'),
+      proposedResolution: t('Temporarily lock bed B310-G4 and allocate to B208-G2'),
       isResolved: true,
     },
   ],
@@ -235,43 +236,43 @@ export const STAFF_MAINTENANCE_TASKS: MaintenanceInspectionItem[] = [
     id: 'maint-01',
     ticketCode: 'TK-10499',
     room: 'D305',
-    building: 'Tòa D',
-    category: 'Điện',
-    description: 'Chập aptomat khu vực máy lạnh phòng D305, ngắt nguồn cục bộ',
+    building: t('Building D'),
+    category: 'Electrical',
+    description: t('Circuit breaker tripped in the air-conditioning area of room D305, local power cut'),
     reportedBy: 'Võ Minh Nhật (SE180321)',
     reportedAt: '17/10/2026 14:15',
     urgency: 'URGENT',
     status: 'IN_PROGRESS',
-    assignedTech: 'Nguyễn Văn Tâm (Kỹ thuật điện)',
-    slaRemaining: '0.9 giờ (Khẩn cấp)',
+    assignedTech: t('Nguyễn Văn Tâm (Electrical)'),
+    slaRemaining: t('0.9 hours (urgent)'),
   },
   {
     id: 'maint-02',
     ticketCode: 'TK-10488',
     room: 'B108',
-    building: 'Tòa B',
-    category: 'Cấp thoát nước',
-    description: 'Rò rỉ van vòi sen phòng tắm, nước tràn ra sàn phòng vệ sinh',
+    building: t('Building B'),
+    category: 'Plumbing',
+    description: t('Shower valve leaking, water overflowing onto the bathroom floor'),
     reportedBy: 'Đặng Quốc Huy (SE190012)',
     reportedAt: '17/10/2026 15:00',
     urgency: 'URGENT',
     status: 'PENDING',
-    assignedTech: 'Lê Văn Tài (Kỹ thuật cấp thoát)',
-    slaRemaining: '1.5 giờ',
+    assignedTech: t('Lê Văn Tài (Plumbing)'),
+    slaRemaining: t('1.5 hours'),
   },
   {
     id: 'maint-03',
     ticketCode: 'TK-10472',
     room: 'A204',
-    building: 'Tòa A',
-    category: 'Nội thất',
-    description: 'Bản lề tủ quần áo giường G2 bị lỏng, cửa không khép kín',
+    building: t('Building A'),
+    category: 'Furniture',
+    description: t('Wardrobe hinge at bed G2 loose, door does not close'),
     reportedBy: 'Nguyễn Thị Mai Anh (SE171234)',
     reportedAt: '16/10/2026 09:30',
     urgency: 'MEDIUM',
     status: 'VERIFIED_DONE',
-    assignedTech: 'Trần Quốc Thắng (Tổ mộc/nội thất)',
-    slaRemaining: 'Đã hoàn thành',
+    assignedTech: t('Trần Quốc Thắng (Carpentry/furniture)'),
+    slaRemaining: t('Completed'),
   },
 ];
 
@@ -283,15 +284,15 @@ export const STAFF_MANUAL_CHECKINS: ManualCheckinItem[] = [
     studentId: 'SE190112',
     assignedRoom: 'C305',
     bedCode: 'C305-G2',
-    checkinType: 'Thủ công tại quầy',
-    scheduledTime: 'Hôm nay · 08:30',
+    checkinType: 'Walk-in at the desk',
+    scheduledTime: t('Today · 08:30'),
     status: 'WAITING',
     inventoryItems: [
-      { name: 'Thẻ từ ra vào cửa phòng & thang máy', checked: true },
-      { name: 'Chìa khóa tủ cá nhân số G2', checked: true },
-      { name: 'Nệm & ga trải giường tiêu chuẩn KTX', checked: true },
-      { name: 'Bàn ghế học tập không trầy xước', checked: false },
-      { name: 'Thiết bị vệ sinh & điều hòa hoạt động tốt', checked: false },
+      { name: t('Key card for the room door & elevator'), checked: true },
+      { name: t('Personal locker key no. G2'), checked: true },
+      { name: t('Standard dormitory mattress & bed sheets'), checked: true },
+      { name: t('Desk and chair without scratches'), checked: false },
+      { name: t('Bathroom fixtures & air conditioner working well'), checked: false },
     ],
   },
   {
@@ -300,15 +301,15 @@ export const STAFF_MANUAL_CHECKINS: ManualCheckinItem[] = [
     studentId: 'AI180990',
     assignedRoom: 'D402',
     bedCode: 'D402-G2',
-    checkinType: 'Check-in muộn',
-    scheduledTime: 'Hôm nay · 18:30',
+    checkinType: 'Late check-in',
+    scheduledTime: t('Today · 18:30'),
     status: 'WAITING',
     inventoryItems: [
-      { name: 'Thẻ từ ra vào cửa phòng & thang máy', checked: false },
-      { name: 'Chìa khóa tủ cá nhân số G2', checked: false },
-      { name: 'Nệm & ga trải giường tiêu chuẩn KTX', checked: false },
-      { name: 'Bàn ghế học tập không trầy xước', checked: false },
-      { name: 'Thiết bị vệ sinh & điều hòa hoạt động tốt', checked: false },
+      { name: t('Key card for the room door & elevator'), checked: false },
+      { name: t('Personal locker key no. G2'), checked: false },
+      { name: t('Standard dormitory mattress & bed sheets'), checked: false },
+      { name: t('Desk and chair without scratches'), checked: false },
+      { name: t('Bathroom fixtures & air conditioner working well'), checked: false },
     ],
   },
 ];

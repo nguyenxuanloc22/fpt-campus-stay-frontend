@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { Camera, Send, Clock, UserCog, Info, ArrowLeftRight, Repeat, CheckCircle2 } from 'lucide-react';
 import clsx from 'clsx';
-import { PageHeader, SectionCard, AppButton, formatVnd } from '@shared-ui';
+import { PageHeader, SectionCard, AppButton, formatVnd, t } from '@shared-ui';
 import { APP_ROUTES } from '@campusstay/constants';
 import { assetsForRoom } from '@features/rooms/roomCatalog';
 import { APPLICATION_TYPES, typeMeta, useStudentApplications, type ApplicationType } from '@features/applications/studentApplications';
@@ -18,14 +18,14 @@ const MY_ROOM = 'A204';
 const MY_ASSETS = assetsForRoom(MY_ROOM, 'ROOM_4');
 
 const OPEN_INVOICES = [
-  { code: 'INV-2026-1012', label: 'Phí phòng Fall 2026 — đợt 2', amount: 2600000, due: '24/10/2026' },
-  { code: 'INV-2026-1019', label: 'Điện nước tháng 10/2026', amount: 318000, due: '05/11/2026' },
+  { code: 'INV-2026-1012', label: t('Fall 2026 room fee — installment 2'), amount: 2600000, due: '24/10/2026' },
+  { code: 'INV-2026-1019', label: t('Utilities, October 2026'), amount: 318000, due: '05/11/2026' },
 ];
 
-const REFUND_KINDS = ['Hoàn cọc khi trả phòng', 'Thanh toán trùng / chuyển dư', 'Chấm dứt hợp đồng sớm'] as const;
-const PURPOSES = ['Vay vốn ngân hàng chính sách', 'Đăng ký tạm trú', 'Hồ sơ học bổng', 'Khác'] as const;
+const REFUND_KINDS = [t('Deposit refund on check-out'), t('Duplicate payment / overpayment'), t('Early contract termination')] as const;
+const PURPOSES = [t('Policy bank student loan'), t('Temporary residence registration'), t('Scholarship application'), t('Other')] as const;
 
-const input = 'w-full px-3 py-2.5 text-sm border border-line rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-brand';
+const input = 'w-full px-3 py-2.5 text-sm border border-line rounded-xl bg-surface focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-brand';
 
 function Field({ label, hint, children }: { label: string; hint?: string; children: React.ReactNode }) {
   return (
@@ -89,17 +89,17 @@ export function StudentSubmitApplicationPage() {
   const build = (): { title: string; fields: Record<string, string> } => {
     switch (type) {
       case 'MAINTENANCE':
-        return { title, fields: { 'Thiết bị': asset ? `${asset.id} · ${asset.name}` : '—', 'Mức độ': urgent ? 'Khẩn cấp' : 'Bình thường', ...(photos ? { 'Ảnh đính kèm': `${photos} ảnh` } : {}) } };
+        return { title, fields: { [t('Equipment')]: asset ? `${asset.id} · ${asset.name}` : '—', [t('Severity')]: urgent ? t('Urgent') : t('Normal'), ...(photos ? { [t('Attached photos')]: t('{0} photos', { 0: photos }) } : {}) } };
       case 'ROOM_CHANGE':
         return swapMode === 'SWAP'
-          ? { title: `Hoán đổi phòng với ${partnerId}`, fields: { 'Đối tác': partnerId, 'Phòng hiện tại': `${MY_ROOM}-G1` } }
-          : { title: 'Đổi phòng — chờ hệ thống ghép', fields: { 'Hình thức': 'Chưa có đối tác', 'Phòng hiện tại': `${MY_ROOM}-G1` } };
+          ? { title: t('Room swap with {0}', { 0: partnerId }), fields: { [t('Partner')]: partnerId, [t('Current room')]: `${MY_ROOM}-G1` } }
+          : { title: t('Room change — waiting for system matching'), fields: { [t('Type')]: t('No partner yet'), [t('Current room')]: `${MY_ROOM}-G1` } };
       case 'REFUND':
-        return { title: `Hoàn tiền — ${refundKind}`, fields: { 'Loại hoàn tiền': refundKind, 'Số tiền': formatVnd(Number(amount)), ...(txRef ? { 'Mã giao dịch': txRef } : {}) } };
+        return { title: t('Refund — {0}', { 0: refundKind }), fields: { [t('Refund type')]: refundKind, [t('Amount')]: formatVnd(Number(amount)), ...(txRef ? { [t('Transaction ID')]: txRef } : {}) } };
       case 'PAYMENT_EXTENSION':
-        return { title: `Xin gia hạn ${inv?.label ?? invoice}`, fields: { 'Hóa đơn': invoice, 'Hạn hiện tại': inv?.due ?? '—', 'Hạn mong muốn': newDue.split('-').reverse().join('/') } };
+        return { title: t('Extension request: {0}', { 0: inv?.label ?? invoice }), fields: { [t('Invoice')]: invoice, [t('Current due date')]: inv?.due ?? '—', [t('Requested due date')]: newDue.split('-').reverse().join('/') } };
       case 'RESIDENCE_CONFIRMATION':
-        return { title: `Xác nhận cư trú — ${purpose}`, fields: { 'Mục đích': purpose, 'Số bản': String(copies) } };
+        return { title: t('Residence confirmation — {0}', { 0: purpose }), fields: { [t('Purpose')]: purpose, [t('Copies')]: String(copies) } };
       default:
         return { title, fields: {} };
     }
@@ -114,10 +114,10 @@ export function StudentSubmitApplicationPage() {
 
   return (
     <div className="space-y-6">
-      <PageHeader title="Gửi đơn" description="Chọn loại đơn, điền thông tin và gửi — theo dõi tiến độ tại mục “Đơn của tôi”" />
+      <PageHeader title={t('Submit a request')} description={t('Choose a request type, fill in the details and submit — track progress in “My requests”')} />
 
       <div className="grid grid-cols-1 xl:grid-cols-[340px_1fr] gap-6 items-start">
-        <SectionCard title="1. Chọn loại đơn" noPadding>
+        <SectionCard title={t('1. Choose a request type')} noPadding>
           <ul className="p-3 space-y-1.5">
             {APPLICATION_TYPES.map((t) => {
               const v = APPLICATION_VISUAL[t.type];
@@ -144,7 +144,7 @@ export function StudentSubmitApplicationPage() {
           </ul>
         </SectionCard>
 
-        <form onSubmit={onSubmit} className="bg-white rounded-2xl border border-line shadow-sm overflow-hidden">
+        <form onSubmit={onSubmit} className="bg-surface rounded-2xl border border-line shadow-sm overflow-hidden">
           <div className="px-6 py-5 bg-gradient-to-r from-orange-50 via-white to-white border-b border-line flex flex-wrap items-center gap-4">
             {(() => {
               const v = APPLICATION_VISUAL[type];
@@ -155,40 +155,40 @@ export function StudentSubmitApplicationPage() {
               );
             })()}
             <div className="flex-1 min-w-0">
-              <div className="text-label font-bold uppercase tracking-[0.12em] text-brand-ink">2. Nội dung đơn</div>
+              <div className="text-label font-bold uppercase tracking-[0.12em] text-brand-ink">{t('2. Request details')}</div>
               <h2 className="text-lg font-extrabold text-ink">{meta.title}</h2>
             </div>
             <div className="flex flex-wrap gap-2 text-label">
-              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-white border border-line text-ink-muted"><UserCog className="w-3.5 h-3.5 text-sky-500" />{meta.handler}</span>
-              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-white border border-line text-ink-muted"><Clock className="w-3.5 h-3.5 text-amber-500" />{meta.sla}</span>
+              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-surface border border-line text-ink-muted"><UserCog className="w-3.5 h-3.5 text-sky-500" />{meta.handler}</span>
+              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-surface border border-line text-ink-muted"><Clock className="w-3.5 h-3.5 text-amber-500" />{meta.sla}</span>
             </div>
           </div>
 
           <div className="p-6 space-y-5">
             {type === 'MAINTENANCE' && (
               <>
-                <Field label="Thiết bị cần sửa" hint={`Phòng ${MY_ROOM} · mã tài sản giúp kỹ thuật viên xác định đúng thiết bị.`}>
+                <Field label={t('Equipment to repair')} hint={t('Room {0} · the asset ID helps the technician identify the right equipment.', { 0: MY_ROOM })}>
                   <select value={assetId} onChange={(e) => setAssetId(e.target.value)} className={input}>
                     {MY_ASSETS.map((a) => <option key={a.id} value={a.id}>{a.id} — {a.name}</option>)}
                   </select>
                 </Field>
-                <Field label="Tiêu đề">
-                  <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="VD: Máy lạnh chảy nước" className={input} />
+                <Field label={t('Title')}>
+                  <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder={t('E.g. Air conditioner leaking water')} className={input} />
                 </Field>
                 <div className="grid grid-cols-2 gap-2">
                   {[false, true].map((u) => (
                     <button key={String(u)} type="button" onClick={() => setUrgent(u)} className={clsx('p-3 rounded-xl border text-left', urgent === u ? (u ? 'border-rose-300 bg-rose-50' : 'border-orange-300 bg-orange-50') : 'border-line')}>
-                      <div className={clsx('text-sm font-bold', u ? 'text-rose-700' : 'text-ink')}>{u ? 'Khẩn cấp' : 'Bình thường'}</div>
-                      <div className="text-label text-ink-muted">{u ? 'Mất điện, rò nước, chập cháy — xử lý trong 2 giờ' : 'Xử lý trong 24 – 72 giờ'}</div>
+                      <div className={clsx('text-sm font-bold', u ? 'text-rose-700' : 'text-ink')}>{u ? t('Urgent') : t('Normal')}</div>
+                      <div className="text-label text-ink-muted">{u ? t('Power outage, water leak, short circuit — handled within 2 hours') : t('Handled within 24 – 72 hours')}</div>
                     </button>
                   ))}
                 </div>
                 <div>
-                  <span className="block text-xs font-bold text-ink mb-1.5">Ảnh hiện trạng (tối đa 4)</span>
+                  <span className="block text-xs font-bold text-ink mb-1.5">{t('Photos of the condition (up to 4)')}</span>
                   <div className="flex gap-2 flex-wrap">
                     {Array.from({ length: photos }).map((_, i) => <div key={i} className="w-16 h-16 rounded-xl bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center text-label text-ink-muted">IMG_{i + 1}</div>)}
                     {photos < 4 && (
-                      <button type="button" onClick={() => setPhotos((p) => p + 1)} className="w-16 h-16 rounded-xl border-2 border-dashed border-line-strong flex items-center justify-center text-ink-subtle hover:border-brand hover:text-brand-ink" aria-label="Thêm ảnh">
+                      <button type="button" onClick={() => setPhotos((p) => p + 1)} className="w-16 h-16 rounded-xl border-2 border-dashed border-line-strong flex items-center justify-center text-ink-subtle hover:border-brand hover:text-brand-ink" aria-label={t('Add photo')}>
                         <Camera className="w-5 h-5" />
                       </button>
                     )}
@@ -201,16 +201,16 @@ export function StudentSubmitApplicationPage() {
               <>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                   <button type="button" onClick={() => setSwapMode('SWAP')} className={clsx('p-3 rounded-xl border text-left', swapMode === 'SWAP' ? 'border-sky-300 bg-sky-50' : 'border-line')}>
-                    <div className="text-sm font-bold text-ink flex items-center gap-1.5"><ArrowLeftRight className="w-4 h-4 text-sky-600" />Hoán đổi với bạn cụ thể</div>
-                    <div className="text-label text-ink-muted mt-0.5">Nhập MSSV, bạn ấy cần chấp nhận lời mời</div>
+                    <div className="text-sm font-bold text-ink flex items-center gap-1.5"><ArrowLeftRight className="w-4 h-4 text-sky-600" />{t('Swap with a specific student')}</div>
+                    <div className="text-label text-ink-muted mt-0.5">{t('Enter their student ID; they must accept the invitation')}</div>
                   </button>
                   <button type="button" onClick={() => setSwapMode('MOVE')} className={clsx('p-3 rounded-xl border text-left', swapMode === 'MOVE' ? 'border-sky-300 bg-sky-50' : 'border-line')}>
-                    <div className="text-sm font-bold text-ink flex items-center gap-1.5"><Repeat className="w-4 h-4 text-sky-600" />Chưa có đối tác</div>
-                    <div className="text-label text-ink-muted mt-0.5">Đơn được treo chờ ghép đến hết đợt đổi phòng</div>
+                    <div className="text-sm font-bold text-ink flex items-center gap-1.5"><Repeat className="w-4 h-4 text-sky-600" />{t('No partner yet')}</div>
+                    <div className="text-label text-ink-muted mt-0.5">{t('The request waits for a match until the room-change window ends')}</div>
                   </button>
                 </div>
                 {swapMode === 'SWAP' && (
-                  <Field label="MSSV đối tác" hint="Cùng giới tính, cùng kỳ lưu trú và đang ở KTX.">
+                  <Field label={t('Partner\'s student ID')} hint={t('Same gender, same stay term and currently living in the dormitory.')}>
                     <input value={partnerId} onChange={(e) => setPartnerId(e.target.value.toUpperCase())} placeholder="VD: SE172211" className={clsx(input, partnerId && !partnerValid && 'border-rose-300')} />
                   </Field>
                 )}
@@ -219,33 +219,33 @@ export function StudentSubmitApplicationPage() {
 
             {type === 'REFUND' && (
               <>
-                <Field label="Loại hoàn tiền">
+                <Field label={t('Refund type')}>
                   <select value={refundKind} onChange={(e) => setRefundKind(e.target.value as (typeof REFUND_KINDS)[number])} className={input}>
                     {REFUND_KINDS.map((k) => <option key={k}>{k}</option>)}
                   </select>
                 </Field>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <Field label="Số tiền đề nghị (₫)" hint={Number(amount) > 0 ? formatVnd(Number(amount)) : undefined}>
+                  <Field label={t('Requested amount (₫)')} hint={Number(amount) > 0 ? formatVnd(Number(amount)) : undefined}>
                     <input type="number" min={0} value={amount} onChange={(e) => setAmount(e.target.value)} placeholder="VD: 500000" className={input} />
                   </Field>
-                  <Field label="Mã giao dịch VietQR (nếu có)">
+                  <Field label={t('VietQR transaction ID (if any)')}>
                     <input value={txRef} onChange={(e) => setTxRef(e.target.value.toUpperCase())} placeholder="VD: FT26288123456" className={input} />
                   </Field>
                 </div>
                 <p className="flex items-start gap-2 text-label text-emerald-800 bg-emerald-50 border border-emerald-100 rounded-xl p-3">
-                  <Info className="w-4 h-4 shrink-0" />Tiền được hoàn về tài khoản đã dùng để thanh toán VietQR, sau khi cán bộ đối chiếu biên bản trả phòng.
+                  <Info className="w-4 h-4 shrink-0" />{t('The money is refunded to the account used for the VietQR payment after staff check the check-out report.')}
                 </p>
               </>
             )}
 
             {type === 'PAYMENT_EXTENSION' && (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <Field label="Hóa đơn cần gia hạn" hint={inv ? `${formatVnd(inv.amount)} · hạn hiện tại ${inv.due}` : undefined}>
+                <Field label={t('Invoice to extend')} hint={inv ? t('{0} · current due date {1}', { 0: formatVnd(inv.amount), 1: inv.due }) : undefined}>
                   <select value={invoice} onChange={(e) => setInvoice(e.target.value)} className={input}>
                     {OPEN_INVOICES.map((i) => <option key={i.code} value={i.code}>{i.code} — {i.label}</option>)}
                   </select>
                 </Field>
-                <Field label="Hạn mong muốn" hint="Tối đa 14 ngày so với hạn hiện tại.">
+                <Field label={t('Requested due date')} hint={t('At most 14 days after the current due date.')}>
                   <input type="date" value={newDue} onChange={(e) => setNewDue(e.target.value)} className={input} />
                 </Field>
               </div>
@@ -253,32 +253,32 @@ export function StudentSubmitApplicationPage() {
 
             {type === 'RESIDENCE_CONFIRMATION' && (
               <div className="grid grid-cols-1 sm:grid-cols-[1fr_140px] gap-4">
-                <Field label="Mục đích sử dụng">
+                <Field label={t('Purpose of use')}>
                   <select value={purpose} onChange={(e) => setPurpose(e.target.value as (typeof PURPOSES)[number])} className={input}>
                     {PURPOSES.map((p) => <option key={p}>{p}</option>)}
                   </select>
                 </Field>
-                <Field label="Số bản">
+                <Field label={t('Copies')}>
                   <input type="number" min={1} max={5} value={copies} onChange={(e) => setCopies(Math.max(1, Math.min(5, Number(e.target.value) || 1)))} className={input} />
                 </Field>
               </div>
             )}
 
             {type === 'OTHER' && (
-              <Field label="Tiêu đề">
-                <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Tóm tắt nội dung đề nghị" className={input} />
+              <Field label={t('Title')}>
+                <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder={t('Summary of your request')} className={input} />
               </Field>
             )}
 
-            <Field label={type === 'MAINTENANCE' ? 'Mô tả chi tiết' : 'Lý do / nội dung'} hint="Tối thiểu 5 ký tự.">
-              <textarea value={detail} onChange={(e) => setDetail(e.target.value)} rows={4} placeholder="Trình bày ngắn gọn, rõ ràng…" className={input} />
+            <Field label={type === 'MAINTENANCE' ? t('Detailed description') : t('Reason / content')} hint={t('At least 5 characters.')}>
+              <textarea value={detail} onChange={(e) => setDetail(e.target.value)} rows={4} placeholder={t('Keep it short and clear…')} className={input} />
             </Field>
           </div>
 
           <div className="px-6 py-4 border-t border-line bg-surface-muted flex flex-wrap items-center gap-3">
-            <span className="text-label text-ink-muted flex-1 min-w-[200px]">Sau khi gửi, bạn nhận thông báo ở chuông mỗi khi đơn đổi trạng thái.</span>
-            <AppButton type="button" variant="outline" onClick={() => navigate(APP_ROUTES.STUDENT.APPLICATIONS)}>Xem đơn đã gửi</AppButton>
-            <AppButton type="submit" disabled={!canSubmit} leftIcon={<Send className="w-4 h-4" />}>Gửi đơn</AppButton>
+            <span className="text-label text-ink-muted flex-1 min-w-[200px]">{t('After submitting, you\'ll get a bell notification whenever the request changes status.')}</span>
+            <AppButton type="button" variant="outline" onClick={() => navigate(APP_ROUTES.STUDENT.APPLICATIONS)}>{t('View submitted requests')}</AppButton>
+            <AppButton type="submit" disabled={!canSubmit} leftIcon={<Send className="w-4 h-4" />}>{t('Submit a request')}</AppButton>
           </div>
         </form>
       </div>

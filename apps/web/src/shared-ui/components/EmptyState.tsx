@@ -1,3 +1,4 @@
+import { t } from '../i18n/t';
 import React from 'react';
 import { Inbox } from 'lucide-react';
 import { AppButton } from './AppButton';
@@ -12,8 +13,8 @@ interface EmptyStateProps {
 
 /** Trạng thái trống: nói rõ chưa có gì và gợi ý bước tiếp theo. */
 export function EmptyState({
-  title = 'Chưa có dữ liệu',
-  description = 'Mục này chưa có bản ghi nào.',
+  title = t('No data yet'),
+  description = t('There are no records in this section yet.'),
   actionText,
   onAction,
   icon,

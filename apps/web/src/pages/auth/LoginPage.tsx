@@ -5,6 +5,7 @@ import clsx from 'clsx';
 import { useAuthStore } from '@features/auth';
 import { ROLES, type Role, APP_ROUTES } from '@campusstay/constants';
 import { LoginHeroPanel } from './components/LoginHeroPanel';
+import { t } from '@shared-ui';
 
 /**
  * F0 — Đăng nhập.
@@ -53,7 +54,7 @@ export function LoginPage() {
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!loginWithCredentials(username, password)) {
-      setError('Tài khoản hoặc mật khẩu không đúng.');
+      setError(t('Incorrect username or password.'));
       return;
     }
     goHome();
@@ -152,7 +153,7 @@ export function LoginPage() {
                     />
                     <button
                       type="button"
-                      aria-label={showPassword ? 'Ẩn mật khẩu' : 'Hiện mật khẩu'}
+                      aria-label={showPassword ? t('Hide password') : t('Show password')}
                       onClick={() => setShowPassword((v) => !v)}
                       className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
                     >
@@ -182,7 +183,7 @@ export function LoginPage() {
 
         <button
           type="button"
-          aria-label="Trợ giúp"
+          aria-label={t('Help')}
           onClick={() => setHelpOpen((v) => !v)}
           className="fixed bottom-6 right-6 w-10 h-10 rounded-full bg-slate-900 hover:bg-slate-800 text-white flex items-center justify-center shadow-xl z-50"
         >
@@ -190,8 +191,8 @@ export function LoginPage() {
         </button>
         {helpOpen && (
           <div className="fixed bottom-20 right-6 z-50 w-72 p-4 rounded-xl bg-white border border-slate-200 shadow-lg text-xs text-slate-700">
-            <div className="font-bold text-slate-800 mb-1">Cần hỗ trợ đăng nhập?</div>
-            Sinh viên dùng tài khoản @fpt.edu.vn. Cán bộ quên mật khẩu vui lòng liên hệ Phòng CNTT hoặc Văn phòng KTX: 0274 3 789 001.
+            <div className="font-bold text-slate-800 mb-1">{t('Need help signing in?')}</div>
+            {t('Students use their @fpt.edu.vn account. Staff who forgot their password, please contact the IT Department or the Dormitory Office: 0274 3 789 001.')}
           </div>
         )}
       </div>

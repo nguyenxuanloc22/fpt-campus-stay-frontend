@@ -130,7 +130,7 @@ Bốn nhóm yêu cầu phi chức năng trong Phiếu đăng ký (mục 3.2.d) �
 | Nền | `page` · `surface` · `surface-muted` · `surface-sunken` | #F7F7F8 · #FFFFFF · #FAFAF9 · #F5F5F4 |
 | Viền | `line` (thẻ) · `line-strong` · `line-control` (ô nhập, ≥ 3:1) | #E7E5E4 · #D6D3D1 · #8C857F |
 | Chữ | `ink` · `ink-muted` (chữ phụ) · `ink-subtle` (không nhạt hơn) | #1C1917 · #57534E · #78716C |
-| Thương hiệu | `brand` (chỉ nền / icon) · `brand-ink` (chữ, link, nút chữ trắng) · `brand-soft` (mục menu đang chọn) | #F26B1D · #C2410C · #FFF4ED |
+| Thương hiệu | `brand` (chỉ nền / icon) · `brand-ink` (chữ, link) · `brand-fill` (nền nút chính, chữ trắng) · `brand-soft` (mục menu đang chọn) | #F26B1D · #C2410C · #C2410C · #FFF4ED |
 | Trạng thái | `pending` vàng = chờ · `info` xanh dương = đang xử lý · `success` xanh lá = xong · `danger` đỏ = quá hạn / bị chặn (mỗi màu có `-soft` làm nền) | xem index.css |
 | Bo góc | `rounded-card` (thẻ) · `rounded-control` (nút, ô nhập) · `rounded-full` (badge) | 12px · 8px |
 | Bóng | `shadow-card` (gần như không) · `shadow-overlay` (popover, hộp thoại) | — |
@@ -161,3 +161,16 @@ Khoảng cách chỉ dùng thang 4/8/12/16/24/32px (`1, 2, 3, 4, 6, 8`).
 - Chuyển động chỉ dùng `transform` / `opacity`, 150–200ms; tôn trọng `prefers-reduced-motion` (đã đặt trong index.css). Không animate width / height / top / left.
 - Thuật ngữ: “yêu cầu bảo trì” (không dùng ticket), “Nhật ký thay đổi” (không dùng Audit logs), “Yêu cầu” (không dùng Request).
 - Nghiệm thu bằng Lighthouse mobile trên bản production (`npm run build` rồi `npm run preview`): Accessibility ≥ 90, CLS < 0.1.
+
+### 8.5. Chế độ sáng / tối
+- Mọi màu đi qua token; chế độ tối chỉ khai báo lại token dưới `:root[data-theme='dark']` trong `index.css`. Không viết `dark:` rải rác trong component.
+- Nền nút / huy hiệu đặc dùng token `*-fill` (`brand-fill`, `danger-fill`) để chữ trắng luôn đủ tương phản ở cả hai chế độ; chữ màu dùng `*-ink` / màu trạng thái (tự sáng lên ở chế độ tối).
+- Không dùng `bg-white`, `text-slate-*`: dùng `bg-surface`, `text-ink*`. Icon trên nền màu dùng `text-surface`.
+
+## 9. ĐA NGÔN NGỮ (i18n)
+- Ngôn ngữ mặc định: **tiếng Anh**; người dùng chọn English / Tiếng Việt trên Header (lưu ở `campusstay_preferences`, đổi xong tải lại trang).
+- Viết chuỗi giao diện **bằng tiếng Anh** và bọc `t('…')` (import từ `@shared-ui`). Biến dùng `{tên}`: `t('{0} days left', { 0: n })`. Không ghép câu bằng cộng chuỗi.
+- Thêm bản tiếng Việt vào `shared-ui/i18n/vi/manual.ts`. `npm test` chạy `vi.test.ts` — **thiếu bản dịch là test đỏ**; placeholder `{…}` phải giống nhau ở hai ngôn ngữ.
+- Giá trị dữ liệu dùng làm kiểu / so sánh (giới tính, loại đơn, hạng mục…) giữ dạng tiếng Anh cố định và hiển thị bằng `t(value)`. Tên người, mã phòng, mã đơn không dịch.
+- `t` dùng được cả ở hằng số cấp module (dữ liệu mẫu) vì ngôn ngữ được nạp trước khi ứng dụng khởi động.
+

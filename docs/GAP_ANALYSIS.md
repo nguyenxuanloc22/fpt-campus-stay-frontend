@@ -53,6 +53,15 @@ Mức độ: 🔴 sai nghiệp vụ (phải sửa trước bảo vệ) · 🟠 t
 
 ---
 
+### 1.4. Đợt 5 — timeline 16 tuần, song ngữ, sáng/tối
+
+| Nhóm | Thay đổi |
+|---|---|
+| Timeline 16 tuần | Admin › Semesters & timeline: biểu đồ Gantt 9 giai đoạn theo System Timeline của dự án, vạch Today, giai đoạn hiện tại / tiếp theo, chỉnh tuần từng giai đoạn, khóa / mở khóa ngày, khôi phục mặc định (BUSINESS_FLOWS F8). Tổng quan Admin hiển thị tuần hiện tại và các giai đoạn sắp tới |
+| Ngôn ngữ | Toàn bộ giao diện chuyển sang **tiếng Anh**; chọn English / Tiếng Việt trên Header. ~1.900 chuỗi qua `t()`, từ điển tiếng Việt tách chunk riêng; test kiểm tra thiếu bản dịch (CONVENTIONS §9) |
+| Sáng / tối | Nút chuyển chế độ trên Header; chế độ tối bằng bộ token riêng (CONVENTIONS §8.5); Lighthouse Accessibility 100 ở cả hai chế độ trên các trang đã đo |
+| Sidebar | Nhóm chức năng thành mục sổ xuống hiện trang con (ARCHITECTURE §5) |
+
 ## 2. ĐỘ LỆCH NGHIỆP VỤ ĐÃ GHI NHẬN (BAN ĐẦU)
 
 | # | Mức | Hiện trạng trong code | Theo đề tài / main flow | Cách sửa |

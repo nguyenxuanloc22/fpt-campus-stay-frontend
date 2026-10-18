@@ -1,3 +1,4 @@
+import { t } from '../i18n/t';
 import clsx from 'clsx';
 
 interface SkeletonProps {
@@ -11,7 +12,7 @@ export function Skeleton({ className }: SkeletonProps) {
 
 export function TableSkeleton({ rows = 5 }: { rows?: number }) {
   return (
-    <div role="status" aria-label="Đang tải dữ liệu" className="w-full space-y-3 bg-surface p-6 rounded-card border border-line">
+    <div role="status" aria-label={t('Loading data')} className="w-full space-y-3 bg-surface p-6 rounded-card border border-line">
       <Skeleton className="h-8 w-1/4 mb-4" />
       {Array.from({ length: rows }).map((_, i) => (
         <div key={i} className="flex gap-4">
@@ -28,7 +29,7 @@ export function TableSkeleton({ rows = 5 }: { rows?: number }) {
 /** Danh sách dạng dòng (icon + 2 dòng chữ + nút) — khớp kích thước các danh sách trên dashboard. */
 export function ListSkeleton({ rows = 3 }: { rows?: number }) {
   return (
-    <ul role="status" aria-label="Đang tải dữ liệu" className="divide-y divide-line">
+    <ul role="status" aria-label={t('Loading data')} className="divide-y divide-line">
       {Array.from({ length: rows }).map((_, i) => (
         <li key={i} className="flex items-center gap-3 px-4 sm:px-6 py-4">
           <Skeleton className="w-5 h-5 shrink-0" />

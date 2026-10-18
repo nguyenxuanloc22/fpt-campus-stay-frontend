@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Download, FileSpreadsheet, FileText, Building2, Wallet, Repeat, TrendingUp, CalendarRange, Mail } from 'lucide-react';
 import clsx from 'clsx';
-import { PageHeader, StatCard, SectionCard, Tabs, BarChart, DonutChart, ProgressBar, AppButton, useToast, CHART_COLORS } from '@shared-ui';
+import { PageHeader, StatCard, SectionCard, Tabs, BarChart, DonutChart, ProgressBar, AppButton, useToast, CHART_COLORS, t } from '@shared-ui';
 
 /**
  * Generate Occupancy, Revenue & Turnover Reports (Admin) + Forecast Occupancy Trends (System).
@@ -11,19 +11,19 @@ import { PageHeader, StatCard, SectionCard, Tabs, BarChart, DonutChart, Progress
 type TabKey = 'occupancy' | 'revenue' | 'turnover' | 'forecast';
 
 const BUILDINGS = [
-  { b: 'Tòa A (Nữ)', beds: 288, used: 271 },
-  { b: 'Tòa B (Nam)', beds: 312, used: 298 },
-  { b: 'Tòa C (Nữ)', beds: 320, used: 276 },
-  { b: 'Tòa D (Nam)', beds: 280, used: 230 },
+  { b: t('Building A (Female)'), beds: 288, used: 271 },
+  { b: t('Building B (Male)'), beds: 312, used: 298 },
+  { b: t('Building C (Female)'), beds: 320, used: 276 },
+  { b: t('Building D (Male)'), beds: 280, used: 230 },
 ];
 
 const TEMPLATES = [
-  { name: 'Công suất theo tòa / loại phòng', tab: 'occupancy' as const, f: 'PDF' },
-  { name: 'Danh sách sinh viên lưu trú', tab: 'occupancy' as const, f: 'Excel' },
-  { name: 'Doanh thu phí phòng & tiền cọc', tab: 'revenue' as const, f: 'Excel' },
-  { name: 'Tiền cọc bị giữ (no-show) & hoàn cọc', tab: 'revenue' as const, f: 'Excel' },
-  { name: 'Luân chuyển: nhận / trả / đổi phòng', tab: 'turnover' as const, f: 'PDF' },
-  { name: 'Dự báo công suất kỳ tới', tab: 'forecast' as const, f: 'PDF' },
+  { name: t('Capacity by building / room type'), tab: 'occupancy' as const, f: 'PDF' },
+  { name: t('Resident student list'), tab: 'occupancy' as const, f: 'Excel' },
+  { name: t('Room fee & deposit revenue'), tab: 'revenue' as const, f: 'Excel' },
+  { name: t('Forfeited deposits (no-show) & refunds'), tab: 'revenue' as const, f: 'Excel' },
+  { name: t('Turnover: check-ins / check-outs / room changes'), tab: 'turnover' as const, f: 'PDF' },
+  { name: t('Next term capacity forecast'), tab: 'forecast' as const, f: 'PDF' },
 ];
 
 export function AdminReportsPage() {
@@ -37,34 +37,34 @@ export function AdminReportsPage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Báo cáo"
-        description="Công suất, doanh thu, luân chuyển và dự báo — xuất theo kỳ học"
+        title={t('Reports')}
+        description={t('Capacity, revenue, turnover and forecasts — exported per semester')}
         actions={
           <>
-            <select value={term} onChange={(e) => setTerm(e.target.value)} className="px-3 py-2 text-xs rounded-lg border border-line bg-white">
-              <option value="FA26">Học kỳ Fall 2026</option>
-              <option value="SU26">Học kỳ Summer 2026</option>
-              <option value="SP26">Học kỳ Spring 2026</option>
-              <option value="Y2026">Năm 2026</option>
+            <select value={term} onChange={(e) => setTerm(e.target.value)} className="px-3 py-2 text-xs rounded-lg border border-line bg-surface">
+              <option value="FA26">{t('Fall 2026 semester')}</option>
+              <option value="SU26">{t('Summer 2026 semester')}</option>
+              <option value="SP26">{t('Spring 2026 semester')}</option>
+              <option value="Y2026">{t('Year 2026')}</option>
             </select>
-            <AppButton size="sm" leftIcon={<Download className="w-4 h-4" />} onClick={() => show('Đang tạo báo cáo tổng hợp (PDF)')}>Xuất tổng hợp</AppButton>
+            <AppButton size="sm" leftIcon={<Download className="w-4 h-4" />} onClick={() => show(t('Generating the summary report (PDF)'))}>{t('Export summary')}</AppButton>
           </>
         }
       />
 
       <div className="grid grid-cols-2 xl:grid-cols-4 gap-4">
-        <StatCard label="Công suất" value={`${((used / beds) * 100).toFixed(1)}%`} icon={Building2} tone="navy" hint={`${used.toLocaleString('vi-VN')}/${beds.toLocaleString('vi-VN')} giường`} />
-        <StatCard label="Doanh thu phí phòng" value="5,18 tỷ ₫" icon={Wallet} tone="emerald" trend={{ value: '+8,1%', up: true }} />
-        <StatCard label="Tỷ lệ luân chuyển" value="7,4%" icon={Repeat} tone="blue" hint="Đổi phòng + trả phòng sớm" />
-        <StatCard label="Dự báo Spring 2027" value="94%" icon={TrendingUp} tone="orange" hint="Công suất dự kiến" />
+        <StatCard label={t('Capacity')} value={`${((used / beds) * 100).toFixed(1)}%`} icon={Building2} tone="navy" hint={t('{0}/{1} beds', { 0: used.toLocaleString('vi-VN'), 1: beds.toLocaleString('vi-VN') })} />
+        <StatCard label={t('Room fee revenue')} value={t('5.18 billion ₫')} icon={Wallet} tone="emerald" trend={{ value: '+8,1%', up: true }} />
+        <StatCard label={t('Turnover rate')} value="7,4%" icon={Repeat} tone="blue" hint={t('Room changes + early check-outs')} />
+        <StatCard label={t('Spring 2027 forecast')} value="94%" icon={TrendingUp} tone="orange" hint={t('Projected capacity')} />
       </div>
 
       <Tabs<TabKey>
         items={[
-          { value: 'occupancy', label: 'Công suất' },
+          { value: 'occupancy', label: t('Capacity') },
           { value: 'revenue', label: 'Doanh thu' },
-          { value: 'turnover', label: 'Luân chuyển' },
-          { value: 'forecast', label: 'Dự báo' },
+          { value: 'turnover', label: t('Turnover') },
+          { value: 'forecast', label: t('Forecast') },
         ]}
         value={tab}
         onChange={setTab}
@@ -72,7 +72,7 @@ export function AdminReportsPage() {
 
       {tab === 'occupancy' && (
         <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-          <SectionCard className="xl:col-span-2" title="Công suất theo tòa">
+          <SectionCard className="xl:col-span-2" title={t('Capacity by building')}>
             <ul className="space-y-4 text-xs">
               {BUILDINGS.map((b) => {
                 const pct = (b.used / b.beds) * 100;
@@ -85,16 +85,16 @@ export function AdminReportsPage() {
               })}
             </ul>
           </SectionCard>
-          <SectionCard title="Theo loại phòng">
+          <SectionCard title={t('By room type')}>
             <DonutChart
               size={130}
               centerValue={used.toLocaleString('vi-VN')}
-              centerLabel="đang ở"
+              centerLabel={t('occupied')}
               segments={[
-                { label: '4 giường máy lạnh', value: 668, color: CHART_COLORS.brand },
-                { label: '6 giường', value: 249, color: CHART_COLORS.neutral },
-                { label: '4 giường quạt', value: 118, color: CHART_COLORS.blue },
-                { label: '2 giường', value: 40, color: CHART_COLORS.green },
+                { label: t('4-bed air-conditioned'), value: 668, color: CHART_COLORS.brand },
+                { label: t('6-bed'), value: 249, color: CHART_COLORS.neutral },
+                { label: t('4-bed with fan'), value: 118, color: CHART_COLORS.blue },
+                { label: t('2-bed'), value: 40, color: CHART_COLORS.green },
               ]}
             />
           </SectionCard>
@@ -103,7 +103,7 @@ export function AdminReportsPage() {
 
       {tab === 'revenue' && (
         <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-          <SectionCard className="xl:col-span-2" title="Doanh thu theo tháng (triệu ₫)" subtitle="Phí phòng và tiền cọc — phải thu so với đã thu">
+          <SectionCard className="xl:col-span-2" title={t('Monthly revenue (million ₫)')} subtitle={t('Room fees and deposits — billed vs. collected')}>
             <BarChart
               height={200}
               data={[
@@ -112,18 +112,18 @@ export function AdminReportsPage() {
                 { label: 'T9', value: 760, secondary: 742 },
                 { label: 'T10', value: 920, secondary: 674 },
               ]}
-              primaryLabel="Phải thu"
-              secondaryLabel="Đã thu"
+              primaryLabel={t('Billed')}
+              secondaryLabel={t('Collected')}
               formatValue={(v) => `${v.toLocaleString('vi-VN')} tr`}
             />
           </SectionCard>
-          <SectionCard title="Tiền cọc">
+          <SectionCard title={t('Deposits')}>
             <ul className="space-y-2 text-xs">
               {[
-                ['Đã thu (đăng ký Spring 2027)', '642 tr ₫'],
-                ['Trừ vào phí phòng khi check-in', '512 tr ₫'],
-                ['Hoàn cọc (hủy đơn, vòng 2)', '9,5 tr ₫'],
-                ['Giữ lại do no-show', '6,0 tr ₫'],
+                [t('Collected (Spring 2027 registration)'), '642 tr ₫'],
+                [t('Deducted from the room fee at check-in'), '512 tr ₫'],
+                [t('Refunded (cancellations, round 2)'), '9,5 tr ₫'],
+                [t('Forfeited due to no-show'), '6,0 tr ₫'],
               ].map(([k, v]) => (
                 <li key={k} className="flex justify-between p-2.5 rounded-lg bg-surface-muted"><span className="text-ink-muted">{k}</span><span className="font-bold">{v}</span></li>
               ))}
@@ -133,12 +133,12 @@ export function AdminReportsPage() {
       )}
 
       {tab === 'turnover' && (
-        <SectionCard title="Luân chuyển trong kỳ Fall 2026">
+        <SectionCard title={t('Turnover in Fall 2026')}>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-5 text-xs">
             {[
-              ['Nhận phòng', '1.075'],
-              ['Trả phòng sớm', '31'],
-              ['Đổi / hoán đổi phòng', '49'],
+              [t('Check-ins'), '1.075'],
+              [t('Early check-outs'), '31'],
+              [t('Room change / swap'), '49'],
               ['No-show', '12'],
             ].map(([k, v]) => (
               <div key={k} className="p-3 rounded-xl bg-surface-muted"><div className="text-ink-subtle">{k}</div><div className="text-xl font-bold text-ink">{v}</div></div>
@@ -152,15 +152,15 @@ export function AdminReportsPage() {
               { label: 'T11', value: 9, secondary: 6 },
               { label: 'T12', value: 4, secondary: 6 },
             ]}
-            primaryLabel="Đổi phòng"
-            secondaryLabel="Trả phòng sớm"
+            primaryLabel={t('Room changes')}
+            secondaryLabel={t('Early check-outs')}
           />
         </SectionCard>
       )}
 
       {tab === 'forecast' && (
         <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-          <SectionCard className="xl:col-span-2" title="Dự báo công suất (%)" subtitle="Hệ thống dự báo từ đơn đã nộp, tỷ lệ gia hạn và no-show các kỳ trước">
+          <SectionCard className="xl:col-span-2" title={t('Capacity forecast (%)')} subtitle={t('Forecast from submitted applications, renewal rates and no-shows of previous terms')}>
             <BarChart
               height={200}
               data={[
@@ -173,15 +173,15 @@ export function AdminReportsPage() {
               ]}
               formatValue={(v) => `${v}%`}
             />
-            <p className="text-label text-ink-muted mt-2">* Giá trị dự báo. Fall 2027 dự kiến vượt 95% — cân nhắc mở thêm tầng 6 Tòa C.</p>
+            <p className="text-label text-ink-muted mt-2">{t('* Forecast values. Fall 2027 is expected to exceed 95% — consider opening floor 6 of Building C.')}</p>
           </SectionCard>
-          <SectionCard title="Giường trống dự kiến Spring 2027">
+          <SectionCard title={t('Projected free beds, Spring 2027')}>
             <ul className="space-y-2 text-xs">
               {[
-                ['4 giường máy lạnh', 38, 'emerald'],
-                ['6 giường', 0, 'rose'],
-                ['4 giường quạt', 19, 'emerald'],
-                ['2 giường', 2, 'amber'],
+                [t('4-bed air-conditioned'), 38, 'emerald'],
+                [t('6-bed'), 0, 'rose'],
+                [t('4-bed with fan'), 19, 'emerald'],
+                [t('2-bed'), 2, 'amber'],
               ].map(([k, v, t]) => (
                 <li key={String(k)} className="flex justify-between p-2.5 rounded-lg bg-surface-muted">
                   <span className="text-ink-muted">{k}</span>
@@ -194,10 +194,10 @@ export function AdminReportsPage() {
       )}
 
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-        <SectionCard title="Xuất báo cáo">
+        <SectionCard title={t('Export reports')}>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {TEMPLATES.map((r) => (
-              <button key={r.name} type="button" onClick={() => show(`Đang tạo “${r.name}” (${r.f})`)} className="p-3 rounded-xl border border-line hover:border-brand text-left flex items-center gap-3">
+              <button key={r.name} type="button" onClick={() => show(t('Generating “{0}” ({1})', { 0: r.name, 1: r.f }))} className="p-3 rounded-xl border border-line hover:border-brand text-left flex items-center gap-3">
                 <div className="w-9 h-9 rounded-lg bg-surface-sunken text-ink flex items-center justify-center">{r.f === 'Excel' ? <FileSpreadsheet className="w-4 h-4" /> : <FileText className="w-4 h-4" />}</div>
                 <div className="flex-1 text-xs"><div className="font-semibold text-ink">{r.name}</div><div className="text-ink-muted">{r.f}</div></div>
                 <Download className="w-4 h-4 text-ink-subtle" />
@@ -205,17 +205,17 @@ export function AdminReportsPage() {
             ))}
           </div>
         </SectionCard>
-        <SectionCard title="Gửi báo cáo định kỳ" noPadding>
+        <SectionCard title={t('Scheduled reports')} noPadding>
           <ul className="divide-y divide-line">
             {[
-              { n: 'Công suất tuần', f: 'Thứ Hai 07:00', to: 'Trưởng ban KTX' },
-              { n: 'Doanh thu & công nợ tháng', f: 'Ngày 1 hằng tháng', to: 'Phòng Tài chính' },
-              { n: 'Dự báo công suất kỳ tới', f: 'Trước khi mở cửa sổ đăng ký', to: 'Ban Giám hiệu' },
+              { n: t('Weekly capacity'), f: t('Monday 07:00'), to: t('Dormitory Manager') },
+              { n: t('Monthly revenue & receivables'), f: t('1st of every month'), to: t('Finance office') },
+              { n: t('Next term capacity forecast'), f: t('Before the registration window opens'), to: t('Board of Rectors') },
             ].map((r) => (
               <li key={r.n} className="px-5 py-3 flex items-center gap-3 text-xs">
                 <Mail className="w-4 h-4 text-brand-ink" />
-                <div className="flex-1"><div className="font-semibold text-ink">{r.n}</div><div className="text-ink-muted flex items-center gap-1"><CalendarRange className="w-3 h-3" />{r.f} · gửi {r.to}</div></div>
-                <span className="text-label font-semibold text-emerald-600">Đang bật</span>
+                <div className="flex-1"><div className="font-semibold text-ink">{r.n}</div><div className="text-ink-muted flex items-center gap-1"><CalendarRange className="w-3 h-3" />{r.f} {t('· sent to')} {r.to}</div></div>
+                <span className="text-label font-semibold text-emerald-600">{t('On')}</span>
               </li>
             ))}
           </ul>

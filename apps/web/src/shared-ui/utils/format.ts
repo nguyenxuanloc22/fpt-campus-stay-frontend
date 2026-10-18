@@ -1,3 +1,4 @@
+import { t } from '../i18n/t';
 /** 1200000 → "1.200.000 ₫" */
 export const formatVnd = (value: number) => `${value.toLocaleString('vi-VN')} ₫`;
 
@@ -23,4 +24,4 @@ export const daysUntil = (ddmmyyyy: string, today = new Date()) => {
 };
 
 /** 3 → "Còn 3 ngày", 0 → "Hạn hôm nay", -2 → "Quá hạn 2 ngày" */
-export const formatDaysLeft = (days: number) => (days > 0 ? `Còn ${days} ngày` : days === 0 ? 'Hạn hôm nay' : `Quá hạn ${-days} ngày`);
+export const formatDaysLeft = (days: number) => (days > 0 ? t('{0} days left', { 0: days }) : days === 0 ? t('Due today') : t('{0} days overdue', { 0: -days }));

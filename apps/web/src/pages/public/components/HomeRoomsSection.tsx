@@ -1,46 +1,47 @@
 import { Check, Sparkles } from 'lucide-react';
 
+import { t } from '@shared-ui';
 export function HomeRoomsSection() {
   const rooms = [
     {
-      title: 'Phòng 4 giường Điều hòa',
-      badge: 'Phổ biến nhất',
+      title: t('4-bed air-conditioned room'),
+      badge: t('Most popular'),
       price: '1.200.000',
-      period: 'tháng / sinh viên',
-      desc: 'Thiết kế thông minh tối ưu không gian học tập và nghỉ ngơi.',
+      period: t('month / student'),
+      desc: t('Smart design that optimizes space for studying and resting.'),
       features: [
-        'Điều hòa 2 chiều Inverter',
-        'Bàn học và tủ cá nhân riêng',
-        'Bình nóng lạnh & vệ sinh khép kín',
-        'Ban công đón gió tự nhiên',
+        t('Two-way inverter air conditioner'),
+        t('Personal desk and wardrobe'),
+        t('Water heater & private bathroom'),
+        t('Balcony with natural airflow'),
       ],
       popular: true,
     },
     {
-      title: 'Phòng 6 giường Tiêu chuẩn',
-      badge: 'Tiết kiệm chi phí',
+      title: t('6-bed standard room'),
+      badge: t('Budget saver'),
       price: '850.000',
-      period: 'tháng / sinh viên',
-      desc: 'Lựa chọn tiết kiệm tối đa chi phí sinh hoạt cho sinh viên.',
+      period: t('month / student'),
+      desc: t('The most budget-friendly option for students.'),
       features: [
-        'Hệ thống quạt trần đối lưu',
-        'Giường tầng chắc chắn, đệm êm',
-        'Tủ đồ có khóa cá nhân',
-        'Khu vệ sinh sạch sẽ, thông thoáng',
+        t('Ceiling fan ventilation'),
+        t('Sturdy bunk beds with soft mattresses'),
+        t('Personal lockable wardrobe'),
+        t('Clean, well-ventilated bathroom'),
       ],
       popular: false,
     },
     {
-      title: 'Phòng 2 giường VIP Dịch vụ',
-      badge: 'Tiện nghi cao cấp',
+      title: t('2-bed VIP service room'),
+      badge: t('Premium amenities'),
       price: '2.100.000',
-      period: 'tháng / sinh viên',
-      desc: 'Không gian yên tĩnh tuyệt đối dành cho sinh viên năm cuối & nghiên cứu.',
+      period: t('month / student'),
+      desc: t('A completely quiet space for final-year students & research.'),
       features: [
-        'Điều hòa & tủ lạnh mini riêng',
-        'Wifi băng thông rộng ưu tiên',
-        'Dịch vụ dọn phòng hàng tuần',
-        'Smart TV & nội thất gỗ cao cấp',
+        t('Private air conditioner & mini fridge'),
+        t('Priority broadband Wi-Fi'),
+        t('Weekly room cleaning'),
+        t('Smart TV & premium wooden furniture'),
       ],
       popular: false,
     },
@@ -52,10 +53,10 @@ export function HomeRoomsSection() {
         <div className="text-center max-w-2xl mx-auto mb-16">
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#FFF2EA] text-[#F26522] text-xs font-bold uppercase tracking-wider mb-3">
             <Sparkles className="w-3.5 h-3.5" />
-            <span>Mô hình phòng ở</span>
+            <span>{t('Room models')}</span>
           </div>
-          <h2 className="text-3xl sm:text-4xl font-bold text-[#1A365D] mb-4">Lựa chọn phòng phù hợp nhu cầu</h2>
-          <p className="text-slate-600 text-sm sm:text-base">Mỗi phòng đều được trang bị đầy đủ nội thất cơ bản, an toàn PCCC và camera an ninh 24/7.</p>
+          <h2 className="text-3xl sm:text-4xl font-bold text-[#1A365D] mb-4">{t('Choose the room that fits your needs')}</h2>
+          <p className="text-slate-600 text-sm sm:text-base">{t('Every room comes fully furnished, fire-safety compliant and covered by 24/7 security cameras.')}</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">

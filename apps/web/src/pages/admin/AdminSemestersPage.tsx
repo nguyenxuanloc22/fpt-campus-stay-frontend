@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import { Plus, Calendar, Pencil, Lock, Unlock, CalendarRange, CheckCircle2, Clock, Copy } from 'lucide-react';
+import { Plus, Calendar, Pencil, Lock, Unlock, CalendarRange, Flag, Hourglass, Copy } from 'lucide-react';
 import clsx from 'clsx';
-import { PageHeader, StatCard, SectionCard, StatusBadge, AppButton, Modal, ProgressBar, useToast } from '@shared-ui';
+import { PageHeader, StatCard, StatusBadge, AppButton, Modal, ProgressBar, useToast, t } from '@shared-ui';
+import { SemesterTimelineCard, currentWeekOf, daysUntil, formatDate, phaseDates, phaseStatus, useSemesterTimeline } from '@features/semesters';
 
 type SemStatus = 'ACTIVE' | 'UPCOMING' | 'COMPLETED' | 'DRAFT';
 
@@ -28,16 +29,6 @@ export const SEMESTERS: Semester[] = [
   { code: 'SU27', name: 'Summer 2027', start: '05/05/2027', end: '25/08/2027', regOpen: '—', regClose: '—', checkin: '—', status: 'DRAFT', regLocked: true, applications: 0, residents: 0, progress: 0 },
 ];
 
-export const MILESTONES = [
-  { d: '14/10', t: 'Mở cổng đăng ký', done: true },
-  { d: '01/11', t: 'Hạn gia hạn giữ phòng', done: false },
-  { d: '15/11', t: 'Đóng cổng đăng ký', done: false },
-  { d: '25/11', t: 'Engine đợt 1', done: false },
-  { d: '02/12', t: 'Engine đợt 2', done: false },
-  { d: '20/12', t: 'Hạn thanh toán', done: false },
-  { d: '02/01', t: 'Check-in', done: false },
-];
-
 export function AdminSemestersPage() {
   const { show, toastNode } = useToast();
   const [items, setItems] = useState(SEMESTERS);
@@ -47,47 +38,55 @@ export function AdminSemestersPage() {
   const toggleLock = (code: string) => {
     setItems((all) => all.map((s) => (s.code === code ? { ...s, regLocked: !s.regLocked } : s)));
     const s = items.find((x) => x.code === code);
-    show(s?.regLocked ? `Đã mở cổng đăng ký ${s.name}` : `Đã khóa cổng đăng ký ${s?.name}`, 'info');
+    show(s?.regLocked ? t('Registration opened for {0}', { 0: s.name }) : t('Registration locked for {0}', { 0: s?.name }), 'info');
   };
 
   const active = items.find((s) => s.status === 'ACTIVE');
   const upcoming = items.find((s) => s.status === 'UPCOMING');
 
+  // Số liệu đầu trang lấy từ chu trình 16 tuần
+  const { cycleStart, phases } = useSemesterTimeline();
+  const week = currentWeekOf(cycleStart);
+  const byStart = [...phases].sort((a, b) => a.startWeek - b.startWeek);
+  const current = byStart.filter((p) => phaseStatus(cycleStart, p) === 'active');
+  const next = byStart.find((p) => phaseStatus(cycleStart, p) === 'upcoming');
+  const currentRange = current[0] && phaseDates(cycleStart, current[0]);
+
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Cấu Hình Kỳ Học"
-        description="Quản lý học kỳ lưu trú, thời gian mở cổng đăng ký, check-in và các mốc vận hành"
-        actions={<AppButton size="sm" leftIcon={<Plus className="w-4 h-4" />} onClick={() => setCreating(true)}>Tạo học kỳ</AppButton>}
+        title={t('Semester configuration')}
+        description={t('Manage residence semesters, registration windows, check-in and operational milestones')}
+        actions={<AppButton size="sm" leftIcon={<Plus className="w-4 h-4" />} onClick={() => setCreating(true)}>{t('Create semester')}</AppButton>}
       />
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard label="Học kỳ đang vận hành" value={active?.name ?? '—'} icon={Calendar} tone="emerald" hint={`Tuần 7/16`} />
-        <StatCard label="Đang mở đăng ký" value={upcoming?.name ?? '—'} icon={CalendarRange} tone="orange" hint={`${upcoming?.applications.toLocaleString('vi-VN')} đơn`} />
-        <StatCard label="Ngày còn lại" value="29 ngày" icon={Clock} tone="amber" hint="đến khi đóng cổng" />
-        <StatCard label="Học kỳ đã hoàn tất" value={items.filter((s) => s.status === 'COMPLETED').length} icon={CheckCircle2} tone="navy" />
+      <div className="grid grid-cols-2 xl:grid-cols-4 gap-4">
+        <StatCard label={t('Current semester')} value={active?.name ?? '—'} icon={Calendar} hint={week ? t('Week {0} of 16', { 0: week }) : t('Outside the cycle')} />
+        <StatCard
+          label={t('Current phase')}
+          value={current.length ? current.map((p) => t(p.title)).join(' · ') : '—'}
+          icon={Flag}
+          hint={currentRange ? `${formatDate(currentRange.start)} – ${formatDate(currentRange.end)}` : undefined}
+        />
+        <StatCard
+          label={t('Next phase')}
+          value={next ? t(next.title) : '—'}
+          icon={Hourglass}
+          hint={next ? t('Starts in {0} days', { 0: daysUntil(phaseDates(cycleStart, next).start) }) : undefined}
+        />
+        <StatCard label={t('Registration open')} value={upcoming?.name ?? '—'} icon={CalendarRange} hint={t('{0} applications', { 0: upcoming?.applications.toLocaleString('vi-VN') })} />
       </div>
 
-      {upcoming && (
-        <SectionCard title={`Tiến trình ${upcoming.name}`} subtitle="Các mốc thời gian được dùng bởi engine xếp phòng và hệ thống thông báo tự động">
-          <ol className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3">
-            {MILESTONES.map((m) => (
-              <li key={m.t} className={clsx('p-3 rounded-xl border text-center', m.done ? 'border-emerald-200 bg-emerald-50' : 'border-line')}>
-                <div className={clsx('text-sm font-bold', m.done ? 'text-emerald-700' : 'text-ink')}>{m.d}</div>
-                <div className="text-label text-ink-muted mt-0.5">{m.t}</div>
-              </li>
-            ))}
-          </ol>
-        </SectionCard>
-      )}
+      <SemesterTimelineCard />
 
+      <h2 className="text-section font-semibold text-ink">{t('Semesters')}</h2>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {items.map((s) => (
-          <div key={s.code} className={clsx('bg-white p-5 rounded-2xl border shadow-xs', s.status === 'ACTIVE' ? 'border-emerald-300' : s.status === 'UPCOMING' ? 'border-orange-300' : 'border-line')}>
+          <div key={s.code} className={clsx('bg-surface p-4 sm:p-6 rounded-card border shadow-card', s.status === 'ACTIVE' || s.status === 'UPCOMING' ? 'border-line-strong' : 'border-line')}>
             <div className="flex items-start justify-between gap-3 mb-4">
               <div>
                 <div className="flex items-center gap-2">
-                  <h3 className="text-base font-bold text-ink">{s.name}</h3>
+                  <h3 className="text-section font-semibold text-ink">{s.name}</h3>
                   <span className="text-label font-bold text-ink-subtle">{s.code}</span>
                 </div>
                 <div className="text-xs text-ink-muted">{s.start} – {s.end}</div>
@@ -95,25 +94,25 @@ export function AdminSemestersPage() {
               <StatusBadge status={s.status} />
             </div>
             <div className="grid grid-cols-2 gap-2 text-xs mb-4">
-              <div className="p-2.5 rounded-lg bg-surface-muted"><div className="text-ink-subtle">Cổng đăng ký</div><div className="font-semibold">{s.regOpen} – {s.regClose}</div></div>
+              <div className="p-2.5 rounded-lg bg-surface-muted"><div className="text-ink-subtle">{t('Registration window')}</div><div className="font-semibold">{s.regOpen} – {s.regClose}</div></div>
               <div className="p-2.5 rounded-lg bg-surface-muted"><div className="text-ink-subtle">Check-in</div><div className="font-semibold">{s.checkin}</div></div>
-              <div className="p-2.5 rounded-lg bg-surface-muted"><div className="text-ink-subtle">Số đơn</div><div className="font-semibold">{s.applications.toLocaleString('vi-VN')}</div></div>
-              <div className="p-2.5 rounded-lg bg-surface-muted"><div className="text-ink-subtle">Lưu trú</div><div className="font-semibold">{s.residents.toLocaleString('vi-VN')}</div></div>
+              <div className="p-2.5 rounded-lg bg-surface-muted"><div className="text-ink-subtle">{t('Applications')}</div><div className="font-semibold">{s.applications.toLocaleString('vi-VN')}</div></div>
+              <div className="p-2.5 rounded-lg bg-surface-muted"><div className="text-ink-subtle">{t('Residents')}</div><div className="font-semibold">{s.residents.toLocaleString('vi-VN')}</div></div>
             </div>
             {s.status === 'ACTIVE' && (
               <div className="mb-4">
-                <div className="flex justify-between text-label text-ink-muted mb-1"><span>Tiến độ học kỳ</span><span>{s.progress}%</span></div>
+                <div className="flex justify-between text-label text-ink-muted mb-1"><span>{t('Semester progress')}</span><span>{s.progress}%</span></div>
                 <ProgressBar value={s.progress} tone="emerald" />
               </div>
             )}
             <div className="flex flex-wrap gap-2">
-              <AppButton size="sm" variant="outline" leftIcon={<Pencil className="w-3.5 h-3.5" />} onClick={() => setEditing(s)} disabled={s.status === 'COMPLETED'}>Chỉnh sửa</AppButton>
+              <AppButton size="sm" variant="outline" leftIcon={<Pencil className="w-3.5 h-3.5" />} onClick={() => setEditing(s)} disabled={s.status === 'COMPLETED'}>{t('Edit')}</AppButton>
               {(s.status === 'UPCOMING' || s.status === 'DRAFT') && (
                 <AppButton size="sm" variant={s.regLocked ? 'primary' : 'outline'} leftIcon={s.regLocked ? <Unlock className="w-3.5 h-3.5" /> : <Lock className="w-3.5 h-3.5" />} onClick={() => toggleLock(s.code)}>
-                  {s.regLocked ? 'Mở cổng đăng ký' : 'Khóa cổng đăng ký'}
+                  {s.regLocked ? t('Registration opens') : t('Lock registration')}
                 </AppButton>
               )}
-              <AppButton size="sm" variant="ghost" leftIcon={<Copy className="w-3.5 h-3.5" />} onClick={() => show(`Đã nhân bản cấu hình ${s.name}`, 'info')}>Nhân bản</AppButton>
+              <AppButton size="sm" variant="ghost" leftIcon={<Copy className="w-3.5 h-3.5" />} onClick={() => show(t('Duplicated configuration of {0}', { 0: s.name }), 'info')}>{t('Duplicate')}</AppButton>
             </div>
           </div>
         ))}
@@ -123,30 +122,30 @@ export function AdminSemestersPage() {
         open={!!editing || creating}
         onClose={() => { setEditing(null); setCreating(false); }}
         size="lg"
-        title={creating ? 'Tạo học kỳ mới' : `Chỉnh sửa ${editing?.name}`}
+        title={creating ? t('Create a new semester') : t('Edit {0}', { 0: editing?.name })}
         footer={
           <>
-            <AppButton variant="outline" onClick={() => { setEditing(null); setCreating(false); }}>Hủy</AppButton>
-            <AppButton onClick={() => { show(creating ? 'Đã tạo học kỳ (bản nháp)' : 'Đã lưu cấu hình học kỳ'); setEditing(null); setCreating(false); }}>Lưu</AppButton>
+            <AppButton variant="outline" onClick={() => { setEditing(null); setCreating(false); }}>{t('Cancel')}</AppButton>
+            <AppButton onClick={() => { show(creating ? t('Semester created (draft)') : t('Semester settings saved')); setEditing(null); setCreating(false); }}>{t('Save')}</AppButton>
           </>
         }
       >
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
-          <div><label className="block font-semibold text-ink mb-1">Mã học kỳ</label><input defaultValue={editing?.code ?? 'FA27'} className="w-full px-3 py-2 border border-line rounded-lg" /></div>
-          <div><label className="block font-semibold text-ink mb-1">Tên hiển thị</label><input defaultValue={editing?.name ?? 'Fall 2027'} className="w-full px-3 py-2 border border-line rounded-lg" /></div>
-          <div><label className="block font-semibold text-ink mb-1">Ngày bắt đầu lưu trú</label><input type="date" defaultValue="2027-09-01" className="w-full px-3 py-2 border border-line rounded-lg" /></div>
-          <div><label className="block font-semibold text-ink mb-1">Ngày kết thúc</label><input type="date" defaultValue="2027-12-31" className="w-full px-3 py-2 border border-line rounded-lg" /></div>
-          <div><label className="block font-semibold text-ink mb-1">Mở cổng đăng ký</label><input type="datetime-local" defaultValue="2027-08-01T08:00" className="w-full px-3 py-2 border border-line rounded-lg" /></div>
-          <div><label className="block font-semibold text-ink mb-1">Đóng cổng đăng ký</label><input type="datetime-local" defaultValue="2027-08-25T23:59" className="w-full px-3 py-2 border border-line rounded-lg" /></div>
-          <div><label className="block font-semibold text-ink mb-1">Thời hạn giữ chỗ chờ đóng cọc (phút)</label><input type="number" defaultValue={15} className="w-full px-3 py-2 border border-line rounded-lg" /></div>
-          <div><label className="block font-semibold text-ink mb-1">Ngày chạy xếp phòng vòng 1</label><input type="datetime-local" defaultValue="2027-08-27T03:00" className="w-full px-3 py-2 border border-line rounded-lg" /></div>
-          <div><label className="block font-semibold text-ink mb-1">Ngày mở vòng 2 & lấp chỗ</label><input type="datetime-local" defaultValue="2027-09-03T03:00" className="w-full px-3 py-2 border border-line rounded-lg" /></div>
-          <div><label className="block font-semibold text-ink mb-1">Hạn thanh toán hóa đơn phí phòng</label><input type="date" defaultValue="2027-08-28" className="w-full px-3 py-2 border border-line rounded-lg" /></div>
-          <div><label className="block font-semibold text-ink mb-1">Mở khung check-in</label><input type="datetime-local" defaultValue="2027-08-29T08:00" className="w-full px-3 py-2 border border-line rounded-lg" /></div>
-          <div><label className="block font-semibold text-ink mb-1">Đóng khung check-in (sau đó hủy no-show)</label><input type="datetime-local" defaultValue="2027-09-01T20:00" className="w-full px-3 py-2 border border-line rounded-lg" /></div>
-          <label className="sm:col-span-2 flex items-center gap-2"><input type="checkbox" defaultChecked className="accent-brand-ink" /> Gửi email mời đăng ký khi cửa sổ mở</label>
-          <label className="sm:col-span-2 flex items-center gap-2"><input type="checkbox" defaultChecked className="accent-brand-ink" /> Giữ phòng cũ cho sinh viên đang ở khi đăng ký kỳ tiếp theo</label>
-          <p className="sm:col-span-2 text-label text-ink-muted">Các mốc trên là đầu vào cho tác vụ tự động của hệ thống: mở/đóng cửa sổ, nhả giữ chỗ, xếp phòng, vòng 2, hủy no-show.</p>
+          <div><label className="block text-label font-semibold text-ink mb-1">{t('Semester code')}</label><input defaultValue={editing?.code ?? 'FA27'} className="field" /></div>
+          <div><label className="block text-label font-semibold text-ink mb-1">{t('Display name')}</label><input defaultValue={editing?.name ?? 'Fall 2027'} className="field" /></div>
+          <div><label className="block text-label font-semibold text-ink mb-1">{t('Residence start date')}</label><input type="date" defaultValue="2027-09-01" className="field" /></div>
+          <div><label className="block text-label font-semibold text-ink mb-1">{t('End date')}</label><input type="date" defaultValue="2027-12-31" className="field" /></div>
+          <div><label className="block text-label font-semibold text-ink mb-1">{t('Registration opens')}</label><input type="datetime-local" defaultValue="2027-08-01T08:00" className="field" /></div>
+          <div><label className="block text-label font-semibold text-ink mb-1">{t('Registration closes')}</label><input type="datetime-local" defaultValue="2027-08-25T23:59" className="field" /></div>
+          <div><label className="block text-label font-semibold text-ink mb-1">{t('Hold time before deposit (minutes)')}</label><input type="number" defaultValue={15} className="field" /></div>
+          <div><label className="block text-label font-semibold text-ink mb-1">{t('Allocation round 1 date')}</label><input type="datetime-local" defaultValue="2027-08-27T03:00" className="field" /></div>
+          <div><label className="block text-label font-semibold text-ink mb-1">{t('Round 2 & vacancy fill date')}</label><input type="datetime-local" defaultValue="2027-09-03T03:00" className="field" /></div>
+          <div><label className="block text-label font-semibold text-ink mb-1">{t('Room fee payment due date')}</label><input type="date" defaultValue="2027-08-28" className="field" /></div>
+          <div><label className="block text-label font-semibold text-ink mb-1">{t('Check-in window opens')}</label><input type="datetime-local" defaultValue="2027-08-29T08:00" className="field" /></div>
+          <div><label className="block text-label font-semibold text-ink mb-1">{t('Check-in window closes (no-shows cancelled after)')}</label><input type="datetime-local" defaultValue="2027-09-01T20:00" className="field" /></div>
+          <label className="sm:col-span-2 flex items-center gap-2"><input type="checkbox" defaultChecked className="accent-brand-ink" /> {t('Send registration invitation emails when the window opens')}</label>
+          <label className="sm:col-span-2 flex items-center gap-2"><input type="checkbox" defaultChecked className="accent-brand-ink" /> {t('Keep current rooms for existing residents registering for the next term')}</label>
+          <p className="sm:col-span-2 text-label text-ink-muted">{t('These milestones drive the system\'s automatic jobs: opening/closing windows, releasing holds, allocation, round 2 and no-show cancellation.')}</p>
         </div>
       </Modal>
 

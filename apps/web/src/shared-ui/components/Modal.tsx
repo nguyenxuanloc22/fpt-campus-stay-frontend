@@ -1,3 +1,4 @@
+import { t } from '../i18n/t';
 import React, { useEffect, useId } from 'react';
 import clsx from 'clsx';
 import { X } from 'lucide-react';
@@ -47,7 +48,7 @@ export function Modal({ open, onClose, title, subtitle, children, footer, size =
             type="button"
             onClick={onClose}
             className="-mr-2 -mt-1 w-touch h-touch shrink-0 inline-flex items-center justify-center rounded-control text-ink-muted hover:bg-surface-sunken hover:text-ink"
-            aria-label="Đóng"
+            aria-label={t('Close')}
           >
             <X className="w-5 h-5" aria-hidden="true" />
           </button>

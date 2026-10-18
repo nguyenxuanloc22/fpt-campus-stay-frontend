@@ -1,4 +1,5 @@
 import React from 'react';
+import { t } from '@shared-ui';
 
 interface GreetingProps {
   name?: string;
@@ -16,7 +17,7 @@ export function Greeting({ name, chip, subtitle, actions }: GreetingProps) {
     <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
       <div className="min-w-0">
         <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
-          <h1 className="text-page-title font-bold text-ink">Xin chào, {name ?? 'bạn'}</h1>
+          <h1 className="text-page-title font-bold text-ink">{t('Hello,')} {name ?? t('there')}</h1>
           {chip}
         </div>
         {subtitle && <p className="text-body text-ink-muted mt-1">{subtitle}</p>}

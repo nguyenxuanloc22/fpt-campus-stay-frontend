@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { ROLE_LABELS } from '@campusstay/constants';
 import { useAuthStore } from '@features/auth';
-import { PageHeader, SectionCard, Avatar, AppButton, useToast } from '@shared-ui';
+import { PageHeader, SectionCard, Avatar, AppButton, useToast, t } from '@shared-ui';
 import { StudentProfilePage } from '@pages/student/StudentProfilePage';
 
 /** Hồ sơ & cài đặt tài khoản — sinh viên dùng hồ sơ đồng bộ SIS, các vai trò khác dùng hồ sơ cán bộ. */
@@ -23,29 +23,29 @@ function StaffProfile() {
 
   return (
     <div className="space-y-6 max-w-3xl">
-      <PageHeader title="Hồ sơ cá nhân" description="Thông tin tài khoản và cài đặt nhận thông báo" />
+      <PageHeader title={t('Profile')} description={t('Account information and notification settings')} />
       <SectionCard>
         <div className="flex items-center gap-4">
           <Avatar name={user.name} size="lg" />
           <div>
             <div className="text-base font-bold text-ink">{user.name}</div>
-            <div className="text-xs text-ink-muted">{ROLE_LABELS[user.role]} · {user.email}</div>
-            <div className="text-xs text-ink-muted">Campus FPT Tân Uyên</div>
+            <div className="text-xs text-ink-muted">{t(ROLE_LABELS[user.role])} · {user.email}</div>
+            <div className="text-xs text-ink-muted">{t('FPT Tan Uyen campus')}</div>
           </div>
         </div>
       </SectionCard>
-      <SectionCard title="Cài đặt thông báo" className={params.get('tab') === 'settings' ? 'ring-2 ring-orange-100' : undefined}>
+      <SectionCard title={t('Notification settings')} className={params.get('tab') === 'settings' ? 'ring-2 ring-orange-100' : undefined}>
         <div className="space-y-3 text-sm">
           <label className="flex items-center justify-between gap-3">
-            <span className="text-ink">Nhận thông báo qua email</span>
+            <span className="text-ink">{t('Email notifications')}</span>
             <input type="checkbox" checked={emailNotify} onChange={(e) => setEmailNotify(e.target.checked)} className="w-4 h-4 accent-brand-ink" />
           </label>
           <label className="flex items-center justify-between gap-3">
-            <span className="text-ink">Thông báo trong ứng dụng</span>
+            <span className="text-ink">{t('In-app notifications')}</span>
             <input type="checkbox" checked={pushNotify} onChange={(e) => setPushNotify(e.target.checked)} className="w-4 h-4 accent-brand-ink" />
           </label>
         </div>
-        <AppButton size="sm" className="mt-4" onClick={() => show('Đã lưu cài đặt')}>Lưu</AppButton>
+        <AppButton size="sm" className="mt-4" onClick={() => show(t('Settings saved'))}>{t('Save')}</AppButton>
       </SectionCard>
       {toastNode}
     </div>

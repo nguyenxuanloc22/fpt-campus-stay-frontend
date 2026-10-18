@@ -1,4 +1,5 @@
 import type { User } from '@campusstay/types';
+import { t } from '@shared-ui';
 
 /**
  * Tài khoản mẫu cho môi trường phát triển (chưa nối Backend).
@@ -15,9 +16,9 @@ export const MOCK_ACCOUNTS: Record<string, User & { department: string }> = {
     email: 'anhntmse171234@fpt.edu.vn',
     role: 'STUDENT',
     gender: 'FEMALE',
-    major: 'Kỹ thuật phần mềm (SE)',
+    major: t('Software Engineering (SE)'),
     phoneNumber: '0901234567',
-    department: 'K17 · Kỳ 5',
+    department: t('K17 · Term 5'),
   },
   staff: {
     id: 'usr-staff-001',
@@ -25,7 +26,7 @@ export const MOCK_ACCOUNTS: Record<string, User & { department: string }> = {
     email: 'cuongtv@fpt.edu.vn',
     role: 'STAFF',
     gender: 'MALE',
-    department: 'Ban Quản lý KTX',
+    department: t('Dormitory Management Board'),
   },
   manager: {
     id: 'usr-manager-001',
@@ -33,14 +34,14 @@ export const MOCK_ACCOUNTS: Record<string, User & { department: string }> = {
     email: 'namh@fpt.edu.vn',
     role: 'MANAGER',
     gender: 'MALE',
-    department: 'Trưởng ban KTX',
+    department: t('Dormitory Manager'),
   },
   admin: {
     id: 'usr-admin-001',
-    name: 'Quản trị viên Hệ thống',
+    name: t('System Administrator'),
     email: 'admin@fpt.edu.vn',
     role: 'ADMIN',
     gender: 'MALE',
-    department: 'Phòng CNTT',
+    department: t('IT Department'),
   },
 };

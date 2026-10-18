@@ -1,4 +1,5 @@
 import type { RoomTypeId } from './roomCatalog';
+import { t } from '@shared-ui';
 
 /**
  * Hình minh họa mặt bằng phòng (vẽ SVG, không phụ thuộc ảnh ngoài).
@@ -12,7 +13,7 @@ export function RoomTypeIllustration({ type, className }: { type: RoomTypeId; cl
   const gap = cols === 1 ? 0 : (200 - cols * bedW) / (cols - 1);
 
   return (
-    <svg viewBox="0 0 240 150" className={className} role="img" aria-label={`Mặt bằng phòng ${beds} người`}>
+    <svg viewBox="0 0 240 150" className={className} role="img" aria-label={t('Floor plan of a {0}-person room', { 0: beds })}>
       <rect x="0" y="0" width="240" height="150" rx="14" fill="var(--color-surface-muted)" />
       <rect x="10" y="10" width="220" height="130" rx="10" fill="var(--color-surface)" stroke="var(--color-line-strong)" strokeWidth="2" />
       {/* Cửa sổ */}
